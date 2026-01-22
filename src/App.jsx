@@ -137,7 +137,6 @@ const MainLayout = () => {
   });
 
   const filteredMembers = searchQuery
-  searchQuery
     ? members.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : [];
 
