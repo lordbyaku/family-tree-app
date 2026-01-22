@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom'
 import { FamilyProvider, useFamily } from './context/FamilyContext'
 import FamilyTree from './components/FamilyTree'
@@ -18,6 +18,7 @@ import { ToastProvider, useToast } from './context/ToastContext';
 import SearchBar from './components/SearchBar';
 import ImportExportActions from './components/ImportExportActions';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { ConfirmProvider } from './context/ConfirmContext';
 
 // Inner component to access context
 const MainLayout = () => {
@@ -560,7 +561,6 @@ const MainLayout = () => {
   );
 };
 
-import { ConfirmProvider } from './context/ConfirmContext';
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { X, Calendar, Cake, ChevronRight, User } from 'lucide-react';
 import { useFamily } from '../context/FamilyContext';
 
