@@ -32,12 +32,12 @@ export const FamilyProvider = ({ children }) => {
                 .from('members')
                 .select('*');
 
-            if (treeSlug === 'default') {
+            if (treeSlug === 'default' || !treeSlug) {
                 // For default, include legacy records (null slug) or 'default'
-                query = query.or('tree_slug.eq.default,tree_slug.is.null');
+                query = query.or('tree_slug.ilike.default,tree_slug.is.null');
             } else {
-                // Strict filtering for other families
-                query = query.eq('tree_slug', treeSlug);
+                // Case-insensitive filtering for other families
+                query = query.ilike('tree_slug', treeSlug);
             }
 
             const { data, error } = await query.order('created_at', { ascending: true });
@@ -404,29 +404,75 @@ export const FamilyProvider = ({ children }) => {
         });
     };
 
-    const exportData = () => { /* same as before */
-        const dataStr = JSON.stringify(members, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-        const link = document.createElement('a');
-        link.href = dataUri;
-        link.download = `family_tree_${treeSlug}_${new Date().toISOString().slice(0, 10)}.json`;
-        link.click();
+    const createSnapshot = async (note = '') => {
+        try {
+            const { error } = await supabase.from('backups').insert({
+                tree_slug: treeSlug,
+                data: members,
+                note: note
+            });
+            if (error) throw error;
+            setLastAction(`Buat Snapshot: ${note || new Date().toLocaleString()}`);
+            return { success: true };
+        } catch (error) {
+            console.error("Gagal membuat snapshot:", error.message);
+            return { success: false, message: error.message };
+        }
     };
 
-    const exportToExcel = async (options = {}) => {
-        const workbook = generateExcelBook(members, options);
-        XLSX.writeFile(workbook, `buku_keluarga_${treeSlug}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    const listSnapshots = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('backups')
+                .select('id, created_at, note')
+                .eq('tree_slug', treeSlug)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error("Gagal mengambil daftar snapshot:", error.message);
+            return [];
+        }
     };
 
-    const exportToHTML = async (options = {}) => {
-        const htmlContent = generateHTMLBook(members, options);
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `buku_keluarga_${treeSlug}_${new Date().toISOString().slice(0, 10)}.html`;
-        link.click();
-        URL.revokeObjectURL(url);
+    const restoreSnapshot = async (snapshotId) => {
+        try {
+            const { data, error } = await supabase
+                .from('backups')
+                .select('data')
+                .eq('id', snapshotId)
+                .single();
+            if (error) throw error;
+
+            const backupData = data.data;
+
+            // Delete all current members for this slug
+            const { error: delError } = await supabase
+                .from('members')
+                .delete()
+                .eq('tree_slug', treeSlug);
+            if (delError) throw delError;
+
+            // Prepare for upsert
+            const dbList = backupData.map(m => ({
+                ...m,
+                tree_slug: treeSlug,
+                birth_date: m.birthDate || m.birth_date,
+                death_date: m.deathDate || m.death_date,
+                is_deceased: m.isDeceased ?? m.is_deceased
+            }));
+            dbList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
+
+            const { error: insError } = await supabase.from('members').insert(dbList);
+            if (insError) throw insError;
+
+            await fetchMembers();
+            setLastAction(`Snapshot di-restore`);
+            return { success: true };
+        } catch (error) {
+            console.error("Gagal restore snapshot:", error.message);
+            return { success: false, message: error.message };
+        }
     };
 
     return (
@@ -434,7 +480,8 @@ export const FamilyProvider = ({ children }) => {
             members, treeSlug, setTreeSlug, addMember, updateMember, deleteMember,
             exportData, importData, importFromExcel, exportToExcel, exportToHTML,
             undo, redo, canUndo, canRedo, lastAction,
-            isLoading, migrateFromLocal
+            isLoading, migrateFromLocal,
+            createSnapshot, listSnapshots, restoreSnapshot
         }}>
             {children}
         </FamilyContext.Provider>
