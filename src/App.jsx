@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom'
 import { FamilyProvider, useFamily } from './context/FamilyContext'
 import FamilyTree from './components/FamilyTree'
