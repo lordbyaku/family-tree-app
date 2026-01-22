@@ -475,6 +475,36 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
+    const exportData = () => {
+        const dataStr = JSON.stringify(members, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const exportFileDefaultName = `family-tree-${treeSlug}-${new Date().toISOString().slice(0, 10)}.json`;
+
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+        setLastAction('Export Data JSON');
+    };
+
+    const exportToExcel = (options = {}) => {
+        const workbook = generateExcelBook(members, options);
+        XLSX.writeFile(workbook, `family-tree-${treeSlug}-${new Date().toISOString().slice(0, 10)}.xlsx`);
+        setLastAction('Export Excel');
+    };
+
+    const exportToHTML = (options = {}) => {
+        const html = generateHTMLBook(members, options);
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `buku-keluarga-${treeSlug}.html`;
+        link.click();
+        URL.revokeObjectURL(url);
+        setLastAction('Export HTML');
+    };
+
     return (
         <FamilyContext.Provider value={{
             members, treeSlug, setTreeSlug, addMember, updateMember, deleteMember,
