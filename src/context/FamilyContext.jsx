@@ -511,6 +511,13 @@ export const FamilyProvider = ({ children }) => {
         setLastAction('Export Excel');
     };
 
+    const exportToCSV = () => {
+        const workbook = generateExcelBook(members, { includeStats: false });
+        // xlsx automatically takes the first sheet for CSV
+        XLSX.writeFile(workbook, `family-tree-${treeSlug}-${new Date().toISOString().slice(0, 10)}.csv`, { bookType: 'csv' });
+        setLastAction('Export CSV');
+    };
+
     const exportToHTML = (options = {}) => {
         const html = generateHTMLBook(members, options);
         const blob = new Blob([html], { type: 'text/html' });
@@ -526,7 +533,7 @@ export const FamilyProvider = ({ children }) => {
     return (
         <FamilyContext.Provider value={{
             members, treeSlug, setTreeSlug, addMember, updateMember, deleteMember,
-            exportData, importData, importFromExcel, exportToExcel, exportToHTML,
+            exportData, importData, importFromExcel, exportToExcel, exportToCSV, exportToHTML,
             undo, redo, canUndo, canRedo, lastAction,
             isLoading, migrateFromLocal,
             createSnapshot, listSnapshots, restoreSnapshot

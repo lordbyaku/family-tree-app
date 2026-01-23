@@ -4,7 +4,7 @@ import { useFamily } from '../context/FamilyContext';
 import { useToast } from '../context/ToastContext';
 
 const ExportModal = ({ onClose }) => {
-    const { members, exportToExcel, exportToHTML } = useFamily();
+    const { members, exportToExcel, exportToCSV, exportToHTML } = useFamily();
     const toast = useToast();
     const [isExporting, setIsExporting] = useState(false);
     const [includePhotos, setIncludePhotos] = useState(true);
@@ -26,6 +26,9 @@ const ExportModal = ({ onClose }) => {
             if (format === 'excel') {
                 await exportToExcel(options);
                 toast.success("Buku keluarga berhasil diexport ke Excel!");
+            } else if (format === 'csv') {
+                await exportToCSV();
+                toast.success("Data berhasil diexport ke CSV!");
             } else if (format === 'html') {
                 await exportToHTML(options);
                 toast.success("Buku keluarga berhasil diexport ke HTML!");
@@ -91,6 +94,19 @@ const ExportModal = ({ onClose }) => {
                                 <FileSpreadsheet size={20} />
                             )}
                             Export ke Excel (.xlsx)
+                        </button>
+
+                        <button
+                            onClick={() => handleExport('csv')}
+                            disabled={isExporting}
+                            className="w-full flex items-center justify-center gap-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-400 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+                        >
+                            {isExporting ? (
+                                <Loader2 size={20} className="animate-spin" />
+                            ) : (
+                                <FileSpreadsheet size={20} />
+                            )}
+                            Export ke CSV (.csv)
                         </button>
 
                         <button
