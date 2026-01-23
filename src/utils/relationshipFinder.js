@@ -62,20 +62,79 @@ const interpretPath = (path, members, endId) => {
     const normalizedPath = path.map(p => p.replace('step-', ''));
     const pathStr = normalizedPath.join('-');
 
+    // Detect generation hierarchy
+    let upCount = 0;
+    let downCount = 0;
+    let spouseCount = 0;
+
+    normalizedPath.forEach(step => {
+        if (step === 'parent') upCount++;
+        if (step === 'child') downCount++;
+        if (step === 'spouse') spouseCount++;
+    });
+
     const result = (() => {
-        if (pathStr === 'parent') return isMale ? 'Ayah' : 'Ibu';
-        if (pathStr === 'child') return isMale ? 'Anak (L)' : 'Anak (P)';
-        if (pathStr === 'spouse') return isMale ? 'Suami' : 'Istri';
-        if (pathStr === 'parent-parent') return isMale ? 'Kakek' : 'Nenek';
-        if (pathStr === 'child-child') return 'Cucu';
-        if (pathStr === 'parent-child') return isMale ? 'Saudara (L)' : 'Saudara (P)';
-        if (pathStr === 'parent-parent-child') return isMale ? 'Paman' : 'Bibi';
-        if (pathStr === 'parent-child-child') return 'Keponakan';
-        if (pathStr === 'parent-parent-child-child') return 'Sepupu';
+        // Direct Vertical Line Up (Leluhur)
+        if (downCount === 0 && spouseCount === 0) {
+            if (upCount === 1) return isMale ? 'Ayah' : 'Ibu';
+            if (upCount === 2) return isMale ? 'Kakek' : 'Nenek';
+            if (upCount === 3) return 'Buyut';
+            if (upCount === 4) return 'Canggah';
+            if (upCount === 5) return 'Wareng';
+            if (upCount === 6) return 'Udheg-udheg';
+            return `Leluhur G-${upCount}`;
+        }
+
+        // Direct Vertical Line Down (Keturunan)
+        if (upCount === 0 && spouseCount === 0) {
+            if (downCount === 1) return isMale ? 'Anak (L)' : 'Anak (P)';
+            if (downCount === 2) return 'Cucu (Putu)';
+            if (downCount === 3) return 'Cicit (Buyut)';
+            if (downCount === 4) return 'Piut';
+            if (downCount === 5) return 'Anggas';
+            return `Keturunan G-${downCount}`;
+        }
+
+        // Horizontal (Spouse)
+        if (upCount === 0 && downCount === 0 && spouseCount === 1) {
+            return isMale ? 'Suami' : 'Istri';
+        }
+
+        // Same Generation (Siblings)
+        if (upCount === 1 && downCount === 1 && spouseCount === 0) {
+            return isMale ? 'Saudara (L)' : 'Saudara (P)';
+        }
+
+        // Collateral Up (Paman/Bibi & Ancestor's Siblings)
+        if (downCount === 1 && spouseCount === 0) {
+            if (upCount === 2) return isMale ? 'Paman' : 'Bibi';
+            if (upCount === 3) return isMale ? 'Kakek Sepupu' : 'Nenek Sepupu';
+            if (upCount === 4) return 'Buyut Sepupu';
+        }
+
+        // Collateral Down (Keponakan)
+        if (upCount === 1 && spouseCount === 0) {
+            if (downCount === 2) return 'Keponakan';
+            if (downCount === 3) return 'Cucu Keponakan';
+            if (downCount === 4) return 'Cicit Keponakan';
+        }
+
+        // Cousins (Up X, then Down X)
+        if (upCount === downCount && upCount > 1 && spouseCount === 0) {
+            if (upCount === 2) return 'Sepupu';
+            if (upCount === 3) return 'Sepupu Dua Kali';
+            return `Sepupu G-${upCount - 1}`;
+        }
+
+        // In-laws
         if (pathStr === 'spouse-parent') return 'Mertua';
         if (pathStr === 'child-spouse') return 'Menantu';
-        if (pathStr === 'parent-child-spouse') return 'Ipar';
-        if (pathStr === 'spouse-parent-child') return 'Ipar';
+        if (pathStr === 'parent-child-spouse' || pathStr === 'spouse-parent-child') return 'Ipar';
+
+        // Generic Fallback
+        if (spouseCount > 0) return "Kerabat (Besan/Ipar)";
+        if (upCount > downCount) return "Kerabat (Jalur Atas)";
+        if (downCount > upCount) return "Kerabat (Jalur Bawah)";
 
         return "Kerabat";
     })();
