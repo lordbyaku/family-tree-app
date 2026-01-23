@@ -74,7 +74,7 @@ const MainLayout = () => {
   const fileInputRef = useRef(null);
   const excelInputRef = useRef(null);
 
-  const hasLocalData = !!localStorage.getItem('family-tree-data');
+  const hasLocalData = !!localStorage.getItem(`family_data_${treeSlug}`) || !!localStorage.getItem('family-tree-data');
 
   const handleMigration = async () => {
     const result = await migrateFromLocal();
@@ -197,7 +197,7 @@ const MainLayout = () => {
   const editingMember = editingMemberId ? members.find(m => m.id === editingMemberId) : null;
 
   const resetLayout = () => {
-    localStorage.removeItem('family-tree-custom-layout');
+    localStorage.removeItem(`family_layout_${treeSlug}`);
     setLayoutMode('auto');
     toast.success("Layout berhasil di-reset ke otomatis");
   };

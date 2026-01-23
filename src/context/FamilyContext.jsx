@@ -229,9 +229,26 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
+    // Sync to LocalStorage for offline backup/cache
+    useEffect(() => {
+        if (treeSlug && members.length > 0) {
+            localStorage.setItem(`family_data_${treeSlug}`, JSON.stringify(members));
+        }
+    }, [members, treeSlug]);
+
     const migrateFromLocal = async () => {
-        const localData = localStorage.getItem('family-tree-data');
-        if (!localData) return { success: false, message: "Tidak ada data lokal ditemukan." };
+        // Try slug-specific key first, then fallback to generic (legacy)
+        let localData = localStorage.getItem(`family_data_${treeSlug}`);
+
+        // Optional: fallback to generic 'family-tree-data' if slug-specific not found AND we are in 'default'
+        // But user requested strict separation. Let's strictly use the slug key or check if they mean the old generic data should be migrated to this slug?
+        // Assuming they want to migrate *existing* local data which might be under 'family-tree-data'.
+        // Let's look for specific first.
+        if (!localData && treeSlug === 'default') {
+            localData = localStorage.getItem('family-tree-data');
+        }
+
+        if (!localData) return { success: false, message: `Tidak ada data lokal ditemukan untuk ${treeSlug}.` };
 
         try {
             const localMembers = JSON.parse(localData);
@@ -260,8 +277,9 @@ export const FamilyProvider = ({ children }) => {
             if (error) throw error;
 
             await fetchMembers();
-            localStorage.removeItem('family-tree-data');
-            return { success: true, message: `Berhasil migrasi ${sanitizedData.length} anggota ke Cloud!` };
+            // Optional: Don't remove immediately or rename it
+            // localStorage.removeItem(`family_data_${treeSlug}`); 
+            return { success: true, message: `Berhasil migrasi ${sanitizedData.length} anggota ke Cloud (${treeSlug})!` };
         } catch (error) {
             console.error("Migration Error:", error);
             return { success: false, message: error.message };

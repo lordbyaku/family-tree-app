@@ -73,8 +73,11 @@ const FamilyTree = (props) => {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const { setCenter } = useReactFlow();
 
-    // Constant for layout key
-    const LAYOUT_KEY = 'family-tree-custom-layout';
+    // Constant for layout key (Slug separated)
+    const LAYOUT_KEY = `family-tree-layout-${members[0]?.tree_slug || 'default'}`;
+    // Ideally we use treeSlug from context, let's grab it properly
+    const { treeSlug } = useFamily();
+    const DYNAMIC_LAYOUT_KEY = `family_layout_${treeSlug}`;
 
     // Handle focus on specific node (Search)
     useEffect(() => {
@@ -273,7 +276,7 @@ const FamilyTree = (props) => {
         const finalNodes = layoutedNodes.map(node => {
             if (props.layoutMode === 'manual') {
                 try {
-                    const savedLayout = localStorage.getItem(LAYOUT_KEY);
+                    const savedLayout = localStorage.getItem(DYNAMIC_LAYOUT_KEY);
                     if (savedLayout) {
                         const { positions } = JSON.parse(savedLayout);
                         if (positions && positions[node.id]) {
@@ -287,20 +290,20 @@ const FamilyTree = (props) => {
 
         setNodes(finalNodes);
         setEdges(finalEdges);
-    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode]);
+    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode, DYNAMIC_LAYOUT_KEY]); // added dependency
 
     const onNodeDragStop = useCallback((event, node) => {
         if (props.layoutMode !== 'manual') return;
 
         try {
-            const savedLayout = localStorage.getItem(LAYOUT_KEY);
+            const savedLayout = localStorage.getItem(DYNAMIC_LAYOUT_KEY);
             let layout = { positions: {} };
             if (savedLayout) {
                 layout = JSON.parse(savedLayout);
             }
 
             layout.positions[node.id] = node.position;
-            localStorage.setItem(LAYOUT_KEY, JSON.stringify(layout));
+            localStorage.setItem(DYNAMIC_LAYOUT_KEY, JSON.stringify(layout));
         } catch (e) {
             console.error("Failed to save custom layout", e);
         }
