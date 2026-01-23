@@ -111,7 +111,7 @@ const MemberForm = ({ onClose, initialData = null }) => {
 
     const toast = useToast();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -126,14 +126,19 @@ const MemberForm = ({ onClose, initialData = null }) => {
             return;
         }
 
-        if (isEditing) {
-            updateMember(initialData.id, formData);
-            toast.success("Data berhasil diperbarui!");
-        } else {
-            addMember(formData);
-            toast.success("Anggota berhasil ditambahkan!");
+        try {
+            if (isEditing) {
+                await updateMember(initialData.id, formData);
+                toast.success("Data berhasil diperbarui!");
+            } else {
+                await addMember(formData);
+                toast.success("Anggota berhasil ditambahkan!");
+            }
+            onClose();
+        } catch (err) {
+            setError(err.message || "Gagal menyimpan data.");
+            toast.error("Gagal menyimpan data.");
         }
-        onClose();
     };
 
     const confirm = useConfirm();

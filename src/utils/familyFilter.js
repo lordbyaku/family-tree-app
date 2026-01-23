@@ -18,8 +18,9 @@ export const getAncestors = (members, rootId) => {
         const current = members.find(m => m.id === currentId);
 
         if (current && current.parents) {
-            current.parents.forEach(parentId => {
-                if (!ancestors.has(parentId)) {
+            current.parents.forEach(p => {
+                const parentId = typeof p === 'string' ? p : p.id;
+                if (parentId && !ancestors.has(parentId)) {
                     ancestors.add(parentId);
                     queue.push(parentId);
                 }
@@ -46,9 +47,10 @@ export const getDescendants = (members, rootId) => {
 
         if (current && current.children) {
             current.children.forEach(childId => {
-                if (!descendants.has(childId)) {
-                    descendants.add(childId);
-                    queue.push(childId);
+                const cid = typeof childId === 'string' ? childId : childId.id;
+                if (cid && !descendants.has(cid)) {
+                    descendants.add(cid);
+                    queue.push(cid);
                 }
             });
         }

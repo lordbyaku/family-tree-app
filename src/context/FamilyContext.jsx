@@ -49,7 +49,7 @@ export const FamilyProvider = ({ children }) => {
                 ...m,
                 birthDate: m.birth_date,
                 deathDate: m.death_date,
-                isDeceased: m.is_deceased
+                isDeceased: !!m.is_deceased
             }));
 
             setMembers(mappedData);
@@ -111,14 +111,19 @@ export const FamilyProvider = ({ children }) => {
                 });
             }
 
-            const dbUpsertList = modifiedMembers.map(m => ({
-                ...m,
-                tree_slug: treeSlug,
-                birth_date: m.birthDate,
-                death_date: m.deathDate,
-                is_deceased: m.isDeceased
-            }));
-            dbUpsertList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
+            const dbUpsertList = modifiedMembers.map(m => {
+                const dbM = {
+                    ...m,
+                    tree_slug: treeSlug,
+                    birth_date: m.birthDate || null,
+                    death_date: m.deathDate || null,
+                    is_deceased: m.isDeceased || false
+                };
+                delete dbM.birthDate;
+                delete dbM.deathDate;
+                delete dbM.isDeceased;
+                return dbM;
+            });
 
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
@@ -148,9 +153,9 @@ export const FamilyProvider = ({ children }) => {
             const dbMember = {
                 ...updatedMember,
                 tree_slug: treeSlug,
-                birth_date: updatedMember.birthDate,
-                death_date: updatedMember.deathDate,
-                is_deceased: updatedMember.isDeceased
+                birth_date: updatedMember.birthDate || null,
+                death_date: updatedMember.deathDate || null,
+                is_deceased: updatedMember.isDeceased || false
             };
             delete dbMember.birthDate; delete dbMember.deathDate; delete dbMember.isDeceased;
 
