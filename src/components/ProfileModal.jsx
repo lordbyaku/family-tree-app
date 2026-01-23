@@ -1,6 +1,6 @@
 import { useFamily } from '../context/FamilyContext';
 import { useAuth } from '../context/AuthContext';
-import { X, Pencil, MapPin, Briefcase } from 'lucide-react';
+import { X, Pencil, MapPin, Briefcase, Phone } from 'lucide-react';
 
 const ProfileModal = ({ memberId, onClose, onEdit }) => {
     const { members } = useFamily();
@@ -80,6 +80,12 @@ const ProfileModal = ({ memberId, onClose, onEdit }) => {
                                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-300 text-sm border border-slate-100 dark:border-slate-600">
                                     <Briefcase size={14} className={iconClass} />
                                     {member.occupation}
+                                </div>
+                            )}
+                            {member.phone && (
+                                <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-300 text-sm border border-slate-100 dark:border-slate-600">
+                                    <Phone size={14} className={iconClass} />
+                                    {member.phone}
                                 </div>
                             )}
                         </div>

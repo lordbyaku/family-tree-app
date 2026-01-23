@@ -66,6 +66,18 @@ const MemberBasicInfo = ({ formData, handleChange, setFormData }) => {
                     </div>
                 )}
             </div>
+
+            <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nomor Telepon / WhatsApp</label>
+                <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone || ''}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    placeholder="081234567890"
+                />
+            </div>
         </div>
     );
 };

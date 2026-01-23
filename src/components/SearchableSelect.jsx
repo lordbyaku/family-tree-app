@@ -56,7 +56,17 @@ const SearchableSelect = ({ label, placeholder, members, onSelect, excludeIds = 
                                     {m.name.charAt(0)}
                                 </div>
                             )}
-                            <span className="truncate">{m.name}</span>
+                            <div className="flex flex-col min-w-0">
+                                <span className="truncate font-medium">{m.name}</span>
+                                <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                                    {m.birthDate && <span>Lahir: {m.birthDate.split('-')[0]}</span>}
+                                    {m.parents && m.parents.length > 0 && (
+                                        <span className="truncate">
+                                            &bull; Anak dari: {m.parents.map(p => members.find(parent => parent.id === (typeof p === 'string' ? p : p.id))?.name).filter(Boolean).join(', ')}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
                         </button>
                     ))}
                 </div>

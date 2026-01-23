@@ -16,9 +16,10 @@ export const generateExcelBook = (members, options = {}) => {
         'Tanggal Lahir': m.birthDate || '',
         'Tanggal Wafat': m.isDeceased ? (m.deathDate || '') : '',
         'Status': m.isDeceased ? 'Meninggal' : 'Masih Hidup',
+        'Telepon': m.phone || '',
         'Pekerjaan': m.occupation || '',
         'Domisili': m.address || '',
-        'Orang Tua': m.parents?.map(pid => members.find(parent => parent.id === pid)?.name).filter(Boolean).join(', ') || '',
+        'Orang Tua': m.parents?.map(pid => members.find(parent => parent.id === (typeof pid === 'string' ? pid : pid.id))?.name).filter(Boolean).join(', ') || '',
         'Pasangan': m.spouses?.map(sid => members.find(spouse => spouse.id === sid)?.name).filter(Boolean).join(', ') || '',
         'Jumlah Anak': m.children?.length || 0,
         'Biografi': m.biography || ''
