@@ -128,13 +128,17 @@ export const FamilyProvider = ({ children }) => {
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
 
-            // Audit Log
-            await supabase.from('audit_logs').insert({
-                tree_slug: treeSlug,
-                action: 'ADD_MEMBER',
-                details: { name: newMember.name, id: newMember.id },
-                performed_by: 'Admin'
-            });
+            // Audit Log - Wrapped in try/catch to prevent blocking if table missing
+            try {
+                await supabase.from('audit_logs').insert({
+                    tree_slug: treeSlug,
+                    action: 'ADD_MEMBER',
+                    details: { name: newMember.name, id: newMember.id },
+                    performed_by: 'Admin'
+                });
+            } catch (auditErr) {
+                console.warn("Audit log failed:", auditErr.message);
+            }
 
             setMembers(updatedList);
             setLastAction(`Tambah Anggota: ${newMember.name}`);
@@ -162,13 +166,17 @@ export const FamilyProvider = ({ children }) => {
             const { error } = await supabase.from('members').upsert(dbMember);
             if (error) throw error;
 
-            // Audit Log
-            await supabase.from('audit_logs').insert({
-                tree_slug: treeSlug,
-                action: 'UPDATE_MEMBER',
-                details: { name: member?.name || id, id: id, changes: updatedData },
-                performed_by: 'Admin'
-            });
+            // Audit Log - Wrapped in try/catch
+            try {
+                await supabase.from('audit_logs').insert({
+                    tree_slug: treeSlug,
+                    action: 'UPDATE_MEMBER',
+                    details: { name: member?.name || id, id: id, changes: updatedData },
+                    performed_by: 'Admin'
+                });
+            } catch (auditErr) {
+                console.warn("Audit log failed:", auditErr.message);
+            }
 
             setMembers(updatedList);
             setLastAction(`Update Anggota: ${member?.name || id}`);
