@@ -220,26 +220,33 @@ export const FamilyProvider = ({ children }) => {
             if (delError) throw delError;
 
             if (modifiedMembers.length > 0) {
-                const dbUpsertList = modifiedMembers.map(m => ({
-                    ...m,
-                    tree_slug: treeSlug,
-                    birth_date: m.birthDate,
-                    death_date: m.deathDate,
-                    is_deceased: m.isDeceased
-                }));
-                dbUpsertList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
+                const dbUpsertList = modifiedMembers.map(m => {
+                    const dbM = {
+                        ...m,
+                        tree_slug: treeSlug,
+                        birth_date: m.birthDate || null,
+                        death_date: m.deathDate || null,
+                        is_deceased: m.isDeceased || false
+                    };
+                    delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+                    return dbM;
+                });
 
                 const { error: upError } = await supabase.from('members').upsert(dbUpsertList);
                 if (upError) throw upError;
             }
 
-            // Audit Log
-            await supabase.from('audit_logs').insert({
-                tree_slug: treeSlug,
-                action: 'DELETE_MEMBER',
-                details: { name: memberToDelete.name, id: id },
-                performed_by: 'Admin'
-            });
+            // Audit Log - Wrapped in try/catch
+            try {
+                await supabase.from('audit_logs').insert({
+                    tree_slug: treeSlug,
+                    action: 'DELETE_MEMBER',
+                    details: { name: memberToDelete.name, id: id },
+                    performed_by: 'Admin'
+                });
+            } catch (auditErr) {
+                console.warn("Audit log failed:", auditErr.message);
+            }
 
             setMembers(updatedList);
             setLastAction(`Hapus Anggota: ${memberToDelete.name}`);
@@ -274,9 +281,9 @@ export const FamilyProvider = ({ children }) => {
                 tree_slug: treeSlug,
                 name: m.name,
                 gender: m.gender,
-                birth_date: m.birthDate || m.birth_date || '',
-                death_date: m.deathDate || m.death_date || '',
-                is_deceased: m.isDeceased ?? m.is_deceased ?? false,
+                birth_date: m.birthDate || m.birth_date || null,
+                death_date: m.deathDate || m.death_date || null,
+                is_deceased: !!(m.isDeceased ?? m.is_deceased),
                 occupation: m.occupation || '',
                 address: m.address || '',
                 biography: m.biography || '',
@@ -313,9 +320,9 @@ export const FamilyProvider = ({ children }) => {
                         tree_slug: treeSlug,
                         name: m.name,
                         gender: m.gender,
-                        birth_date: m.birthDate || m.birth_date || '',
-                        death_date: m.deathDate || m.death_date || '',
-                        is_deceased: m.isDeceased ?? m.is_deceased ?? false,
+                        birth_date: m.birthDate || m.birth_date || null,
+                        death_date: m.deathDate || m.death_date || null,
+                        is_deceased: !!(m.isDeceased ?? m.is_deceased),
                         occupation: m.occupation || '',
                         address: m.address || '',
                         biography: m.biography || '',
@@ -400,14 +407,17 @@ export const FamilyProvider = ({ children }) => {
                     });
 
                     const updatedList = [...members, ...newMembers];
-                    const dbList = newMembers.map(m => ({
-                        ...m,
-                        tree_slug: treeSlug,
-                        birth_date: m.birthDate,
-                        death_date: m.deathDate,
-                        is_deceased: m.isDeceased
-                    }));
-                    dbList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
+                    const dbList = newMembers.map(m => {
+                        const dbM = {
+                            ...m,
+                            tree_slug: treeSlug,
+                            birth_date: m.birthDate || null,
+                            death_date: m.deathDate || null,
+                            is_deceased: m.isDeceased || false
+                        };
+                        delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+                        return dbM;
+                    });
 
                     const { error } = await supabase.from('members').upsert(dbList);
                     if (error) throw error;
@@ -469,14 +479,17 @@ export const FamilyProvider = ({ children }) => {
                 .eq('tree_slug', treeSlug);
             if (delError) throw delError;
 
-            const dbList = backupData.map(m => ({
-                ...m,
-                tree_slug: treeSlug,
-                birth_date: m.birthDate || m.birth_date,
-                death_date: m.deathDate || m.death_date,
-                is_deceased: m.isDeceased ?? m.is_deceased
-            }));
-            dbList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
+            const dbList = backupData.map(m => {
+                const dbM = {
+                    ...m,
+                    tree_slug: treeSlug,
+                    birth_date: m.birthDate || m.birth_date || null,
+                    death_date: m.deathDate || m.death_date || null,
+                    is_deceased: !!(m.isDeceased ?? m.is_deceased)
+                };
+                delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+                return dbM;
+            });
 
             const { error: insError } = await supabase.from('members').insert(dbList);
             if (insError) throw insError;
