@@ -33,7 +33,7 @@ export const getDetailedRelationship = (members, startId, endId) => {
 
         if (id === endId) {
             return {
-                type: interpretPath(path.map(p => p.rel), members, endId),
+                type: interpretPath(path.map(p => p.rel), members, startId), // Use startId to describe A
                 path: path // Array of { id, rel, label }
             };
         }
@@ -53,13 +53,24 @@ export const getDetailedRelationship = (members, startId, endId) => {
     return { type: "Tidak ada hubungan langsung", path: [] };
 };
 
-const interpretPath = (path, members, endId) => {
-    const endMember = members.find(m => m.id === endId);
-    const gender = endMember?.gender || 'male';
+const interpretPath = (path, members, startId) => {
+    const startMember = members.find(m => m.id === startId);
+    const gender = startMember?.gender || 'male';
     const isMale = gender === 'male';
 
     const isStep = path.some(p => p.startsWith('step-'));
-    const normalizedPath = path.map(p => p.replace('step-', ''));
+
+    // INVERT THE PATH: To describe A relative to B
+    // If A -> B is 'parent', then A is 'child' of B
+    const invertedPath = path.map(p => {
+        if (p === 'parent') return 'child';
+        if (p === 'child') return 'parent';
+        if (p === 'step-parent') return 'step-child';
+        if (p === 'step-child') return 'step-parent';
+        return p; // spouse stays spouse
+    });
+
+    const normalizedPath = invertedPath.map(p => p.replace('step-', ''));
     const pathStr = normalizedPath.join('-');
 
     // Detect generation hierarchy

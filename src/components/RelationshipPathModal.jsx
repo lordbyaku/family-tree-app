@@ -81,11 +81,19 @@ const RelationshipPathModal = ({ onClose }) => {
                     {/* Result Path Section */}
                     {result && (
                         <div className="space-y-6 animate-in slide-in-from-top-4 duration-500">
-                            <div className="text-center p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
-                                <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-1">Hasil Analisis</p>
-                                <h3 className="text-2xl font-black text-slate-800 dark:text-white">
-                                    {result.type}
-                                </h3>
+                            <div className="text-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                                <p className="text-xs text-slate-400 uppercase tracking-widest font-bold mb-3">Hasil Analisis</p>
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                                        {members.find(m => m.id === personA)?.name} adalah
+                                    </span>
+                                    <h3 className="text-3xl font-black text-purple-600 dark:text-purple-400 my-1">
+                                        {result.type}
+                                    </h3>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                                        dari {members.find(m => m.id === personB)?.name}
+                                    </span>
+                                </div>
                             </div>
 
                             {result.path.length > 0 && (
