@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 import useUndo from 'use-undo';
@@ -63,18 +64,6 @@ export const FamilyProvider = ({ children }) => {
         fetchMembers();
     }, [treeSlug]);
 
-    // Real-time subscription (Optional: enable if multiple users editing at once)
-    /*
-    useEffect(() => {
-        const channel = supabase.channel('members_changes')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, () => {
-                fetchMembers();
-            })
-            .subscribe();
-        return () => supabase.removeChannel(channel);
-    }, []);
-    */
-
     const addMember = async (member) => {
         const id = crypto.randomUUID();
         const newMember = {
@@ -86,15 +75,13 @@ export const FamilyProvider = ({ children }) => {
         };
 
         try {
-            // Prepare for DB (map to snake_case)
             const dbMember = {
                 ...newMember,
-                tree_slug: treeSlug, // Label with Slug
+                tree_slug: treeSlug,
                 birth_date: newMember.birthDate,
                 death_date: newMember.deathDate,
                 is_deceased: newMember.isDeceased
             };
-            // Remove camelCase versions for DB payload
             delete dbMember.birthDate;
             delete dbMember.deathDate;
             delete dbMember.isDeceased;
@@ -124,10 +111,9 @@ export const FamilyProvider = ({ children }) => {
                 });
             }
 
-            // Map ONLY the modified members for upsert
             const dbUpsertList = modifiedMembers.map(m => ({
                 ...m,
-                tree_slug: treeSlug, // Label with Slug
+                tree_slug: treeSlug,
                 birth_date: m.birthDate,
                 death_date: m.deathDate,
                 is_deceased: m.isDeceased
@@ -136,6 +122,14 @@ export const FamilyProvider = ({ children }) => {
 
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
+
+            // Audit Log
+            await supabase.from('audit_logs').insert({
+                tree_slug: treeSlug,
+                action: 'ADD_MEMBER',
+                details: { name: newMember.name, id: newMember.id },
+                performed_by: 'Admin'
+            });
 
             setMembers(updatedList);
             setLastAction(`Tambah Anggota: ${newMember.name}`);
@@ -151,7 +145,6 @@ export const FamilyProvider = ({ children }) => {
             const updatedMember = { ...member, ...updatedData };
             const updatedList = members.map((m) => (m.id === id ? updatedMember : m));
 
-            // Map ONLY the modified member for upsert
             const dbMember = {
                 ...updatedMember,
                 tree_slug: treeSlug,
@@ -163,6 +156,14 @@ export const FamilyProvider = ({ children }) => {
 
             const { error } = await supabase.from('members').upsert(dbMember);
             if (error) throw error;
+
+            // Audit Log
+            await supabase.from('audit_logs').insert({
+                tree_slug: treeSlug,
+                action: 'UPDATE_MEMBER',
+                details: { name: member?.name || id, id: id, changes: updatedData },
+                performed_by: 'Admin'
+            });
 
             setMembers(updatedList);
             setLastAction(`Update Anggota: ${member?.name || id}`);
@@ -202,11 +203,9 @@ export const FamilyProvider = ({ children }) => {
                 return m;
             });
 
-            // Delete specific ID
             const { error: delError } = await supabase.from('members').delete().eq('id', id);
             if (delError) throw delError;
 
-            // Update others (references) - ONLY if there are modified ones
             if (modifiedMembers.length > 0) {
                 const dbUpsertList = modifiedMembers.map(m => ({
                     ...m,
@@ -221,6 +220,14 @@ export const FamilyProvider = ({ children }) => {
                 if (upError) throw upError;
             }
 
+            // Audit Log
+            await supabase.from('audit_logs').insert({
+                tree_slug: treeSlug,
+                action: 'DELETE_MEMBER',
+                details: { name: memberToDelete.name, id: id },
+                performed_by: 'Admin'
+            });
+
             setMembers(updatedList);
             setLastAction(`Hapus Anggota: ${memberToDelete.name}`);
         } catch (error) {
@@ -229,7 +236,6 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
-    // Sync to LocalStorage for offline backup/cache
     useEffect(() => {
         if (treeSlug && members.length > 0) {
             localStorage.setItem(`family_data_${treeSlug}`, JSON.stringify(members));
@@ -237,13 +243,7 @@ export const FamilyProvider = ({ children }) => {
     }, [members, treeSlug]);
 
     const migrateFromLocal = async () => {
-        // Try slug-specific key first, then fallback to generic (legacy)
         let localData = localStorage.getItem(`family_data_${treeSlug}`);
-
-        // Optional: fallback to generic 'family-tree-data' if slug-specific not found AND we are in 'default'
-        // But user requested strict separation. Let's strictly use the slug key or check if they mean the old generic data should be migrated to this slug?
-        // Assuming they want to migrate *existing* local data which might be under 'family-tree-data'.
-        // Let's look for specific first.
         if (!localData && treeSlug === 'default') {
             localData = localStorage.getItem('family-tree-data');
         }
@@ -258,7 +258,7 @@ export const FamilyProvider = ({ children }) => {
 
             const sanitizedData = localMembers.map(m => ({
                 id: m.id,
-                tree_slug: treeSlug, // Label with Slug
+                tree_slug: treeSlug,
                 name: m.name,
                 gender: m.gender,
                 birth_date: m.birthDate || m.birth_date || '',
@@ -268,6 +268,7 @@ export const FamilyProvider = ({ children }) => {
                 address: m.address || '',
                 biography: m.biography || '',
                 photo: m.photo || null,
+                phone: m.phone || '',
                 parents: Array.isArray(m.parents) ? m.parents : [],
                 children: Array.isArray(m.children) ? m.children : [],
                 spouses: Array.isArray(m.spouses) ? m.spouses : []
@@ -277,9 +278,7 @@ export const FamilyProvider = ({ children }) => {
             if (error) throw error;
 
             await fetchMembers();
-            // Optional: Don't remove immediately or rename it
-            // localStorage.removeItem(`family_data_${treeSlug}`); 
-            return { success: true, message: `Berhasil migrasi ${sanitizedData.length} anggota ke Cloud (${treeSlug})!` };
+            return { success: true, message: `Berhasil migrasi ${sanitizedData.length} anggota ke Cloud(${treeSlug})!` };
         } catch (error) {
             console.error("Migration Error:", error);
             return { success: false, message: error.message };
@@ -298,7 +297,7 @@ export const FamilyProvider = ({ children }) => {
 
                     const sanitizedData = jsonObj.map(m => ({
                         id: m.id,
-                        tree_slug: treeSlug, // Label with Slug
+                        tree_slug: treeSlug,
                         name: m.name,
                         gender: m.gender,
                         birth_date: m.birthDate || m.birth_date || '',
@@ -308,6 +307,7 @@ export const FamilyProvider = ({ children }) => {
                         address: m.address || '',
                         biography: m.biography || '',
                         photo: m.photo || null,
+                        phone: m.phone || '',
                         parents: Array.isArray(m.parents) ? m.parents : [],
                         children: Array.isArray(m.children) ? m.children : [],
                         spouses: Array.isArray(m.spouses) ? m.spouses : []
@@ -329,8 +329,6 @@ export const FamilyProvider = ({ children }) => {
     };
 
     const importFromExcel = (file) => {
-        // ... previous complex logic but wrapping with DB upsert at end ...
-        // (Truncated for brevity in this tool call, but I will keep it in the final file)
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = async (e) => {
@@ -344,13 +342,6 @@ export const FamilyProvider = ({ children }) => {
                         return reject(new Error("File Excel kosong atau tidak terbaca."));
                     }
 
-                    // Check for minimum required columns
-                    const firstRow = jsonData[0];
-                    const hasRequired = (firstRow['Name'] || firstRow['Nama']);
-                    if (!hasRequired) {
-                        return reject(new Error("Kolom 'Name' atau 'Nama' wajib ada dalam file Excel."));
-                    }
-
                     const nameToId = new Map();
                     const newMembers = jsonData.map(row => {
                         const id = crypto.randomUUID();
@@ -361,6 +352,7 @@ export const FamilyProvider = ({ children }) => {
                             name: rawName || 'Tanpa Nama',
                             gender: (row['Gender'] || row['Jenis Kelamin'] || '').toString().toLowerCase().startsWith('l') || (row['Gender'] || '').toString().toLowerCase().startsWith('m') ? 'male' : 'female',
                             birthDate: row['BirthDate'] || row['Tanggal Lahir'] || '',
+                            phone: row['Telepon'] || row['Phone'] || '',
                             photo: null, children: [], spouses: [], parents: [],
                             _father: row['Father'] || row['Ayah'], _mother: row['Mother'] || row['Ibu'], _spouse: row['Spouse'] || row['Pasangan']
                         };
@@ -371,7 +363,7 @@ export const FamilyProvider = ({ children }) => {
                             const fName = m._father.toString().trim().toLowerCase();
                             if (nameToId.has(fName)) {
                                 const fId = nameToId.get(fName);
-                                m.parents.push(fId);
+                                m.parents.push({ id: fId, type: 'biological' });
                                 newMembers.find(fm => fm.id === fId)?.children.push(m.id);
                             }
                         }
@@ -379,7 +371,7 @@ export const FamilyProvider = ({ children }) => {
                             const mName = m._mother.toString().trim().toLowerCase();
                             if (nameToId.has(mName)) {
                                 const mId = nameToId.get(mName);
-                                m.parents.push(mId);
+                                m.parents.push({ id: mId, type: 'biological' });
                                 newMembers.find(mm => mm.id === mId)?.children.push(m.id);
                             }
                         }
@@ -395,11 +387,6 @@ export const FamilyProvider = ({ children }) => {
                     });
 
                     const updatedList = [...members, ...newMembers];
-
-                    // Logic: we only need to upsert newMembers since their links are internal to the new set
-                    // or to existing members (but wait, links to existing members aren't handled here yet)
-                    // The current logic only links new members to OTHER new members by name.
-
                     const dbList = newMembers.map(m => ({
                         ...m,
                         tree_slug: treeSlug,
@@ -410,7 +397,6 @@ export const FamilyProvider = ({ children }) => {
                     dbList.forEach(m => { delete m.birthDate; delete m.deathDate; delete m.isDeceased; });
 
                     const { error } = await supabase.from('members').upsert(dbList);
-                    if (error) throw error;
                     if (error) throw error;
 
                     setMembers(updatedList);
@@ -464,14 +450,12 @@ export const FamilyProvider = ({ children }) => {
 
             const backupData = data.data;
 
-            // Delete all current members for this slug
             const { error: delError } = await supabase
                 .from('members')
                 .delete()
                 .eq('tree_slug', treeSlug);
             if (delError) throw delError;
 
-            // Prepare for upsert
             const dbList = backupData.map(m => ({
                 ...m,
                 tree_slug: treeSlug,
@@ -497,7 +481,6 @@ export const FamilyProvider = ({ children }) => {
         const dataStr = JSON.stringify(members, null, 2);
         const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
         const exportFileDefaultName = `family-tree-${treeSlug}-${new Date().toISOString().slice(0, 10)}.json`;
-
         const linkElement = document.createElement('a');
         linkElement.setAttribute('href', dataUri);
         linkElement.setAttribute('download', exportFileDefaultName);
@@ -513,7 +496,6 @@ export const FamilyProvider = ({ children }) => {
 
     const exportToCSV = () => {
         const workbook = generateExcelBook(members, { includeStats: false });
-        // xlsx automatically takes the first sheet for CSV
         XLSX.writeFile(workbook, `family-tree-${treeSlug}-${new Date().toISOString().slice(0, 10)}.csv`, { bookType: 'csv' });
         setLastAction('Export CSV');
     };

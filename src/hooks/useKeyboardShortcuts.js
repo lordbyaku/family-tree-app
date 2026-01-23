@@ -4,6 +4,7 @@ const useKeyboardShortcuts = ({
     setIsFormOpen,
     setIsStatsOpen,
     setIsRelOpen,
+    setIsAuditLogOpen,
     setViewingMemberId,
     setEditingMemberId,
     canUndo,
@@ -20,6 +21,7 @@ const useKeyboardShortcuts = ({
                 setIsFormOpen(false);
                 setIsStatsOpen(false);
                 setIsRelOpen(false);
+                setIsAuditLogOpen(false);
                 setViewingMemberId(null);
                 setEditingMemberId(null);
             }
@@ -50,11 +52,17 @@ const useKeyboardShortcuts = ({
                     toast.info(`Redo: ${lastAction}`);
                 }
             }
+
+            // Audit Log: Ctrl+L
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                setIsAuditLogOpen(true);
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [canUndo, canRedo, undo, redo, lastAction, toast, setIsFormOpen, setIsStatsOpen, setIsRelOpen, setViewingMemberId, setEditingMemberId]);
+    }, [canUndo, canRedo, undo, redo, lastAction, toast, setIsFormOpen, setIsStatsOpen, setIsRelOpen, setIsAuditLogOpen, setViewingMemberId, setEditingMemberId]);
 };
 
 export default useKeyboardShortcuts;

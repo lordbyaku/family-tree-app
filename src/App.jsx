@@ -10,7 +10,9 @@ import ProfileModal from './components/ProfileModal'
 import ExportModal from './components/ExportModal'
 import BirthdayDashboard from './components/BirthdayDashboard'
 import BackupModal from './components/BackupModal'
-import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database } from 'lucide-react'
+import RelationshipPathModal from './components/RelationshipPathModal'
+import AuditLogModal from './components/AuditLogModal'
+import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList } from 'lucide-react'
 import { toPng } from 'html-to-image';
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginScreen from './components/LoginScreen'
@@ -41,6 +43,7 @@ const MainLayout = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isBirthdayOpen, setIsBirthdayOpen] = useState(false);
   const [isBackupOpen, setIsBackupOpen] = useState(false);
+  const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
 
   const {
     members,
@@ -136,7 +139,8 @@ const MainLayout = () => {
     undo,
     redo,
     lastAction,
-    toast
+    toast,
+    setIsAuditLogOpen
   });
 
   const filteredMembers = searchQuery
@@ -366,6 +370,16 @@ const MainLayout = () => {
               </button>
             )}
 
+            {isAdmin && (
+              <button
+                onClick={() => setIsAuditLogOpen(true)}
+                className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
+                title="Audit Log (Riwayat)"
+              >
+                <ClipboardList size={20} />
+              </button>
+            )}
+
             <button
               onClick={() => setIsStatsOpen(true)}
               className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
@@ -553,7 +567,11 @@ const MainLayout = () => {
       )}
 
       {isRelOpen && (
-        <RelationshipModal onClose={() => setIsRelOpen(false)} />
+        <RelationshipPathModal onClose={() => setIsRelOpen(false)} />
+      )}
+
+      {isAuditLogOpen && (
+        <AuditLogModal onClose={() => setIsAuditLogOpen(false)} />
       )}
 
       {isExportModalOpen && (
