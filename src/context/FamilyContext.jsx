@@ -101,9 +101,16 @@ export const FamilyProvider = ({ children }) => {
                 });
             }
             if (newMember.spouses && newMember.spouses.length > 0) {
+                const spouseIds = newMember.spouses.map(s => typeof s === 'string' ? s : s.id);
                 updatedList = updatedList.map(m => {
-                    if (newMember.spouses.includes(m.id)) {
-                        const updatedSpouse = { ...m, spouses: [...(m.spouses || []), id] };
+                    if (spouseIds.includes(m.id)) {
+                        const spouseObjInNew = newMember.spouses.find(s => (typeof s === 'string' ? s === m.id : s.id === m.id));
+                        const status = typeof spouseObjInNew === 'object' ? spouseObjInNew.status : 'married';
+
+                        const updatedSpouse = {
+                            ...m,
+                            spouses: [...(m.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)), { id, status }]
+                        };
                         modifiedMembers.push(updatedSpouse);
                         return updatedSpouse;
                     }
@@ -152,18 +159,60 @@ export const FamilyProvider = ({ children }) => {
         try {
             const member = members.find(m => m.id === id);
             const updatedMember = { ...member, ...updatedData };
-            const updatedList = members.map((m) => (m.id === id ? updatedMember : m));
 
-            const dbMember = {
-                ...updatedMember,
-                tree_slug: treeSlug,
-                birth_date: updatedMember.birthDate || null,
-                death_date: updatedMember.deathDate || null,
-                is_deceased: updatedMember.isDeceased || false
-            };
-            delete dbMember.birthDate; delete dbMember.deathDate; delete dbMember.isDeceased;
+            let updatedList = members.map((m) => (m.id === id ? updatedMember : m));
+            const modifiedMembers = [updatedMember];
 
-            const { error } = await supabase.from('members').upsert(dbMember);
+            // Sync spouses back-and-forth
+            if (updatedData.spouses) {
+                const oldSpouseIds = (member.spouses || []).map(s => typeof s === 'string' ? s : s.id);
+                const newSpouseIds = updatedData.spouses.map(s => typeof s === 'string' ? s : s.id);
+
+                // 1. Members who are no longer spouses
+                const removedIds = oldSpouseIds.filter(sid => !newSpouseIds.includes(sid));
+                // 2. Members who are still spouses (to update status if changed)
+                const keptIds = newSpouseIds;
+
+                updatedList = updatedList.map(m => {
+                    if (removedIds.includes(m.id)) {
+                        const updatedSpouse = {
+                            ...m,
+                            spouses: (m.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id))
+                        };
+                        modifiedMembers.push(updatedSpouse);
+                        return updatedSpouse;
+                    }
+                    if (keptIds.includes(m.id)) {
+                        const spouseObjInNew = updatedData.spouses.find(s => (typeof s === 'string' ? s === m.id : s.id === m.id));
+                        const status = typeof spouseObjInNew === 'object' ? spouseObjInNew.status : 'married';
+
+                        const updatedSpouse = {
+                            ...m,
+                            spouses: [
+                                ...(m.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)),
+                                { id, status }
+                            ]
+                        };
+                        modifiedMembers.push(updatedSpouse);
+                        return updatedSpouse;
+                    }
+                    return m;
+                });
+            }
+
+            const dbUpsertList = modifiedMembers.map(m => {
+                const dbM = {
+                    ...m,
+                    tree_slug: treeSlug,
+                    birth_date: m.birthDate || null,
+                    death_date: m.deathDate || null,
+                    is_deceased: m.isDeceased || false
+                };
+                delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+                return dbM;
+            });
+
+            const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
 
             // Audit Log - Wrapped in try/catch

@@ -118,7 +118,15 @@ const FamilyTree = (props) => {
                         if (!marriageMap.has(key)) {
                             const mId = `marriage-${key}`;
                             marriageMap.set(key, mId);
-                            marriages.push({ id: mId, p1: pair[0], p2: pair[1] });
+
+                            // Find marriage status if it exists in spouse object
+                            let status = 'married';
+                            if (m.spouses && Array.isArray(m.spouses)) {
+                                const spouseObj = m.spouses.find(s => (typeof s === 'object' && s.id === sid));
+                                if (spouseObj && spouseObj.status) status = spouseObj.status;
+                            }
+
+                            marriages.push({ id: mId, p1: pair[0], p2: pair[1], status });
                         }
                     }
                 });
@@ -146,7 +154,7 @@ const FamilyTree = (props) => {
             ...marriages.map(m => ({
                 id: m.id,
                 type: 'marriage',
-                data: {},
+                data: { status: m.status },
                 position: { x: 0, y: 0 }
             }))
         ];
@@ -249,7 +257,19 @@ const FamilyTree = (props) => {
             });
 
             sortedChildren.forEach(m => {
-                const isStep = m.parents?.some(p => typeof p === 'object' && p.type === 'step');
+                const isStep = m.parents?.some(p => typeof p === 'object' && (typeof p.id === 'string' ? p.id === parentId.replace('marriage-', '').split('__')[0] || p.id === parentId.replace('marriage-', '').split('__')[1] : false) && p.type === 'step')
+                    || m.parents?.some(p => typeof p === 'object' && p.id === parentId && p.type === 'step');
+
+                // Better step child detection for marriage nodes
+                const parentObj = m.parents?.find(p => {
+                    const pid = typeof p === 'string' ? p : p.id;
+                    if (parentId.startsWith('marriage-')) {
+                        return parentId.includes(pid);
+                    }
+                    return pid === parentId;
+                });
+                const isStepChild = parentObj && typeof parentObj === 'object' && parentObj.type === 'step';
+
                 finalEdges.push({
                     id: `e-${parentId}-${m.id}`,
                     source: parentId,
@@ -257,13 +277,13 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: 'top',
-                    animated: !isStep && parentId.startsWith('marriage-'),
+                    animated: !isStepChild && parentId.startsWith('marriage-'),
                     style: {
-                        stroke: isStep
+                        stroke: isStepChild
                             ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
                             : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
-                        strokeWidth: isStep ? 1.5 : 2.5,
-                        strokeDasharray: isStep ? '5,5' : '0'
+                        strokeWidth: isStepChild ? 1.5 : 2.5,
+                        strokeDasharray: isStepChild ? '5,5' : '0'
                     },
                 });
             });

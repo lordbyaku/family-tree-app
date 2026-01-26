@@ -14,11 +14,10 @@ const MemberForm = ({ onClose, initialData = null }) => {
     const { addMember, updateMember, deleteMember, members } = useFamily();
     const [isUploading, setIsUploading] = useState(false);
 
-    // Schema: parents: Array<{ id, type: 'biological' | 'step' }>
-    // Legacy support: convert array of IDs to objects
-    const formatParents = (parents) => {
-        if (!parents) return [];
-        return parents.map(p => typeof p === 'string' ? { id: p, type: 'biological' } : p);
+    // Schema: spouses: Array<{ id, status: 'married' | 'divorced' }>
+    const formatSpouses = (spouses) => {
+        if (!spouses) return [];
+        return spouses.map(s => typeof s === 'string' ? { id: s, status: 'married' } : s);
     };
 
     const [formData, setFormData] = useState(initialData ? {
@@ -33,7 +32,7 @@ const MemberForm = ({ onClose, initialData = null }) => {
         photo: initialData.photo || '',
         phone: initialData.phone || '', // Added phone field
         parents: formatParents(initialData.parents),
-        spouses: initialData.spouses || []
+        spouses: formatSpouses(initialData.spouses)
     } : {
         name: '',
         birthDate: '',
@@ -222,11 +221,26 @@ const MemberForm = ({ onClose, initialData = null }) => {
     };
 
     const handleSpouseAdd = (selectedId) => {
-        setFormData(prev => ({ ...prev, spouses: [...prev.spouses, selectedId] }));
+        if (!formData.spouses.some(s => s.id === selectedId)) {
+            setFormData(prev => ({
+                ...prev,
+                spouses: [...prev.spouses, { id: selectedId, status: 'married' }]
+            }));
+        }
+    };
+
+    const toggleSpouseStatus = (id) => {
+        setFormData(prev => ({
+            ...prev,
+            spouses: prev.spouses.map(s => s.id === id
+                ? { ...s, status: s.status === 'married' ? 'divorced' : 'married' }
+                : s
+            )
+        }));
     };
 
     const removeSpouse = (id) => {
-        setFormData(prev => ({ ...prev, spouses: prev.spouses.filter(s => s !== id) }));
+        setFormData(prev => ({ ...prev, spouses: prev.spouses.filter(s => s.id !== id) }));
     };
 
     return (
@@ -295,6 +309,7 @@ const MemberForm = ({ onClose, initialData = null }) => {
                         toggleParentType={toggleParentType}
                         removeParent={removeParent}
                         handleSpouseAdd={handleSpouseAdd}
+                        toggleSpouseStatus={toggleSpouseStatus}
                         removeSpouse={removeSpouse}
                     />
 

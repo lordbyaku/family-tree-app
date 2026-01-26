@@ -9,6 +9,7 @@ const MemberRelationshipInfo = ({
     toggleParentType,
     removeParent,
     handleSpouseAdd,
+    toggleSpouseStatus,
     removeSpouse
 }) => {
     return (
@@ -60,16 +61,34 @@ const MemberRelationshipInfo = ({
                     placeholder="Cari nama suami/istri..."
                     members={members}
                     onSelect={handleSpouseAdd}
-                    excludeIds={[...(initialData ? [initialData.id] : []), ...formData.spouses, ...formData.parents.map(p => p.id)]}
+                    excludeIds={[...(initialData ? [initialData.id] : []), ...formData.spouses.map(s => typeof s === 'string' ? s : s.id), ...formData.parents.map(p => p.id)]}
                 />
 
-                <div className="flex flex-wrap gap-2">
-                    {formData.spouses.map(sid => {
+                <div className="grid grid-cols-1 gap-2">
+                    {formData.spouses.map(sObj => {
+                        const sid = typeof sObj === 'string' ? sObj : sObj.id;
+                        const status = typeof sObj === 'string' ? 'married' : sObj.status;
                         const spouse = members.find(m => m.id === sid);
                         return (
-                            <div key={sid} className="flex items-center gap-2 bg-pink-50 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 px-3 py-1.5 rounded-full text-xs font-bold border border-pink-100 dark:border-pink-800 animate-in fade-in zoom-in duration-300">
-                                <span className="truncate max-w-[120px]">{spouse?.name}</span>
-                                <button type="button" onClick={() => removeSpouse(sid)} className="hover:text-red-500 bg-white/50 dark:bg-slate-800 rounded-full p-0.5"><X size={12} /></button>
+                            <div key={sid} className="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-900/20 rounded-xl border border-pink-100 dark:border-pink-800 group transition-all">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center text-xs font-bold text-pink-600 dark:text-pink-400 shrink-0">
+                                        {spouse?.name.charAt(0)}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-bold text-pink-700 dark:text-pink-300 truncate">{spouse?.name}</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleSpouseStatus(sid)}
+                                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider transition-colors ${status === 'married' ? 'bg-pink-200 text-pink-700 dark:bg-pink-900/60 dark:text-pink-200' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}`}
+                                        >
+                                            {status === 'married' ? 'Menikah' : 'Cerai'}
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" onClick={() => removeSpouse(sid)} className="text-pink-400 hover:text-red-500 p-1">
+                                    <X size={18} />
+                                </button>
                             </div>
                         );
                     })}
