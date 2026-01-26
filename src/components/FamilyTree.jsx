@@ -28,7 +28,7 @@ const getLayoutedElements = (nodes, edges) => {
     const nodeWidth = 260; // 256px + margin
     const nodeHeight = 100;
 
-    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 80, nodesep: 40 });
+    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 100, nodesep: 80 });
 
     nodes.forEach((node) => {
         if (node.type === 'member') {
@@ -152,39 +152,51 @@ const FamilyTree = (props) => {
         ];
 
         // 3. Build Edges (For Dagre Layout)
-        // To keep Dagre happy and structure correct, we connect Member -> Marriage and Marriage -> Member
+        // Group children by marriage to sort them by birth date
         const dagreEdges = [];
+        const childrenByMarriage = new Map(); // key: marriageId or parentId, value: array of members
 
-        // Marriage connections
+        displayMembers.forEach(m => {
+            if (m.parents && m.parents.length > 0) {
+                const parentIds = m.parents.map(p => typeof p === 'string' ? p : p.id).filter(pid => displayedIds.has(pid));
+
+                let mId = null;
+                if (parentIds.length >= 2) {
+                    const key = [...parentIds].sort().join('__');
+                    mId = marriageMap.get(key);
+                }
+
+                if (mId) {
+                    if (!childrenByMarriage.has(mId)) childrenByMarriage.set(mId, []);
+                    childrenByMarriage.get(mId).push(m);
+                } else if (parentIds.length > 0) {
+                    // Single parent cases
+                    parentIds.forEach(pid => {
+                        if (!childrenByMarriage.has(pid)) childrenByMarriage.set(pid, []);
+                        childrenByMarriage.get(pid).push(m);
+                    });
+                }
+            }
+        });
+
+        // Marriage connections for Dagre
         marriages.forEach(m => {
             dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id });
             dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id });
         });
 
-        // Children connections
-        displayMembers.forEach(m => {
-            if (m.parents && m.parents.length > 0) {
-                const parentIds = m.parents.map(p => typeof p === 'string' ? p : p.id).filter(pid => displayedIds.has(pid));
+        // Children connections for Dagre (Sorted: Youngest to Oldest = Left to Right => Oldest on Right)
+        childrenByMarriage.forEach((children, parentId) => {
+            const sortedChildren = [...children].sort((a, b) => {
+                const dateA = a.birthDate ? new Date(a.birthDate) : new Date(0);
+                const dateB = b.birthDate ? new Date(b.birthDate) : new Date(0);
+                // Descending order (latest first) to put oldest on the right
+                return dateB - dateA;
+            });
 
-                if (parentIds.length >= 2) {
-                    const key = [...parentIds].sort().join('__');
-                    const mId = marriageMap.get(key);
-                    if (mId) {
-                        // Connect child to marriage node
-                        dagreEdges.push({ id: `de-${mId}-${m.id}`, source: mId, target: m.id });
-                    } else {
-                        // Fallback to single parents if marriage not found
-                        parentIds.forEach(pid => {
-                            dagreEdges.push({ id: `de-${pid}-${m.id}`, source: pid, target: m.id });
-                        });
-                    }
-                } else {
-                    // Single parent
-                    parentIds.forEach(pid => {
-                        dagreEdges.push({ id: `de-${pid}-${m.id}`, source: pid, target: m.id });
-                    });
-                }
-            }
+            sortedChildren.forEach(child => {
+                dagreEdges.push({ id: `de-${parentId}-${child.id}`, source: parentId, target: child.id });
+            });
         });
 
         // 4. Run Layout
@@ -200,17 +212,20 @@ const FamilyTree = (props) => {
             const mNode = layoutedNodes.find(n => n.id === m.id);
 
             if (p1 && p2 && mNode) {
-                // Adjust handles for visual flow
-                const p1Side = p1.position.x < p2.position.x ? 'right' : 'left';
-                const p2Side = p2.position.x < p1.position.x ? 'right' : 'left';
+                const p1Side = p1.position.x < p2.position.x ? 'left' : 'right';
+                const p2Side = p2.position.x < p1.position.x ? 'left' : 'right';
+
+                // Determine which target handle to use on marriage node
+                const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
+                const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
 
                 finalEdges.push({
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
                     target: m.id,
-                    type: 'straight',
-                    sourceHandle: `${p1Side}-source`,
-                    targetHandle: p1Side === 'right' ? 'left' : 'right',
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
+                    targetHandle: p1Target,
                     style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
 
@@ -218,58 +233,40 @@ const FamilyTree = (props) => {
                     id: `e-${m.p2}-${m.id}`,
                     source: m.p2,
                     target: m.id,
-                    type: 'straight',
-                    sourceHandle: `${p2Side}-source`,
-                    targetHandle: p2Side === 'right' ? 'left' : 'right',
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
+                    targetHandle: p2Target,
                     style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
             }
         });
 
-        // Marriage/Parent -> Child Edges
-        displayMembers.forEach(m => {
-            if (m.parents && m.parents.length > 0) {
-                const parentIds = m.parents.map(p => typeof p === 'string' ? p : p.id).filter(pid => displayedIds.has(pid));
-                const isStep = m.parents.some(p => typeof p === 'object' && p.type === 'step');
+        childrenByMarriage.forEach((children, parentId) => {
+            const sortedChildren = [...children].sort((a, b) => {
+                const dateA = a.birthDate ? new Date(a.birthDate) : new Date(0);
+                const dateB = b.birthDate ? new Date(b.birthDate) : new Date(0);
+                return dateB - dateA;
+            });
 
-                let mId = null;
-                if (parentIds.length >= 2) {
-                    const key = [...parentIds].sort().join('__');
-                    mId = marriageMap.get(key);
-                }
-
-                if (mId) {
-                    finalEdges.push({
-                        id: `e-${mId}-${m.id}`,
-                        source: mId,
-                        target: m.id,
-                        type: 'smoothstep',
-                        sourceHandle: 'bottom',
-                        targetHandle: 'top',
-                        animated: true,
-                        style: { stroke: props.isDarkMode ? '#3b82f6' : '#2563eb', strokeWidth: 2.5 }
-                    });
-                } else {
-                    parentIds.forEach(pid => {
-                        finalEdges.push({
-                            id: `e-${pid}-${m.id}`,
-                            source: pid,
-                            target: m.id,
-                            type: 'smoothstep',
-                            sourceHandle: 'bottom',
-                            targetHandle: 'top',
-                            animated: !isStep,
-                            style: {
-                                stroke: isStep
-                                    ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
-                                    : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
-                                strokeWidth: isStep ? 1.5 : 2.5,
-                                strokeDasharray: isStep ? '5,5' : '0'
-                            },
-                        });
-                    });
-                }
-            }
+            sortedChildren.forEach(m => {
+                const isStep = m.parents?.some(p => typeof p === 'object' && p.type === 'step');
+                finalEdges.push({
+                    id: `e-${parentId}-${m.id}`,
+                    source: parentId,
+                    target: m.id,
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
+                    targetHandle: 'top',
+                    animated: !isStep && parentId.startsWith('marriage-'),
+                    style: {
+                        stroke: isStep
+                            ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
+                            : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
+                        strokeWidth: isStep ? 1.5 : 2.5,
+                        strokeDasharray: isStep ? '5,5' : '0'
+                    },
+                });
+            });
         });
 
         // 6. Manual Layout adjustment if needed

@@ -12,6 +12,7 @@ import BirthdayDashboard from './components/BirthdayDashboard'
 import BackupModal from './components/BackupModal'
 import RelationshipPathModal from './components/RelationshipPathModal'
 import AuditLogModal from './components/AuditLogModal'
+import BirthdayReminder from './components/BirthdayReminder'
 import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList } from 'lucide-react'
 import { toPng } from 'html-to-image';
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -574,6 +575,7 @@ const MainLayout = () => {
         <AuditLogModal onClose={() => setIsAuditLogOpen(false)} />
       )}
 
+      <BirthdayReminder />
       {isExportModalOpen && (
         <ExportModal onClose={() => setIsExportModalOpen(false)} />
       )}

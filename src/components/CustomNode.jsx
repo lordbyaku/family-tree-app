@@ -18,10 +18,10 @@ const CustomNode = ({ id, data }) => {
     // Styles based on gender: Blue for Male, Pink for Female, Gray for Deceased
     // Updated for Dark Mode
     const bgClass = data.isDeceased
-        ? 'bg-slate-100 border-slate-300 dark:bg-slate-800 dark:border-slate-600'
+        ? 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
         : (isMale
-            ? 'bg-blue-50 border-blue-200 dark:bg-slate-800 dark:border-blue-900'
-            : 'bg-pink-50 border-pink-200 dark:bg-slate-800 dark:border-pink-900');
+            ? 'bg-blue-50/50 border-blue-100 dark:bg-slate-800 dark:border-blue-900/50'
+            : 'bg-pink-50/50 border-pink-100 dark:bg-slate-800 dark:border-pink-900/50');
 
     const textClass = data.isDeceased
         ? 'text-slate-600 dark:text-slate-400'
@@ -79,7 +79,7 @@ const CustomNode = ({ id, data }) => {
 
     return (
         <div
-            className={`w-64 shadow-md rounded-xl border-2 ${bgClass} overflow-hidden font-sans relative group select-none cursor-pointer transition-transform active:scale-95`}
+            className={`w-64 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)] dark:shadow-none rounded-2xl border ${bgClass} overflow-hidden font-sans relative group select-none cursor-pointer transition-all duration-300 active:scale-95 backdrop-blur-sm`}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerLeave}

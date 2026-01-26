@@ -4,16 +4,17 @@ import { Heart } from 'lucide-react';
 
 const MarriageNode = ({ data }) => {
     return (
-        <div className="flex items-center justify-center p-1 bg-white dark:bg-slate-800 rounded-full border border-pink-200 dark:border-pink-900 shadow-sm animate-pulse">
+        <div className="flex items-center justify-center p-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full border border-pink-300 dark:border-pink-800 shadow-lg shadow-pink-100 dark:shadow-pink-900/20 group transition-all duration-300 hover:scale-110">
             {/* Handles for spouses (left and right) */}
-            <Handle type="target" position={Position.Left} id="left" className="!bg-pink-400 !border-none !w-1 !h-1" />
-            <Handle type="target" position={Position.Right} id="right" className="!bg-pink-400 !border-none !w-1 !h-1" />
+            <Handle type="target" position={Position.Left} id="left" className="!bg-pink-400 !border-none !w-2 !h-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Handle type="target" position={Position.Right} id="right" className="!bg-pink-400 !border-none !w-2 !h-2 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             {/* Handle for children (bottom) */}
-            <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-blue-400 !border-none !w-2 !h-2" />
+            <Handle type="source" position={Position.Bottom} id="bottom" className="!bg-blue-400 !border-none !w-2 !h-2 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <div className="bg-pink-50 dark:bg-pink-900/30 p-1.5 rounded-full text-pink-600 dark:text-pink-400">
-                <Heart size={14} fill="currentColor" />
+            <div className="bg-gradient-to-br from-pink-400 to-rose-500 p-2 rounded-full text-white shadow-inner relative overflow-hidden">
+                <Heart size={16} fill="currentColor" className="relative z-10 animate-pulse" />
+                <div className="absolute inset-0 bg-white/20 animate-ping rounded-full" />
             </div>
         </div>
     );
