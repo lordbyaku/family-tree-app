@@ -61,27 +61,62 @@ export const FamilyProvider = ({ children }) => {
 
             // Deduplication Logic for 'gabungan' mode
             if (treeSlug === 'gabungan') {
-                const uniqueMap = new Map();
+                const masterMap = new Map(); // key -> masterMember
+                const idToMasterId = new Map(); // oldId -> finalMasterId
 
+                // 1. First Pass: Identify the best "Master" for each unique identity (Name + BirthDate)
                 mappedData.forEach(member => {
-                    // Create a unique key based on Name + BirthDate (if available)
-                    const key = `${member.name.toLowerCase().trim()}|${member.birthDate || 'unknown'}`;
+                    const nameKey = member.name?.toLowerCase().trim();
+                    if (!nameKey) return; // Skip members without names
 
-                    if (!uniqueMap.has(key)) {
-                        uniqueMap.set(key, member);
+                    const key = `${nameKey}|${member.birthDate || 'unknown'}`;
+                    const currentConnections = (member.parents?.length || 0) + (member.children?.length || 0) + (member.spouses?.length || 0);
+
+                    if (!masterMap.has(key)) {
+                        masterMap.set(key, member);
                     } else {
-                        // If duplicate found, we prefer the one that has more connections (heuristic)
-                        const existing = uniqueMap.get(key);
-                        const existingConnections = (existing.parents?.length || 0) + (existing.children?.length || 0) + (existing.spouses?.length || 0);
-                        const currentConnections = (member.parents?.length || 0) + (member.children?.length || 0) + (member.spouses?.length || 0);
+                        const existingMaster = masterMap.get(key);
+                        const existingConnections = (existingMaster.parents?.length || 0) + (existingMaster.children?.length || 0) + (existingMaster.spouses?.length || 0);
 
                         if (currentConnections > existingConnections) {
-                            uniqueMap.set(key, member);
+                            masterMap.set(key, member);
                         }
                     }
                 });
 
-                mappedData = Array.from(uniqueMap.values());
+                // 2. Second Pass: Map ALL duplicate IDs to their final Master ID
+                mappedData.forEach(member => {
+                    const nameKey = member.name?.toLowerCase().trim();
+                    if (!nameKey) {
+                        idToMasterId.set(member.id, member.id);
+                        return;
+                    }
+                    const key = `${nameKey}|${member.birthDate || 'unknown'}`;
+                    const finalMaster = masterMap.get(key);
+                    idToMasterId.set(member.id, finalMaster.id);
+                });
+
+                // 3. Rewrite all relationships and filter to keep only Masters
+                const finalMembers = Array.from(masterMap.values()).map(member => {
+                    const rewriteId = (id) => idToMasterId.get(id) || id;
+
+                    // Helper to unique-ify IDs after rewrite (to prevent multiple refs to same master)
+                    const uniqueIds = (ids) => [...new Set(ids)];
+
+                    return {
+                        ...member,
+                        parents: (member.parents || [])
+                            .map(p => (typeof p === 'string' ? { id: rewriteId(p), type: 'biological' } : { ...p, id: rewriteId(p.id) }))
+                            .filter((p, index, self) => index === self.findIndex(t => t.id === p.id)), // Unique parents
+                        children: uniqueIds((member.children || []).map(rewriteId)),
+                        spouses: (member.spouses || [])
+                            .map(s => (typeof s === 'string' ? { id: rewriteId(s), status: 'married' } : { ...s, id: rewriteId(s.id) }))
+                            .filter(s => s.id !== member.id) // No self-marriage
+                            .filter((s, index, self) => index === self.findIndex(t => t.id === s.id)) // Unique spouses
+                    };
+                });
+
+                mappedData = finalMembers;
             }
 
             setMembers(mappedData);

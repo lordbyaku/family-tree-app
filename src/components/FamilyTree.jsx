@@ -171,15 +171,30 @@ const FamilyTree = (props) => {
 
                 let mId = null;
                 if (parentIds.length >= 2) {
-                    const key = [...parentIds].sort().join('__');
-                    mId = marriageMap.get(key);
+                    // Try to find a marriage node that matches ANY pair of these parents
+                    // but preferentially a pair that includes both a male and female (traditional)
+                    // or just any pair we have a marriage node for.
+                    const uniqueParents = [...new Set(parentIds)];
+                    if (uniqueParents.length >= 2) {
+                        for (let i = 0; i < uniqueParents.length; i++) {
+                            for (let j = i + 1; j < uniqueParents.length; j++) {
+                                const pair = [uniqueParents[i], uniqueParents[j]].sort();
+                                const key = pair.join('__');
+                                if (marriageMap.has(key)) {
+                                    mId = marriageMap.get(key);
+                                    break;
+                                }
+                            }
+                            if (mId) break;
+                        }
+                    }
                 }
 
                 if (mId) {
                     if (!childrenByMarriage.has(mId)) childrenByMarriage.set(mId, []);
                     childrenByMarriage.get(mId).push(m);
-                } else if (parentIds.length > 0) {
-                    // Single parent cases
+                } else {
+                    // Single parent or no marriage node found for parent pairs
                     parentIds.forEach(pid => {
                         if (!childrenByMarriage.has(pid)) childrenByMarriage.set(pid, []);
                         childrenByMarriage.get(pid).push(m);
@@ -190,24 +205,23 @@ const FamilyTree = (props) => {
 
         // Marriage connections for Dagre
         marriages.forEach(m => {
-            dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id });
-            dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id });
+            if (displayedIds.has(m.p1) && displayedIds.has(m.p2)) {
+                dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id });
+                dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id });
+            }
         });
 
-        // Children connections for Dagre (Sorted: Youngest to Oldest = Left to Right => Oldest on Right)
+        // Children connections for Dagre
         childrenByMarriage.forEach((children, parentId) => {
-            const sortedChildren = [...children].sort((a, b) => {
-                const dateA = a.birthDate ? new Date(a.birthDate) : new Date(0);
-                const dateB = b.birthDate ? new Date(b.birthDate) : new Date(0);
-                // Descending order (latest first) to put oldest on the right
-                return dateB - dateA;
-            });
+            children.forEach(child => {
+                const childId = child.id;
+                // Double check both exist in layout
+                const sourceExists = parentId.startsWith('marriage-')
+                    ? marriages.some(m => m.id === parentId)
+                    : displayedIds.has(parentId);
 
-            sortedChildren.forEach(child => {
-                // Ensure only layout nodes that actually exist are connected
-                // This prevents ghost connections if deduplication removed one of the nodes
-                if (initialNodes.some(n => n.id === parentId) && initialNodes.some(n => n.id === child.id)) {
-                    dagreEdges.push({ id: `de-${parentId}-${child.id}`, source: parentId, target: child.id });
+                if (sourceExists && displayedIds.has(childId)) {
+                    dagreEdges.push({ id: `de-${parentId}-${childId}`, source: parentId, target: childId });
                 }
             });
         });
