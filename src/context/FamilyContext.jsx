@@ -52,12 +52,37 @@ export const FamilyProvider = ({ children }) => {
 
             if (error) throw error;
 
-            const mappedData = (data || []).map(m => ({
+            let mappedData = (data || []).map(m => ({
                 ...m,
                 birthDate: m.birth_date,
                 deathDate: m.death_date,
                 isDeceased: !!m.is_deceased
             }));
+
+            // Deduplication Logic for 'gabungan' mode
+            if (treeSlug === 'gabungan') {
+                const uniqueMap = new Map();
+
+                mappedData.forEach(member => {
+                    // Create a unique key based on Name + BirthDate (if available)
+                    const key = `${member.name.toLowerCase().trim()}|${member.birthDate || 'unknown'}`;
+
+                    if (!uniqueMap.has(key)) {
+                        uniqueMap.set(key, member);
+                    } else {
+                        // If duplicate found, we prefer the one that has more connections (heuristic)
+                        const existing = uniqueMap.get(key);
+                        const existingConnections = (existing.parents?.length || 0) + (existing.children?.length || 0) + (existing.spouses?.length || 0);
+                        const currentConnections = (member.parents?.length || 0) + (member.children?.length || 0) + (member.spouses?.length || 0);
+
+                        if (currentConnections > existingConnections) {
+                            uniqueMap.set(key, member);
+                        }
+                    }
+                });
+
+                mappedData = Array.from(uniqueMap.values());
+            }
 
             setMembers(mappedData);
         } catch (error) {

@@ -204,7 +204,11 @@ const FamilyTree = (props) => {
             });
 
             sortedChildren.forEach(child => {
-                dagreEdges.push({ id: `de-${parentId}-${child.id}`, source: parentId, target: child.id });
+                // Ensure only layout nodes that actually exist are connected
+                // This prevents ghost connections if deduplication removed one of the nodes
+                if (initialNodes.some(n => n.id === parentId) && initialNodes.some(n => n.id === child.id)) {
+                    dagreEdges.push({ id: `de-${parentId}-${child.id}`, source: parentId, target: child.id });
+                }
             });
         });
 
