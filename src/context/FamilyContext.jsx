@@ -12,8 +12,9 @@ export const useFamily = () => useContext(FamilyContext);
 export const FamilyProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [treeSlug, setTreeSlug] = useState('default');
-    const [prevTreeSlug, setPrevTreeSlug] = useState('default'); // To remember where we came from
+    const [prevTreeSlug, setPrevTreeSlug] = useState(() => localStorage.getItem('prev_tree_slug') || 'default');
     const [selectedSlugs, setSelectedSlugs] = useState([]);
+    const [treeMetadata, setTreeMetadata] = useState({ title: '', description: '' });
     const [membersState, {
         set: setMembers,
         reset: resetMembers,
@@ -30,6 +31,7 @@ export const FamilyProvider = ({ children }) => {
     useEffect(() => {
         if (treeSlug && treeSlug !== 'gabungan') {
             setPrevTreeSlug(treeSlug);
+            localStorage.setItem('prev_tree_slug', treeSlug);
         }
     }, [treeSlug]);
 
@@ -149,9 +151,64 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
+    const fetchTreeMetadata = async () => {
+        if (!treeSlug || treeSlug === 'gabungan') {
+            setTreeMetadata({ title: 'Gabungan Semua Silsilah', description: 'Menampilkan gabungan dari beberapa silsilah keluarga yang dipilih.' });
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase
+                .from('tree_metadata')
+                .select('*')
+                .eq('slug', treeSlug)
+                .single();
+
+            if (error && error.code !== 'PGRST116') throw error;
+
+            if (data) {
+                setTreeMetadata({ title: data.title, description: data.description });
+            } else {
+                // Fallback / Initial Metadata
+                const defaultTitles = {
+                    'sukardi': 'Silsilah Keluarga Sukardi',
+                    'cokrosudiro': 'Silsilah Keluarga Cokrosudiro',
+                    'default': 'Silsilah Utama'
+                };
+                setTreeMetadata({
+                    title: defaultTitles[treeSlug] || `Silsilah ${treeSlug.charAt(0).toUpperCase() + treeSlug.slice(1)}`,
+                    description: 'Selamat datang di pohon keluarga kami. Silsilah ini mencatat sejarah dan hubungan antar anggota keluarga dari generasi ke generasi.'
+                });
+            }
+        } catch (error) {
+            console.error("Gagal mengambil metadata silsilah:", error.message);
+        }
+    };
+
+    const updateTreeMetadata = async (newMetadata) => {
+        try {
+            const { error } = await supabase
+                .from('tree_metadata')
+                .upsert({
+                    slug: treeSlug,
+                    title: newMetadata.title,
+                    description: newMetadata.description,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) throw error;
+            setTreeMetadata(newMetadata);
+            return { success: true };
+        } catch (error) {
+            console.error("Gagal update metadata silsilah:", error.message);
+            return { success: false, message: error.message };
+        }
+    };
+
     useEffect(() => {
         if (treeSlug !== 'gabungan' || selectedSlugs.length > 0) {
             fetchMembers();
+            fetchTreeMetadata();
         }
     }, [treeSlug, selectedSlugs]);
 
@@ -290,7 +347,9 @@ export const FamilyProvider = ({ children }) => {
 
     return (
         <FamilyContext.Provider value={{
-            members, treeSlug, setTreeSlug, prevTreeSlug, selectedSlugs, setSelectedSlugs, addMember, updateMember, deleteMember,
+            members, treeSlug, setTreeSlug, prevTreeSlug, selectedSlugs, setSelectedSlugs,
+            treeMetadata, updateTreeMetadata, fetchTreeMetadata,
+            addMember, updateMember, deleteMember,
             exportData, importData, undo, redo, canUndo, canRedo, lastAction,
             isLoading, listAllSlugs, fetchMembers,
             createSnapshot, listSnapshots, restoreSnapshot

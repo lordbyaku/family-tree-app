@@ -14,6 +14,7 @@ import RelationshipPathModal from './components/RelationshipPathModal'
 import AuditLogModal from './components/AuditLogModal'
 import BirthdayReminder from './components/BirthdayReminder'
 import MergeTreesModal from './components/MergeTreesModal'
+import TreeMetadataSection from './components/TreeMetadataSection'
 import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList } from 'lucide-react'
 import { toPng } from 'html-to-image';
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -535,7 +536,12 @@ const MainLayout = () => {
         </div>
       </div>
 
-      <main className="flex-1 relative">
+      <main className="flex-1 relative flex flex-col overflow-hidden">
+        {members.length > 0 && (
+          <div className="px-4 md:px-8 pt-6 relative z-10 w-full max-w-7xl mx-auto">
+            <TreeMetadataSection />
+          </div>
+        )}
         {members.length > 0 ? (
           <FamilyTree
             onEdit={handleEdit}
