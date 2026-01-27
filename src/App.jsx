@@ -355,13 +355,14 @@ const MainLayout = () => {
           ) : (
             <button
               onClick={() => {
-                navigate('/');
+                const target = (!prevTreeSlug || prevTreeSlug === 'default') ? '/' : `/${prevTreeSlug}`;
+                navigate(target);
                 if (window.innerWidth < 768) setIsNavOpen(false);
               }}
               className="w-full md:w-auto bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-600 hover:bg-slate-100 transition-colors text-[10px] font-bold flex items-center justify-center gap-2"
             >
               <RotateCcw size={14} />
-              Kembali ke Utama
+              Kembali ke Silsilah
             </button>
           )}
 
