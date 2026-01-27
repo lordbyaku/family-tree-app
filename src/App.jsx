@@ -13,6 +13,7 @@ import BackupModal from './components/BackupModal'
 import RelationshipPathModal from './components/RelationshipPathModal'
 import AuditLogModal from './components/AuditLogModal'
 import BirthdayReminder from './components/BirthdayReminder'
+import MergeTreesModal from './components/MergeTreesModal'
 import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList } from 'lucide-react'
 import { toPng } from 'html-to-image';
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -45,6 +46,7 @@ const MainLayout = () => {
   const [isBirthdayOpen, setIsBirthdayOpen] = useState(false);
   const [isBackupOpen, setIsBackupOpen] = useState(false);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
+  const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
 
   const {
     members,
@@ -59,7 +61,9 @@ const MainLayout = () => {
     canRedo,
     lastAction,
     isLoading,
-    migrateFromLocal
+    migrateFromLocal,
+    selectedSlugs,
+    setSelectedSlugs
   } = useFamily();
 
   const { treeSlug: urlSlug } = useParams();
@@ -73,6 +77,13 @@ const MainLayout = () => {
       setTreeSlug('default');
     }
   }, [urlSlug, setTreeSlug, treeSlug]);
+
+  // Auto-open merge modal if in gabungan mode but no slugs selected
+  useEffect(() => {
+    if (treeSlug === 'gabungan' && selectedSlugs.length === 0) {
+      setIsMergeModalOpen(true);
+    }
+  }, [treeSlug, selectedSlugs]);
   const { user, logout, isAdmin, isAuthenticated, isAuthLoading } = useAuth();
   const toast = useToast();
   const fileInputRef = useRef(null);
@@ -102,6 +113,12 @@ const MainLayout = () => {
   const handleClose = () => {
     setIsFormOpen(false);
     setEditingMemberId(null);
+  };
+
+  const handleMergeConfirm = (slugs) => {
+    setSelectedSlugs(slugs);
+    setIsMergeModalOpen(false);
+    navigate('/gabungan');
   };
 
   const handleSearch = (e) => {
@@ -326,11 +343,11 @@ const MainLayout = () => {
           {treeSlug !== 'gabungan' ? (
             <button
               onClick={() => {
-                navigate('/gabungan');
+                setIsMergeModalOpen(true);
                 if (window.innerWidth < 768) setIsNavOpen(false);
               }}
               className="w-full md:w-auto bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition-colors text-[10px] font-bold flex items-center justify-center gap-2"
-              title="Tampilkan gabungan semua silsilah keluarga"
+              title="Pilih silsilah untuk digabung"
             >
               <Users size={14} />
               Pratinjau Gabungan
@@ -607,6 +624,13 @@ const MainLayout = () => {
 
       {isBackupOpen && (
         <BackupModal onClose={() => setIsBackupOpen(false)} />
+      )}
+
+      {isMergeModalOpen && (
+        <MergeTreesModal
+          onClose={() => setIsMergeModalOpen(false)}
+          onConfirm={handleMergeConfirm}
+        />
       )}
 
       {/* Loading Overlay */}

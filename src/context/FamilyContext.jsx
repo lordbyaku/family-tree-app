@@ -12,6 +12,7 @@ export const useFamily = () => useContext(FamilyContext);
 export const FamilyProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [treeSlug, setTreeSlug] = useState('default');
+    const [selectedSlugs, setSelectedSlugs] = useState([]);
     const [membersState, {
         set: setMembers,
         reset: resetMembers,
@@ -25,17 +26,20 @@ export const FamilyProvider = ({ children }) => {
     const [lastAction, setLastAction] = useState('');
 
     // Fetch from Supabase on treeSlug change
-    const fetchMembers = async () => {
-        if (!treeSlug) return;
+    const fetchMembers = async (slugsToFetch = null) => {
+        const targetSlugs = slugsToFetch || (treeSlug === 'gabungan' ? selectedSlugs : null);
+        if (!treeSlug && !targetSlugs) return;
         setIsLoading(true);
         try {
             let query = supabase
                 .from('members')
                 .select('*');
 
-            if (treeSlug === 'gabungan') {
-                // Fetch all members for shared preview
-                query = query.not('id', 'is', null); // dummy condition to match all
+            if (targetSlugs && targetSlugs.length > 0) {
+                query = query.in('tree_slug', targetSlugs);
+            } else if (treeSlug === 'gabungan') {
+                // If in gabungan but no slugs selected, fetch all
+                query = query.not('id', 'is', null);
             } else if (treeSlug === 'default' || !treeSlug) {
                 // For default, include legacy records (null slug) or 'default'
                 query = query.or('tree_slug.ilike.default,tree_slug.is.null');
@@ -64,8 +68,10 @@ export const FamilyProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchMembers();
-    }, [treeSlug]);
+        if (treeSlug !== 'gabungan' || selectedSlugs.length > 0) {
+            fetchMembers();
+        }
+    }, [treeSlug, selectedSlugs]);
 
     const addMember = async (member) => {
         const id = crypto.randomUUID();
@@ -464,7 +470,7 @@ export const FamilyProvider = ({ children }) => {
                             ...m,
                             tree_slug: treeSlug,
                             birth_date: m.birthDate || null,
-                            death_date: m.deathDate || null,
+                            death_date: m.death_date || null,
                             is_deceased: m.isDeceased || false
                         };
                         delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
@@ -590,12 +596,25 @@ export const FamilyProvider = ({ children }) => {
         setLastAction('Export HTML');
     };
 
+    const listAllSlugs = async () => {
+        try {
+            const { data, error } = await supabase.from('members').select('tree_slug');
+            if (error) throw error;
+            const slugs = [...new Set(data.filter(m => m.tree_slug).map(m => m.tree_slug))];
+            if (!slugs.includes('default')) slugs.push('default');
+            return slugs;
+        } catch (error) {
+            console.error("Gagal mengambil daftar slug:", error.message);
+            return [];
+        }
+    };
+
     return (
         <FamilyContext.Provider value={{
-            members, treeSlug, setTreeSlug, addMember, updateMember, deleteMember,
+            members, treeSlug, setTreeSlug, selectedSlugs, setSelectedSlugs, addMember, updateMember, deleteMember,
             exportData, importData, importFromExcel, exportToExcel, exportToCSV, exportToHTML,
             undo, redo, canUndo, canRedo, lastAction,
-            isLoading, migrateFromLocal,
+            isLoading, migrateFromLocal, fetchMembers, listAllSlugs,
             createSnapshot, listSnapshots, restoreSnapshot
         }}>
             {children}
