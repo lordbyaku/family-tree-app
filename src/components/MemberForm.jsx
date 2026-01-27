@@ -14,6 +14,11 @@ const MemberForm = ({ onClose, initialData = null }) => {
     const { addMember, updateMember, deleteMember, members } = useFamily();
     const [isUploading, setIsUploading] = useState(false);
 
+    const formatParents = (parents) => {
+        if (!parents) return [];
+        return parents.map(p => typeof p === 'string' ? { id: p, type: 'biological' } : p);
+    };
+
     // Schema: spouses: Array<{ id, status: 'married' | 'divorced' }>
     const formatSpouses = (spouses) => {
         if (!spouses) return [];

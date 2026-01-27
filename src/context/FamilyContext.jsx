@@ -253,8 +253,8 @@ export const FamilyProvider = ({ children }) => {
                     updatedMember.parents = updatedMember.parents.filter(p => (typeof p === 'string' ? p : p.id) !== id);
                     modified = true;
                 }
-                if (m.spouses?.includes(id)) {
-                    updatedMember.spouses = updatedMember.spouses.filter(spouseId => spouseId !== id);
+                if (m.spouses?.some(s => (typeof s === 'string' ? s === id : s.id === id))) {
+                    updatedMember.spouses = updatedMember.spouses.filter(s => (typeof s === 'string' ? s !== id : s.id !== id));
                     modified = true;
                 }
 
