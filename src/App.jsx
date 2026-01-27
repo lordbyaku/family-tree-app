@@ -246,7 +246,7 @@ const MainLayout = () => {
         <div className="flex items-center justify-between w-full md:w-auto">
           <div className="flex items-center gap-3 md:gap-4 truncate">
             <h1 className="text-lg md:text-2xl font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">
-              {treeSlug === 'utama' || treeSlug === 'default' ? 'Silsilah Keluarga' : `Silsilah: ${treeSlug.charAt(0).toUpperCase() + treeSlug.slice(1)}`}
+              {treeSlug === 'gabungan' ? 'Gabungan Semua Silsilah' : (treeSlug === 'utama' || treeSlug === 'default' ? 'Silsilah Keluarga' : `Silsilah: ${treeSlug.charAt(0).toUpperCase() + treeSlug.slice(1)}`)}
             </h1>
 
             <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
@@ -323,7 +323,32 @@ const MainLayout = () => {
 
           <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-          {isAdmin && hasLocalData && (
+          {treeSlug !== 'gabungan' ? (
+            <button
+              onClick={() => {
+                navigate('/gabungan');
+                if (window.innerWidth < 768) setIsNavOpen(false);
+              }}
+              className="w-full md:w-auto bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1.5 rounded-full border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 transition-colors text-[10px] font-bold flex items-center justify-center gap-2"
+              title="Tampilkan gabungan semua silsilah keluarga"
+            >
+              <Users size={14} />
+              Pratinjau Gabungan
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                navigate('/');
+                if (window.innerWidth < 768) setIsNavOpen(false);
+              }}
+              className="w-full md:w-auto bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-600 hover:bg-slate-100 transition-colors text-[10px] font-bold flex items-center justify-center gap-2"
+            >
+              <RotateCcw size={14} />
+              Kembali ke Utama
+            </button>
+          )}
+
+          {isAdmin && hasLocalData && treeSlug !== 'gabungan' && (
             <button
               onClick={handleMigration}
               className="hidden md:flex items-center gap-2 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-800 hover:bg-amber-100 transition-colors text-[10px] font-bold"
@@ -420,7 +445,7 @@ const MainLayout = () => {
           />
 
           {/* Add Member Button */}
-          {isAdmin && (
+          {isAdmin && treeSlug !== 'gabungan' && (
             <button
               onClick={() => {
                 setIsFormOpen(true);

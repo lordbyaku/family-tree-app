@@ -145,6 +145,7 @@ const FamilyTree = (props) => {
                     deathDate: m.deathDate,
                     isDeceased: m.isDeceased,
                     photo: m.photo,
+                    tree_slug: m.tree_slug,
                     onEdit: props.onEdit,
                     onView: props.onView,
                     onFilterRequest: props.onFilterRequest

@@ -33,7 +33,10 @@ export const FamilyProvider = ({ children }) => {
                 .from('members')
                 .select('*');
 
-            if (treeSlug === 'default' || !treeSlug) {
+            if (treeSlug === 'gabungan') {
+                // Fetch all members for shared preview
+                query = query.not('id', 'is', null); // dummy condition to match all
+            } else if (treeSlug === 'default' || !treeSlug) {
                 // For default, include legacy records (null slug) or 'default'
                 query = query.or('tree_slug.ilike.default,tree_slug.is.null');
             } else {
@@ -41,7 +44,7 @@ export const FamilyProvider = ({ children }) => {
                 query = query.ilike('tree_slug', treeSlug);
             }
 
-            const { data, error } = await query.order('created_at', { ascending: true });
+            const { data, error } = await query.order('name', { ascending: true });
 
             if (error) throw error;
 
