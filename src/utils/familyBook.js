@@ -272,23 +272,31 @@ export const generateHTMLBook = (members, options = {}) => {
                                 <strong>Orang Tua</strong>
                                 ${m.parents.map(p => {
         const pid = typeof p === 'string' ? p : p?.id;
-        return pid ? members.find(parent => parent.id === pid)?.name : null;
-    }).filter(Boolean).join(', ')}
+        const parent = pid ? members.find(parent => parent.id === pid) : null;
+        return parent?.name || null;
+    }).filter(Boolean).join(', ') || '-'}
                             </div>
                         ` : ''}
-                        ${m.spouses && m.spouses.length > 0 ? `
+                        ${(() => {
+            const spouseNames = (m.spouses || []).map(s => {
+                const sid = typeof s === 'string' ? s : s?.id;
+                const spouse = sid ? members.find(sp => sp.id === sid) : null;
+                return spouse?.name || null;
+            }).filter(Boolean);
+            return spouseNames.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Pasangan</strong>
-                                ${m.spouses.map(s => {
-        const sid = typeof s === 'string' ? s : s?.id;
-        return sid ? members.find(spouse => spouse.id === sid)?.name : null;
-    }).filter(Boolean).join(', ')}
+                                ${spouseNames.join(', ')}
                             </div>
-                        ` : ''}
+                        ` : '';
+        })()}
                         ${m.children && m.children.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Anak (${m.children.length})</strong>
-                                ${m.children.map(cid => members.find(c => c.id === cid)?.name).filter(Boolean).join(', ')}
+                                ${m.children.map(cid => {
+            const child = members.find(c => c.id === cid);
+            return child?.name || null;
+        }).filter(Boolean).join(', ') || '-'}
                             </div>
                         ` : ''}
                     </div>

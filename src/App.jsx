@@ -369,6 +369,7 @@ const MainLayout = () => {
             </button>
           )}
 
+          {/* Migrasi Cloud button temporarily hidden
           {isAdmin && hasLocalData && treeSlug !== 'gabungan' && (
             <button
               onClick={handleMigration}
@@ -379,6 +380,7 @@ const MainLayout = () => {
               Migrasi Cloud
             </button>
           )}
+          */}
 
           {/* Action Buttons Group */}
           <div className="grid grid-cols-4 md:flex items-center gap-2 w-full md:w-auto">
