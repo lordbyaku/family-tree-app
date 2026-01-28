@@ -1,7 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as XLSX_MODULE from 'xlsx';
-const XLSX = XLSX_MODULE.utils ? XLSX_MODULE : (XLSX_MODULE.default || XLSX_MODULE);
+import * as XLSX from 'xlsx/xlsx.mjs';
 const { utils, write } = XLSX;
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';

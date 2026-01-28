@@ -1,5 +1,4 @@
-import * as XLSX_MODULE from 'xlsx';
-const XLSX = XLSX_MODULE.utils ? XLSX_MODULE : (XLSX_MODULE.default || XLSX_MODULE);
+import * as XLSX from 'xlsx/xlsx.mjs';
 const { utils } = XLSX;
 
 /**
