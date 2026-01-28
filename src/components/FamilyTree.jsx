@@ -373,6 +373,9 @@ const FamilyTree = (props) => {
 
             try {
                 // 4. Calculate the transform to shift the bounds to (padding, padding)
+                // If nodesBounds.x is negative, we need to shift POSITIVE to bring it to 0.
+                // If nodesBounds.x is positive, we need to shift NEGATIVE to bring it to 0.
+                // So the logic is always: -nodesBounds.x + padding
                 const transformX = -nodesBounds.x + padding;
                 const transformY = -nodesBounds.y + padding;
 
