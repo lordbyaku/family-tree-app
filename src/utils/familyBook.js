@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 
 /**
  * Generate a detailed Excel workbook with family data

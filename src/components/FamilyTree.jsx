@@ -8,7 +8,10 @@ import ReactFlow, {
     useReactFlow,
     ReactFlowProvider,
     MiniMap,
+    getNodesBounds,
+    getViewportForBounds,
 } from 'reactflow';
+import { toPng } from 'html-to-image';
 import 'reactflow/dist/style.css';
 import dagre from 'dagre';
 import { useFamily } from '../context/FamilyContext';
@@ -349,6 +352,52 @@ const FamilyTree = (props) => {
         (params) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
     );
+
+    // EXPORT IMAGE HANDLER (Full Tree)
+    useEffect(() => {
+        const handleExportImage = async () => {
+            if (nodes.length === 0) return;
+
+            // 1. Calculate the bounding box of ALL nodes
+            const nodesBounds = getNodesBounds(nodes);
+
+            // 2. Define image dimensions (adding padding)
+            const padding = 50;
+            const width = nodesBounds.width + padding * 2;
+            const height = nodesBounds.height + padding * 2;
+
+            // 3. Get the viewport settings to fit these bounds
+            const viewport = getViewportForBounds(nodesBounds, width, height, 0.5, 2, 0.1);
+
+            // 4. Find the viewport element
+            const element = document.querySelector('.react-flow__viewport');
+            if (!element) return;
+
+            try {
+                const dataUrl = await toPng(element, {
+                    backgroundColor: props.isDarkMode ? '#0f172a' : '#f8fafc',
+                    width: width,
+                    height: height,
+                    style: {
+                        width: `${width}px`,
+                        height: `${height}px`,
+                        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+                    },
+                });
+
+                const link = document.createElement('a');
+                link.download = `silsilah-keluarga-${treeSlug}-${new Date().toISOString().slice(0, 10)}.png`;
+                link.href = dataUrl;
+                link.link = dataUrl;
+                link.click();
+            } catch (err) {
+                console.error("Gagal export gambar:", err);
+            }
+        };
+
+        window.addEventListener('request-export-image', handleExportImage);
+        return () => window.removeEventListener('request-export-image', handleExportImage);
+    }, [nodes, props.isDarkMode, treeSlug]);
 
     return (
         <div className="w-full h-full bg-slate-50 dark:bg-slate-900 transition-colors duration-300">

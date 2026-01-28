@@ -203,21 +203,11 @@ const MainLayout = () => {
     e.target.value = '';
   }
 
-  const handleExportImage = async () => {
-    const element = document.querySelector('.react-flow__viewport');
-    if (!element) return;
-
-    try {
-      const dataUrl = await toPng(element, { backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc', style: { transform: 'translate(0,0) scale(1)' } });
-      const link = document.createElement('a');
-      link.download = `family-tree-${new Date().toISOString().slice(0, 10)}.png`;
-      link.href = dataUrl;
-      link.click();
-      toast.success("Gambar berhasil diexport!");
-    } catch (err) {
-      console.error("Gagal export gambar", err);
-      toast.error("Gagal melakukan export gambar.");
-    }
+  const handleExportImage = () => {
+    // Dispatch a custom event that FamilyTree component will listen to
+    // This allows exporting the full tree bounds instead of just the visual viewport
+    window.dispatchEvent(new CustomEvent('request-export-image'));
+    toast.success("Menyiapkan gambar silsilah...");
   };
 
   const editingMember = editingMemberId ? members.find(m => m.id === editingMemberId) : null;

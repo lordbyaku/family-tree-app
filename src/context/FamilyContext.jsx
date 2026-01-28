@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
 import { supabase } from '../lib/supabase';
