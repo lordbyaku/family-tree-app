@@ -26,6 +26,7 @@ import SearchBar from './components/SearchBar';
 import ImportExportActions from './components/ImportExportActions';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { ConfirmProvider } from './context/ConfirmContext';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Inner component to access context
 const MainLayout = () => {
@@ -667,6 +668,7 @@ function App() {
                 <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/:treeSlug?" element={<MainLayout />} />
               </Routes>
+              <SpeedInsights />
             </FamilyProvider>
           </AuthProvider>
         </ConfirmProvider>
