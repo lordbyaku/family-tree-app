@@ -361,27 +361,29 @@ const FamilyTree = (props) => {
             // 1. Calculate the bounding box of ALL nodes
             const nodesBounds = getNodesBounds(nodes);
 
-            // 2. Define image dimensions (adding padding)
+            // 2. Define image dimensions (adding padding) rather than fitting to view
             const padding = 50;
-            const width = nodesBounds.width + padding * 2;
-            const height = nodesBounds.height + padding * 2;
+            const imageWidth = nodesBounds.width + (padding * 2);
+            const imageHeight = nodesBounds.height + (padding * 2);
 
-            // 3. Get the viewport settings to fit these bounds
-            const viewport = getViewportForBounds(nodesBounds, width, height, 0.5, 2, 0.1);
-
-            // 4. Find the viewport element
+            // 3. Find the viewport element (the container of the nodes)
+            // We target .react-flow__viewport to capture the content directly
             const element = document.querySelector('.react-flow__viewport');
             if (!element) return;
 
             try {
+                // 4. Calculate the transform to shift the bounds to (padding, padding)
+                const transformX = -nodesBounds.x + padding;
+                const transformY = -nodesBounds.y + padding;
+
                 const dataUrl = await toPng(element, {
                     backgroundColor: props.isDarkMode ? '#0f172a' : '#f8fafc',
-                    width: width,
-                    height: height,
+                    width: imageWidth,
+                    height: imageHeight,
                     style: {
-                        width: `${width}px`,
-                        height: `${height}px`,
-                        transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+                        width: `${imageWidth}px`,
+                        height: `${imageHeight}px`,
+                        transform: `translate(${transformX}px, ${transformY}px) scale(1)`,
                     },
                 });
 
