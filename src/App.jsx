@@ -15,10 +15,11 @@ import AuditLogModal from './components/AuditLogModal'
 import BirthdayReminder from './components/BirthdayReminder'
 import MergeTreesModal from './components/MergeTreesModal'
 import TreeMetadataSection from './components/TreeMetadataSection'
-import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList } from 'lucide-react'
+import { Download, Upload, Search, Image as ImageIcon, BarChart3, FileSpreadsheet, Calculator, Moon, Sun, Users, Filter, X, BookOpen, RotateCcw, RotateCw, Map as MapIcon, Menu, LogOut, User, Cake, Database, ClipboardList, Shield } from 'lucide-react'
 import { toPng } from 'html-to-image';
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginScreen from './components/LoginScreen'
+import AdminDashboard from './components/AdminDashboard'
 
 import { ToastProvider, useToast } from './context/ToastContext';
 import SearchBar from './components/SearchBar';
@@ -159,7 +160,9 @@ const MainLayout = () => {
     redo,
     lastAction,
     toast,
-    setIsAuditLogOpen
+    setIsAuditLogOpen,
+    isAdmin,
+    navigate
   });
 
   const filteredMembers = searchQuery
@@ -326,6 +329,15 @@ const MainLayout = () => {
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 leading-none">{user?.name}</span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-tighter">{user?.role}</span>
               </div>
+              {isAdmin && (
+                <button
+                  onClick={() => navigate('/admin-dashboard')}
+                  className="ml-2 p-1 text-slate-400 hover:text-blue-500 transition-colors"
+                  title="Master Admin Dashboard"
+                >
+                  <Shield size={14} />
+                </button>
+              )}
             </div>
             <button
               onClick={() => {
@@ -662,6 +674,7 @@ function App() {
           <AuthProvider>
             <FamilyProvider>
               <Routes>
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
                 <Route path="/:treeSlug?" element={<MainLayout />} />
               </Routes>
             </FamilyProvider>

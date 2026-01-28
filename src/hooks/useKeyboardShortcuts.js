@@ -12,7 +12,9 @@ const useKeyboardShortcuts = ({
     undo,
     redo,
     lastAction,
-    toast
+    toast,
+    isAdmin,
+    navigate
 }) => {
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -58,11 +60,17 @@ const useKeyboardShortcuts = ({
                 e.preventDefault();
                 setIsAuditLogOpen(true);
             }
+
+            // Master Admin Dashboard: Ctrl+Shift+U
+            if (e.ctrlKey && e.shiftKey && e.key === 'U' && isAdmin) {
+                e.preventDefault();
+                navigate('/admin-dashboard');
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [canUndo, canRedo, undo, redo, lastAction, toast, setIsFormOpen, setIsStatsOpen, setIsRelOpen, setIsAuditLogOpen, setViewingMemberId, setEditingMemberId]);
+    }, [canUndo, canRedo, undo, redo, lastAction, toast, setIsFormOpen, setIsStatsOpen, setIsRelOpen, setIsAuditLogOpen, setViewingMemberId, setEditingMemberId, isAdmin, navigate]);
 };
 
 export default useKeyboardShortcuts;

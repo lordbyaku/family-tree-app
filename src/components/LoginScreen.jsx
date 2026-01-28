@@ -66,7 +66,7 @@ const LoginScreen = () => {
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
                             <TreeDeciduous className="text-blue-600" size={24} />
                         </div>
-                        <span className="text-xl font-bold text-white tracking-tight">Family Archive</span>
+                        <span className="text-xl font-bold text-white tracking-tight">Silsilah Keluarga</span>
                     </div>
 
                     <div className="space-y-6">
@@ -97,7 +97,7 @@ const LoginScreen = () => {
                     <div className="mb-8 block lg:hidden">
                         <div className="flex items-center gap-2 mb-2">
                             <TreeDeciduous className="text-blue-600" size={24} />
-                            <span className="text-xl font-bold tracking-tight dark:text-white">Family Archive</span>
+                            <span className="text-xl font-bold tracking-tight dark:text-white">Silsilah Keluarga</span>
                         </div>
                     </div>
 
@@ -182,14 +182,8 @@ const LoginScreen = () => {
                         </div>
                     </form>
 
-                    <div className="mt-8 text-center flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
-                        <span>{isRegister ? 'Sudah memiliki akun?' : 'Baru di sini?'}</span>
-                        <button
-                            onClick={() => setIsRegister(!isRegister)}
-                            className="text-blue-600 dark:text-blue-400 font-bold hover:underline"
-                        >
-                            {isRegister ? 'Masuk Saja' : 'Buat Akun Baru'}
-                        </button>
+                    <div className="mt-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                        <span>Whatsapp ke <a href="https://wa.me/628562717803" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">08562717803</a> untuk membuat user baru.</span>
                     </div>
 
                     <div className="relative my-10 px-10">
@@ -213,7 +207,7 @@ const LoginScreen = () => {
                     </button>
 
                     <p className="text-center text-[10px] text-slate-400 mt-10 uppercase tracking-widest font-medium">
-                        &copy; {new Date().getFullYear()} Family Archive &bull; Digital Heritage
+                        Copyright 2026 - SILSILAH KELUARGA - by : Haritrisna Suryadimarta
                     </p>
                 </div>
             </div>
