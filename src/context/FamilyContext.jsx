@@ -471,6 +471,10 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
+    const exportToPDFCall = async (options = {}) => {
+        await exportToPDF(members, options);
+    };
+
     const createSnapshot = async (note = '') => {
         try {
             const { error } = await supabase.from('backups').insert([{

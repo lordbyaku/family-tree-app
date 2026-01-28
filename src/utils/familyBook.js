@@ -1,5 +1,7 @@
 import * as XLSX from 'xlsx';
 const { utils } = XLSX;
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 /**
  * Generate a detailed Excel workbook with family data
@@ -99,116 +101,190 @@ export const generateHTMLBook = (members, options = {}) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buku Keluarga - Silsilah Keluarga</title>
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
+            color: var(--text-main);
+            background: var(--bg);
+            padding-bottom: 50px;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
-            padding: 60px 20px;
+            padding: 80px 40px;
             text-align: center;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 24px;
+            margin-bottom: 50px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
         }
-        .header h1 { font-size: 3em; margin-bottom: 10px; }
-        .header p { font-size: 1.2em; opacity: 0.9; }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            opacity: 0.1;
+        }
+        .header h1 { font-size: 3.5em; margin-bottom: 15px; letter-spacing: -0.02em; font-weight: 800; }
+        .header p { font-size: 1.25em; opacity: 0.8; font-weight: 300; }
         
         /* Stats */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 60px;
         }
         .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
             text-align: center;
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease;
         }
-        .stat-card h3 { color: #667eea; font-size: 2.5em; margin-bottom: 10px; }
-        .stat-card p { color: #666; font-size: 1.1em; }
+        .stat-card h3 { color: var(--primary); font-size: 2.5em; margin-bottom: 5px; font-weight: 700; }
+        .stat-card p { color: var(--text-muted); font-size: 0.9em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
         
+        /* Section Title */
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+            display: inline-block;
+        }
+
         /* Members */
-        .members { display: grid; gap: 30px; }
+        .members { display: grid; grid-template-columns: 1fr; gap: 40px; }
         .member-card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
             page-break-inside: avoid;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
         }
         .member-header {
             display: flex;
             align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f0f0f0;
+            gap: 30px;
         }
         .member-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+            width: 140px;
+            height: 140px;
+            border-radius: 24px;
             object-fit: cover;
-            border: 4px solid #667eea;
+            border: 4px solid white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
         .member-photo-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 140px;
+            height: 140px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 2.5em;
-            font-weight: bold;
+            font-size: 3.5em;
+            font-weight: 800;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
-        .member-info h2 { color: #333; margin-bottom: 5px; }
-        .member-info .dates { color: #666; font-size: 0.95em; }
-        .member-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .detail-item { padding: 10px; background: #f9f9f9; border-radius: 5px; }
-        .detail-item strong { display: block; color: #667eea; margin-bottom: 5px; }
+        .member-info h2 { font-size: 2.2em; color: var(--text-main); margin-bottom: 8px; font-weight: 800; letter-spacing: -0.02em; }
+        .member-info .dates { 
+            display: inline-block;
+            padding: 6px 16px;
+            background: #f1f5f9;
+            color: var(--text-muted);
+            border-radius: 100px;
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+        .member-details { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+        .detail-item { 
+            padding: 20px; 
+            background: #f8fafc; 
+            border-radius: 16px; 
+            border: 1px solid var(--border);
+        }
+        .detail-item strong { 
+            display: block; 
+            color: var(--primary); 
+            font-size: 0.8em; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em;
+            margin-bottom: 8px; 
+        }
+        .detail-item span { font-weight: 600; color: var(--text-main); }
+        
         .biography {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-left: 4px solid #667eea;
-            border-radius: 5px;
-            font-style: italic;
+            padding: 30px;
+            background: #fffbeb;
+            border-left: 6px solid var(--accent);
+            border-radius: 0 20px 20px 0;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #92400e;
         }
+        .biography strong { color: var(--accent); display: block; margin-bottom: 10px; font-size: 0.9em; text-transform: uppercase; }
         
         /* Print Styles */
         @media print {
-            body { background: white; }
-            .header { background: #667eea; }
-            .member-card { page-break-inside: avoid; }
+            body { background: white; padding: 0; }
+            .container { max-width: 100%; padding: 0; }
+            .member-card { 
+                box-shadow: none; 
+                border: 1px solid #eee; 
+                margin-bottom: 20px;
+                page-break-inside: avoid;
+            }
+            .header { border-radius: 0; box-shadow: none; background: #1e293b !important; color: white !important; -webkit-print-color-adjust: exact; }
+            .stat-card { border: 1px solid #eee; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📖 Buku Keluarga</h1>
-            <p>Dokumentasi Lengkap Silsilah Keluarga</p>
-            <p style="margin-top: 10px; font-size: 0.9em;">Dibuat pada: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <h1>Silsilah Keluarga</h1>
+            <p>Dokumentasi Sejarah dan Relasi Anggota Keluarga</p>
+            <div style="margin-top: 30px; font-size: 0.9em; font-weight: 500; opacity: 0.7;">
+                🗓️ Dibuat pada: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
         </div>
         
         ${options.includeStats ? `
+        <h2 class="section-title">📊 Statistik Keluarga</h2>
         <div class="stats">
             <div class="stat-card">
                 <h3>${totalMembers}</h3>
-                <p>Total Anggota</p>
+                <p>Anggota</p>
             </div>
             <div class="stat-card">
                 <h3>${males}</h3>
@@ -225,12 +301,13 @@ export const generateHTMLBook = (members, options = {}) => {
         </div>
         ` : ''}
         
+        <h2 class="section-title">👥 Direktori Anggota</h2>
         <div class="members">
             ${members.map(m => `
                 <div class="member-card">
                     <div class="member-header">
                         ${options.includePhotos && m.photo ? `
-                            <img src="${m.photo}" alt="${m.name}" class="member-photo">
+                            <img src="${m.photo}" alt="${m.name}" class="member-photo" crossOrigin="anonymous">
                         ` : `
                             <div class="member-photo-placeholder">
                                 ${m.name.charAt(0).toUpperCase()}
@@ -238,43 +315,42 @@ export const generateHTMLBook = (members, options = {}) => {
                         `}
                         <div class="member-info">
                             <h2>${m.name} ${m.isDeceased ? '🕊️' : ''}</h2>
-                            <p class="dates">
-                                ${m.birthDate || '?'} ${m.isDeceased ? `- ${m.deathDate || '?'}` : '- Sekarang'}
-                            </p>
+                            <span class="dates">
+                                ${m.birthDate || 'Tanggal Lahir Tidak Diketahui'} ${m.isDeceased ? `- ${m.deathDate || '?'}` : '(Masih Hidup)'}
+                            </span>
                         </div>
                     </div>
                     
                     <div class="member-details">
                         <div class="detail-item">
                             <strong>Jenis Kelamin</strong>
-                            ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                            <span>${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</span>
                         </div>
                         ${m.phone ? `
                             <div class="detail-item">
                                 <strong>Nomor Telepon</strong>
-                                ${m.phone}
+                                <span>${m.phone}</span>
                             </div>
                         ` : ''}
                         ${m.occupation ? `
                             <div class="detail-item">
                                 <strong>Pekerjaan</strong>
-                                ${m.occupation}
+                                <span>${m.occupation}</span>
                             </div>
                         ` : ''}
                         ${m.address ? `
                             <div class="detail-item">
                                 <strong>Domisili</strong>
-                                ${m.address}
+                                <span>${m.address}</span>
                             </div>
                         ` : ''}
                         ${m.parents && m.parents.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Orang Tua</strong>
-                                ${m.parents.map(p => {
+                                <span>${m.parents.map(p => {
         const pid = typeof p === 'string' ? p : p?.id;
-        const parent = pid ? members.find(parent => parent.id === pid) : null;
-        return parent?.name || null;
-    }).filter(Boolean).join(', ') || '-'}
+        return pid ? members.find(parent => parent.id === pid)?.name : null;
+    }).filter(Boolean).join(', ')}</span>
                             </div>
                         ` : ''}
                         ${(() => {
@@ -286,33 +362,114 @@ export const generateHTMLBook = (members, options = {}) => {
             return spouseNames.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Pasangan</strong>
-                                ${spouseNames.join(', ')}
+                                <span>${(m.spouses || []).map(s => {
+                const sid = typeof s === 'string' ? s : s?.id;
+                return sid ? members.find(spouse => spouse.id === sid)?.name : null;
+            }).filter(Boolean).join(', ')}</span>
                             </div>
                         ` : '';
         })()}
                         ${m.children && m.children.length > 0 ? `
                             <div class="detail-item">
-                                <strong>Anak (${m.children.length})</strong>
-                                ${m.children.map(cid => {
-            const child = members.find(c => c.id === cid);
-            return child?.name || null;
-        }).filter(Boolean).join(', ') || '-'}
+                                <strong>Keturunan (${m.children.length})</strong>
+                                <span>${m.children.map(cid => members.find(c => c.id === cid)?.name).filter(Boolean).join(', ')}</span>
                             </div>
                         ` : ''}
                     </div>
                     
                     ${m.biography ? `
                         <div class="biography">
-                            <strong style="color: #667eea; font-style: normal; display: block; margin-bottom: 10px;">Biografi</strong>
+                            <strong>📜 Biografi</strong>
                             "${m.biography}"
                         </div>
                     ` : ''}
                 </div>
             `).join('')}
-        </div>
-    </div>
-</body>
-</html>`;
+        </div >
+    </div >
+
+    <button onclick="window.print()" style="position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; background: #2563eb; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 15px rgba(0,0,0,0.1); display: flex; items-center: center; gap: 10px; z-index: 1000;" class="no-print">
+        <span>🖨️ Cetak / Simpan PDF</span>
+    </button>
+
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+        }
+    </style>
+</body >
+</html > `;
 
     return html;
+};
+
+/**
+ * Export family book to PDF
+ * @param {Array} members - All family members
+ * @param {Object} options - Export options
+ * @returns {Promise<void>}
+ */
+export const exportToPDF = async (members, options = {}) => {
+    const html = generateHTMLBook(members, options);
+
+    // Create a hidden container to render HTML
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.width = '1000px'; // Fixed width for consistent layout
+    container.style.background = '#f8fafc';
+    container.innerHTML = html;
+    document.body.appendChild(container);
+
+    // Wait for all images to load
+    const images = container.getElementsByTagName('img');
+    const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+        });
+    });
+    await Promise.all(imagePromises);
+
+    try {
+        const canvas = await html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#f8fafc'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        let heightLeft = pdfHeight;
+        let position = 0;
+
+        // Add first page
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+
+        // Add subsequent pages if content overflows
+        while (heightLeft > 0) {
+            position = heightLeft - pdfHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+        }
+
+        const treeSlug = members[0]?.tree_slug || 'keluarga';
+        pdf.save(`buku - keluarga - ${treeSlug} -${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+        console.error('PDF Generation Error:', error);
+        throw error;
+    } finally {
+        document.body.removeChild(container);
+    }
 };
