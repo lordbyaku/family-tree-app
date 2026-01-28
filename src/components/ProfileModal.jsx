@@ -120,7 +120,20 @@ const ProfileModal = ({ memberId, onClose, onEdit }) => {
                                             })}
                                         </p>
                                     )}
-                                    {member.spouses.length > 0 && <p><span className="font-medium text-slate-500 dark:text-slate-400">Pasangan:</span> {member.spouses.map(sid => members.find(m => m.id === sid)?.name).join(', ')}</p>}
+                                    {member.spouses && member.spouses.length > 0 && (
+                                        <p>
+                                            <span className="font-medium text-slate-500 dark:text-slate-400">Pasangan:</span>{' '}
+                                            {member.spouses.map((s, idx) => {
+                                                const spouseId = typeof s === 'string' ? s : s.id;
+                                                const spouse = members.find(m => m.id === spouseId);
+                                                return (
+                                                    <span key={idx}>
+                                                        {spouse?.name}{idx < member.spouses.length - 1 ? ', ' : ''}
+                                                    </span>
+                                                );
+                                            })}
+                                        </p>
+                                    )}
                                     {member.children && member.children.length > 0 && <p><span className="font-medium text-slate-500 dark:text-slate-400">Anak:</span> {member.children.map(cid => members.find(m => m.id === cid)?.name).join(', ')}</p>}
                                 </div>
                             </div>
