@@ -373,9 +373,6 @@ const FamilyTree = (props) => {
 
             try {
                 // 4. Calculate the transform to shift the bounds to (padding, padding)
-                // If nodesBounds.x is negative, we need to shift POSITIVE to bring it to 0.
-                // If nodesBounds.x is positive, we need to shift NEGATIVE to bring it to 0.
-                // So the logic is always: -nodesBounds.x + padding
                 const transformX = -nodesBounds.x + padding;
                 const transformY = -nodesBounds.y + padding;
 
@@ -387,15 +384,21 @@ const FamilyTree = (props) => {
                         width: `${imageWidth}px`,
                         height: `${imageHeight}px`,
                         transform: `translate(${transformX}px, ${transformY}px) scale(1)`,
+                        transformOrigin: 'top left',
                     },
-                    pixelRatio: 2, // Improve definition for large trees
-                    quality: 1
+                    pixelRatio: 2,
+                    quality: 1,
+                    // Filter out some problematic elements if needed
+                    filter: (node) => {
+                        if (node.classList?.contains('react-flow__controls')) return false;
+                        if (node.classList?.contains('react-flow__minimap')) return false;
+                        return true;
+                    }
                 });
 
                 const link = document.createElement('a');
                 link.download = `silsilah-keluarga-${treeSlug}-${new Date().toISOString().slice(0, 10)}.png`;
                 link.href = dataUrl;
-                link.link = dataUrl;
                 link.click();
             } catch (err) {
                 console.error("Gagal export gambar:", err);

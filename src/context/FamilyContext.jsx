@@ -1,6 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as XLSX from 'xlsx/xlsx.mjs';
+import * as XLSX from 'xlsx';
 const { utils, write } = XLSX;
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
@@ -365,6 +365,41 @@ export const FamilyProvider = ({ children }) => {
         fetchMembers();
     };
 
+    const importFromExcel = async (file) => {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = utils.sheet_to_json(worksheet);
+
+        const mappedData = jsonData.map(row => {
+            // Map Indonesian column names back to internal keys if necessary
+            // Or assume standard keys. For now, let's look at what generateExcelBook produces.
+            // Nama, Jenis Kelamin, Tanggal Lahir, Tanggal Wafat, Status, Telepon, Pekerjaan, Domisili, Biografi
+            return {
+                id: crypto.randomUUID(),
+                name: row['Nama'] || row['name'] || '',
+                gender: (row['Jenis Kelamin'] === 'Laki-laki' || row['gender'] === 'male') ? 'male' : 'female',
+                birthDate: row['Tanggal Lahir'] || row['birthDate'] || '',
+                deathDate: row['Tanggal Wafat'] || row['deathDate'] || '',
+                is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
+                phone: row['Telepon'] || row['phone'] || '',
+                occupation: row['Pekerjaan'] || row['occupation'] || '',
+                address: row['Domisili'] || row['address'] || '',
+                biography: row['Biografi'] || row['biography'] || '',
+            };
+        });
+
+        const upsertData = mappedData.map(m => {
+            const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.is_deceased || false };
+            delete dbM.birthDate; delete dbM.deathDate;
+            return dbM;
+        });
+
+        const { error } = await supabase.from('members').upsert(upsertData);
+        if (error) throw error;
+        fetchMembers();
+    };
+
     const listAllSlugs = async () => {
         try {
             const { data, error } = await supabase.from('members').select('tree_slug');
@@ -488,7 +523,9 @@ export const FamilyProvider = ({ children }) => {
             addMember, updateMember, deleteMember,
             exportData, importData, undo, redo, canUndo, canRedo, lastAction,
             isLoading, listAllSlugs, fetchMembers,
-            createSnapshot, listSnapshots, restoreSnapshot
+            createSnapshot, listSnapshots, restoreSnapshot,
+            exportToExcel, exportToCSV, exportToHTML, migrateFromLocal,
+            importFromExcel
         }}>
             {children}
         </FamilyContext.Provider>
