@@ -249,6 +249,12 @@ export const generateHTMLBook = (members, options = {}) => {
                             <strong>Jenis Kelamin</strong>
                             ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
                         </div>
+                        ${m.phone ? `
+                            <div class="detail-item">
+                                <strong>Nomor Telepon</strong>
+                                ${m.phone}
+                            </div>
+                        ` : ''}
                         ${m.occupation ? `
                             <div class="detail-item">
                                 <strong>Pekerjaan</strong>
