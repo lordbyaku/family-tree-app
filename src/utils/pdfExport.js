@@ -1,298 +1,212 @@
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 /**
- * Generate a comprehensive Family Book in PDF format
- * @param {Array} members - All family members
- * @param {Object} options - Export options
- * @returns {Blob} PDF file blob
+ * Generate PDF Book by rendering HTML visually (canvas) to preserve styles and encoding.
+ * @param {Array} members 
+ * @param {Object} options 
+ * @returns {Promise<jsPDF>}
  */
-export const generatePDFBook = (members, options = {}) => {
-    // Default options
-    const { includeStats = true } = options;
-
-    const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-    });
-
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
-    const contentWidth = pageWidth - (margin * 2);
-    let yPos = margin;
-
-    // Helper function to add new page if needed
-    const checkPageBreak = (requiredSpace = 20) => {
-        if (yPos + requiredSpace > pageHeight - margin) {
-            doc.addPage();
-            yPos = margin;
-            return true;
-        }
-        return false;
-    };
-
-    // Helper function to draw line
-    const drawLine = (y) => {
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.5);
-        doc.line(margin, y, pageWidth - margin, y);
-    };
-
-    // === COVER PAGE ===
-    doc.setFillColor(102, 126, 234); // Purple gradient start
-    doc.rect(0, 0, pageWidth, 80, 'F');
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(32);
-    doc.setFont('helvetica', 'bold');
-    doc.text('📖 Buku Keluarga', pageWidth / 2, 40, { align: 'center' });
-
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Dokumentasi Lengkap Silsilah Keluarga', pageWidth / 2, 55, { align: 'center' });
-
-    const today = new Date();
-    const dateStr = today.toLocaleDateString('id-ID', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    });
-    doc.setFontSize(10);
-    doc.text(`Dibuat pada: ${dateStr}`, pageWidth / 2, 70, { align: 'center' });
-
-    // Statistics section on cover
-    if (includeStats) {
-        yPos = 100;
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text('Statistik Keluarga', pageWidth / 2, yPos, { align: 'center' });
-
-        yPos += 15;
-        const totalMembers = members.length;
-        const males = members.filter(m => m.gender === 'male').length;
-        const females = members.filter(m => m.gender === 'female').length;
-        const deceased = members.filter(m => m.isDeceased).length;
-        const alive = totalMembers - deceased;
-
-        const stats = [
-            { label: 'Total Anggota', value: totalMembers, color: [59, 130, 246] },
-            { label: 'Laki-laki', value: males, color: [34, 197, 94] },
-            { label: 'Perempuan', value: females, color: [236, 72, 153] },
-            { label: 'Masih Hidup', value: alive, color: [34, 197, 94] },
-            { label: 'Sudah Meninggal', value: deceased, color: [156, 163, 175] }
-        ];
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-
-        stats.forEach((stat, idx) => {
-            const x = margin + (idx % 2) * (contentWidth / 2);
-            const y = yPos + Math.floor(idx / 2) * 20;
-
-            doc.setDrawColor(...stat.color);
-            doc.setFillColor(...stat.color);
-            doc.rect(x, y - 5, 4, 8, 'F');
-
-            doc.setTextColor(0, 0, 0);
-            doc.text(`${stat.label}:`, x + 8, y);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`${stat.value}`, x + 60, y);
-            doc.setFont('helvetica', 'normal');
-        });
-    }
-
-    // === MEMBER DIRECTORY ===
-    doc.addPage();
-    yPos = margin;
-
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(102, 126, 234);
-    doc.text('Direktori Anggota Keluarga', margin, yPos);
-    yPos += 10;
-    drawLine(yPos);
-    yPos += 10;
+export const generatePDFBook = async (members, options = {}) => {
+    const { includeStats = true, includePhotos = true } = options;
 
     // Sort members by name
     const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
 
-    sortedMembers.forEach((member, index) => {
-        checkPageBreak(50); // Increased space check
+    // A4 dimensions in pixel (approximate for 96 DPI)
+    // A4 is 210mm x 297mm. jsPDF uses mm. html2canvas uses px.
+    // We will render at a fixed width (e.g. 800px) and scale it down to PDF.
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
 
-        // Member card background
-        doc.setFillColor(248, 250, 252);
-        doc.roundedRect(margin, yPos, contentWidth, 45, 2, 2, 'F'); // Increased height
+    // CSS Styles copied from HTML Export to match the look
+    const styles = `
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        background: white;
+        width: 794px; /* A4 width at 96dpi approx */
+        margin: 0 auto;
+        padding: 40px;
+        box-sizing: border-box;
+    `;
 
-        // Member number
-        doc.setFillColor(102, 126, 234);
-        doc.circle(margin + 8, yPos + 8, 6, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${index + 1}`, margin + 8, yPos + 10, { align: 'center' });
+    const headerStyle = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 40px 20px;
+        text-align: center;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    `;
 
-        // Member name
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        const nameText = member.isDeceased ? `${member.name} 🕊️` : member.name;
-        doc.text(nameText, margin + 18, yPos + 10);
+    const cardStyle = `
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+    `;
 
-        // Member details
-        doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(80, 80, 80);
+    // Helper to create a container
+    const createContainer = () => {
+        const div = document.createElement('div');
+        div.style.cssText = `
+            position: absolute; 
+            left: -9999px; 
+            top: 0; 
+            width: 794px; /* A4 width */
+            background: #f8fafc; /* Slate-50 */
+        `;
+        document.body.appendChild(div);
+        return div;
+    };
 
-        let detailY = yPos + 18;
-        const leftColX = margin + 18;
-        const lineHeight = 5;
-
-        // Gender and dates
-        const genderText = member.gender === 'male' ? 'Laki-laki' : 'Perempuan';
-        const dateText = member.birthDate
-            ? (member.isDeceased
-                ? `${member.birthDate} - ${member.deathDate || '?'}`
-                : `${member.birthDate} - Sekarang`)
-            : 'Tanggal lahir tidak diketahui';
-        doc.text(`${genderText} | ${dateText}`, leftColX, detailY);
-        detailY += lineHeight;
-
-        // Phone - ONLY if exists
-        if (member.phone) {
-            doc.text(`📞 ${member.phone}`, leftColX, detailY);
-            detailY += lineHeight;
-        }
-
-        // Occupation & Address
-        const occupationAddr = [
-            member.occupation ? `💼 ${member.occupation}` : null,
-            member.address ? `📍 ${member.address}` : null
-        ].filter(Boolean).join(' | ');
-
-        if (occupationAddr) {
-            // Check text width to prevent overflow
-            const splitText = doc.splitTextToSize(occupationAddr, contentWidth - 25);
-            doc.text(splitText, leftColX, detailY);
-            detailY += (lineHeight * splitText.length);
-        }
-
-        // Parents
-        if (member.parents && member.parents.length > 0) {
-            const parentNames = member.parents.map(p => {
-                const pid = typeof p === 'string' ? p : p?.id;
-                const parent = pid ? members.find(parent => parent.id === pid) : null;
-                return parent?.name || null;
-            }).filter(Boolean).join(', ');
-
-            if (parentNames) {
-                const text = `Orang Tua: ${parentNames}`;
-                const splitText = doc.splitTextToSize(text, contentWidth - 25);
-                doc.text(splitText, leftColX, detailY);
-                detailY += (lineHeight * splitText.length);
-            }
-        }
-
-        // Spouses - IMPROVED LOGIC
-        const spouseNames = (member.spouses || []).map(s => {
-            const sid = typeof s === 'string' ? s : s?.id;
-            const spouse = sid ? members.find(sp => sp.id === sid) : null;
-            return spouse?.name || null;
-        }).filter(Boolean);
-
-        if (spouseNames.length > 0) {
-            const text = `Pasangan: ${spouseNames.join(', ')}`;
-            const splitText = doc.splitTextToSize(text, contentWidth - 25);
-            doc.text(splitText, leftColX, detailY);
-            detailY += (lineHeight * splitText.length);
-        }
-
-        yPos += 50; // Increased vertical spacing between cards
-    });
-
-    // === RELATIONSHIP NETWORK ===
-    doc.addPage();
-    yPos = margin;
-
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(102, 126, 234);
-    doc.text('Jaringan Hubungan Keluarga', margin, yPos);
-    yPos += 10;
-    drawLine(yPos);
-    yPos += 15;
-
-    // Build relationship data
-    const relationships = [];
-    members.forEach(m => {
-        if (m.children && m.children.length > 0) {
-            m.children.forEach(childId => {
-                const child = members.find(c => c.id === childId);
-                if (child) {
-                    relationships.push({
-                        parent: m.name,
-                        child: child.name,
-                        type: m.gender === 'male' ? 'Ayah-Anak' : 'Ibu-Anak'
-                    });
-                }
-            });
-        }
-    });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(0, 0, 0);
-
-    if (relationships.length > 0) {
-        doc.text(`Total ${relationships.length} hubungan orang tua-anak tercatat`, margin, yPos);
-        yPos += 10;
-
-        relationships.slice(0, 100).forEach((rel, idx) => { // Increased limit
-            checkPageBreak(8);
-            doc.setFontSize(9);
-            doc.text(`${idx + 1}.`, margin, yPos);
-            doc.setFont('helvetica', 'bold');
-            doc.text(rel.parent, margin + 8, yPos);
-            doc.setFont('helvetica', 'normal');
-            doc.text('→', margin + 70, yPos); // Arrow
-            doc.setFont('helvetica', 'bold');
-            doc.text(rel.child, margin + 78, yPos);
-
-            // Align type to right
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(100, 100, 100);
-            doc.text(`(${rel.type})`, margin + 140, yPos);
-            doc.setTextColor(0, 0, 0);
-
-            yPos += 6;
+    /**
+     * Render a component to canvas and add to PDF
+     */
+    const addToPdf = async (element) => {
+        const canvas = await html2canvas(element, {
+            scale: 2, // Retinal quality
+            useCORS: true, // Handle images
+            logging: false
         });
 
-        if (relationships.length > 100) {
-            yPos += 5;
-            doc.setTextColor(156, 163, 175);
-            doc.text(`... dan ${relationships.length - 100} hubungan lainnya`, margin, yPos);
-        }
-    } else {
-        doc.setTextColor(156, 163, 175);
-        doc.text('Tidak ada data hubungan orang tua-anak', margin, yPos);
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfImgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfImgHeight);
+    };
+
+    // --- PAGE 1: COVER & STATS ---
+    const coverContainer = createContainer();
+
+    // Stats HTML Generator
+    let statsHtml = '';
+    if (includeStats) {
+        const total = members.length;
+        const males = members.filter(m => m.gender === 'male').length;
+        const females = members.filter(m => m.gender === 'female').length;
+        const deceased = members.filter(m => m.isDeceased).length;
+        const alive = total - deceased;
+
+        statsHtml = `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 30px;">
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">${total}</div>
+                    <div style="font-size: 12px; color: #64748b;">Total Anggota</div>
+                </div>
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 24px; font-weight: bold; color: #22c55e;">${alive}</div>
+                    <div style="font-size: 12px; color: #64748b;">Masih Hidup</div>
+                </div>
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">${males}</div>
+                    <div style="font-size: 12px; color: #64748b;">Laki-laki</div>
+                </div>
+                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="font-size: 24px; font-weight: bold; color: #ec4899;">${females}</div>
+                    <div style="font-size: 12px; color: #64748b;">Perempuan</div>
+                </div>
+            </div>
+        `;
     }
 
+    coverContainer.innerHTML = `
+        <div style="${styles}">
+            <div style="${headerStyle}">
+                <h1 style="font-size: 36px; margin: 0 0 10px 0;">📖 Buku Keluarga</h1>
+                <p style="font-size: 18px; margin: 0; opacity: 0.9;">Dokumentasi Lengkap Silsilah Keluarga</p>
+                <p style="margin-top: 20px; font-size: 14px;">Dibuat pada: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</p>
+            </div>
+            ${statsHtml}
+        </div>
+    `;
 
-    // === FOOTER ON EACH PAGE ===
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(150, 150, 150);
-        doc.text(
-            `Halaman ${i} dari ${totalPages} | Buku Keluarga - ${dateStr}`,
-            pageWidth / 2,
-            pageHeight - 10,
-            { align: 'center' }
-        );
+    await addToPdf(coverContainer);
+    document.body.removeChild(coverContainer);
+
+    // --- MEMBER PAGES ---
+    // We fit approx 4 members per page to match the HTML look nicely
+    const MEMBERS_PER_PAGE = 4;
+
+    for (let i = 0; i < sortedMembers.length; i += MEMBERS_PER_PAGE) {
+        pdf.addPage();
+
+        const chunk = sortedMembers.slice(i, i + MEMBERS_PER_PAGE);
+        const pageContainer = createContainer();
+
+        let cardsHtml = chunk.map((m, idx) => {
+            const globalIndex = i + idx + 1;
+
+            // Photo handling
+            const photoHtml = (includePhotos && m.photo)
+                ? `<img src="${m.photo}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; display: block;">`
+                : `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: bold;">${m.name.charAt(0).toUpperCase()}</div>`;
+
+            // Spouses
+            const spouseNames = (m.spouses || []).map(s => {
+                const sid = typeof s === 'string' ? s : s?.id;
+                const spouse = sid ? members.find(sp => sp.id === sid) : null;
+                return spouse?.name || null;
+            }).filter(Boolean);
+
+            // Parents
+            const parentNames = (m.parents || []).map(p => {
+                const pid = typeof p === 'string' ? p : p?.id;
+                const parent = pid ? members.find(par => par.id === pid) : null;
+                return parent?.name || null;
+            }).filter(Boolean);
+
+            return `
+                <div style="${cardStyle}">
+                    <div style="display: flex; gap: 20px; align-items: flex-start;">
+                        <div style="flex-shrink: 0;">
+                            ${photoHtml}
+                            <div style="margin-top: 10px; background: #667eea; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin: 10px auto 0;">${globalIndex}</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <h2 style="margin: 0 0 5px 0; font-size: 18px; color: #1e293b;">
+                                ${m.name} ${m.isDeceased ? '🕊️' : ''}
+                            </h2>
+                            <div style="color: #64748b; font-size: 13px; margin-bottom: 15px;">
+                                ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'} | 
+                                ${m.birthDate || '?'} ${m.isDeceased ? `- ${m.deathDate || '?'}` : '- Sekarang'}
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
+                                ${m.phone ? `<div><strong>📞 Telepon:</strong><br>${m.phone}</div>` : ''}
+                                ${m.occupation ? `<div><strong>💼 Pekerjaan:</strong><br>${m.occupation}</div>` : ''}
+                                ${m.address ? `<div style="grid-column: span 2;"><strong>📍 Domisili:</strong> ${m.address}</div>` : ''}
+                                ${parentNames.length > 0 ? `<div style="grid-column: span 2;"><strong>Orang Tua:</strong> ${parentNames.join(', ')}</div>` : ''}
+                                ${spouseNames.length > 0 ? `<div style="grid-column: span 2;"><strong>Pasangan:</strong> ${spouseNames.join(', ')}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        pageContainer.innerHTML = `
+            <div style="${styles}">
+                <h3 style="color: #667eea; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">Direktori Anggota (${i + 1} - ${i + chunk.length})</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    ${cardsHtml}
+                </div>
+                <div style="text-align: center; color: #94a3b8; font-size: 10px; margin-top: 40px;">
+                    Halaman ${Math.floor(i / MEMBERS_PER_PAGE) + 2} - Buku Keluarga
+                </div>
+            </div>
+        `;
+
+        // Wait for images to load (primitive wait)
+        await new Promise(r => setTimeout(r, 100));
+
+        await addToPdf(pageContainer);
+        document.body.removeChild(pageContainer);
     }
 
-    return doc;
+    return pdf;
 };

@@ -461,9 +461,14 @@ export const FamilyProvider = ({ children }) => {
         setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
-    const exportToPDF = (options = {}) => {
-        const doc = generatePDFBook(members, options);
-        doc.save(`buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.pdf`);
+    const exportToPDF = async (options = {}) => {
+        try {
+            const doc = await generatePDFBook(members, options);
+            doc.save(`buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.pdf`);
+        } catch (error) {
+            console.error("Gagal generate PDF:", error);
+            throw error;
+        }
     };
 
     const createSnapshot = async (note = '') => {
