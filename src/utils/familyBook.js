@@ -1,5 +1,4 @@
-import * as XLSX from 'xlsx';
-const X = XLSX.default || XLSX;
+import { utils } from 'xlsx';
 
 /**
  * Generate a detailed Excel workbook with family data
@@ -8,7 +7,7 @@ const X = XLSX.default || XLSX;
  * @returns {Blob} Excel file blob
  */
 export const generateExcelBook = (members, options = {}) => {
-    const workbook = X.utils.book_new();
+    const workbook = utils.book_new();
 
     // Sheet 1: Members Directory
     const membersData = members.map(m => ({
@@ -32,8 +31,8 @@ export const generateExcelBook = (members, options = {}) => {
         'Biografi': m.biography || ''
     }));
 
-    const membersSheet = X.utils.json_to_sheet(membersData);
-    X.utils.book_append_sheet(workbook, membersSheet, 'Direktori Anggota');
+    const membersSheet = utils.json_to_sheet(membersData);
+    utils.book_append_sheet(workbook, membersSheet, 'Direktori Anggota');
 
     // Sheet 2: Statistics
     if (options.includeStats) {
@@ -51,8 +50,8 @@ export const generateExcelBook = (members, options = {}) => {
             { 'Kategori': 'Sudah Meninggal', 'Jumlah': deceased }
         ];
 
-        const statsSheet = X.utils.json_to_sheet(statsData);
-        X.utils.book_append_sheet(workbook, statsSheet, 'Statistik');
+        const statsSheet = utils.json_to_sheet(statsData);
+        utils.book_append_sheet(workbook, statsSheet, 'Statistik');
     }
 
     // Sheet 3: Relationships
@@ -73,8 +72,8 @@ export const generateExcelBook = (members, options = {}) => {
     });
 
     if (relationshipsData.length > 0) {
-        const relSheet = X.utils.json_to_sheet(relationshipsData);
-        X.utils.book_append_sheet(workbook, relSheet, 'Hubungan Keluarga');
+        const relSheet = utils.json_to_sheet(relationshipsData);
+        utils.book_append_sheet(workbook, relSheet, 'Hubungan Keluarga');
     }
 
     return workbook;

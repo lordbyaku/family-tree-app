@@ -388,6 +388,8 @@ const FamilyTree = (props) => {
                         height: `${imageHeight}px`,
                         transform: `translate(${transformX}px, ${transformY}px) scale(1)`,
                     },
+                    pixelRatio: 2, // Improve definition for large trees
+                    quality: 1
                 });
 
                 const link = document.createElement('a');

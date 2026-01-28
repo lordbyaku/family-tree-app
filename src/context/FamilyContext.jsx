@@ -1,7 +1,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import * as XLSX from 'xlsx';
-const X = XLSX.default || XLSX;
+import { utils, write } from 'xlsx';
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
 import { supabase } from '../lib/supabase';
@@ -387,7 +386,7 @@ export const FamilyProvider = ({ children }) => {
 
     const exportToExcel = async (options = {}) => {
         const workbook = generateExcelBook(members, options);
-        const excelBuffer = X.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const excelBuffer = write(workbook, { bookType: 'xlsx', type: 'array' });
         const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         const url = URL.createObjectURL(data);
         const link = document.createElement('a');
@@ -398,7 +397,7 @@ export const FamilyProvider = ({ children }) => {
 
     const exportToCSV = () => {
         const workbook = generateExcelBook(members, { includeStats: false });
-        const csv = X.utils.sheet_to_csv(workbook.Sheets['Direktori Anggota']);
+        const csv = utils.sheet_to_csv(workbook.Sheets['Direktori Anggota']);
         const data = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(data);
         const link = document.createElement('a');
