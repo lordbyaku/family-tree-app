@@ -1,4 +1,6 @@
-import { utils } from 'xlsx';
+import * as XLSX_MODULE from 'xlsx';
+const XLSX = XLSX_MODULE.utils ? XLSX_MODULE : (XLSX_MODULE.default || XLSX_MODULE);
+const { utils } = XLSX;
 
 /**
  * Generate a detailed Excel workbook with family data
@@ -20,12 +22,12 @@ export const generateExcelBook = (members, options = {}) => {
         'Pekerjaan': m.occupation || '',
         'Domisili': m.address || '',
         'Orang Tua': m.parents?.map(p => {
-            const pid = typeof p === 'string' ? p : p.id;
-            return members.find(parent => parent.id === pid)?.name;
+            const pid = typeof p === 'string' ? p : p?.id;
+            return pid ? members.find(parent => parent.id === pid)?.name : null;
         }).filter(Boolean).join(', ') || '',
         'Pasangan': m.spouses?.map(s => {
-            const sid = typeof s === 'string' ? s : s.id;
-            return members.find(spouse => spouse.id === sid)?.name;
+            const sid = typeof s === 'string' ? s : s?.id;
+            return sid ? members.find(spouse => spouse.id === sid)?.name : null;
         }).filter(Boolean).join(', ') || '',
         'Jumlah Anak': m.children?.length || 0,
         'Biografi': m.biography || ''
@@ -264,8 +266,8 @@ export const generateHTMLBook = (members, options = {}) => {
                             <div class="detail-item">
                                 <strong>Orang Tua</strong>
                                 ${m.parents.map(p => {
-        const pid = typeof p === 'string' ? p : p.id;
-        return members.find(parent => parent.id === pid)?.name;
+        const pid = typeof p === 'string' ? p : p?.id;
+        return pid ? members.find(parent => parent.id === pid)?.name : null;
     }).filter(Boolean).join(', ')}
                             </div>
                         ` : ''}
@@ -273,8 +275,8 @@ export const generateHTMLBook = (members, options = {}) => {
                             <div class="detail-item">
                                 <strong>Pasangan</strong>
                                 ${m.spouses.map(s => {
-        const sid = typeof s === 'string' ? s : s.id;
-        return members.find(spouse => spouse.id === sid)?.name;
+        const sid = typeof s === 'string' ? s : s?.id;
+        return sid ? members.find(spouse => spouse.id === sid)?.name : null;
     }).filter(Boolean).join(', ')}
                             </div>
                         ` : ''}

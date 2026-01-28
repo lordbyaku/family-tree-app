@@ -1,6 +1,8 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { utils, write } from 'xlsx';
+import * as XLSX_MODULE from 'xlsx';
+const XLSX = XLSX_MODULE.utils ? XLSX_MODULE : (XLSX_MODULE.default || XLSX_MODULE);
+const { utils, write } = XLSX;
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
 import { supabase } from '../lib/supabase';
