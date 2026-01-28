@@ -4,7 +4,7 @@ import { useFamily } from '../context/FamilyContext';
 import { useToast } from '../context/ToastContext';
 
 const ExportModal = ({ onClose }) => {
-    const { members, exportToExcel, exportToCSV, exportToHTML } = useFamily();
+    const { members, exportToExcel, exportToCSV, exportToHTML, exportToPDF } = useFamily();
     const toast = useToast();
     const [isExporting, setIsExporting] = useState(false);
     const [includePhotos, setIncludePhotos] = useState(true);
@@ -29,6 +29,9 @@ const ExportModal = ({ onClose }) => {
             } else if (format === 'csv') {
                 await exportToCSV();
                 toast.success("Data berhasil diexport ke CSV!");
+            } else if (format === 'pdf') {
+                await exportToPDF(options);
+                toast.success("Buku keluarga berhasil diexport ke PDF!");
             } else if (format === 'html') {
                 await exportToHTML(options);
                 toast.success("Buku keluarga berhasil diexport ke HTML!");
@@ -82,6 +85,19 @@ const ExportModal = ({ onClose }) => {
                     {/* Export Buttons */}
                     <div className="space-y-3">
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Pilih Format</h3>
+
+                        <button
+                            onClick={() => handleExport('pdf')}
+                            disabled={isExporting}
+                            className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:bg-slate-400 text-white px-4 py-3 rounded-lg font-medium transition-all shadow-lg shadow-red-500/30"
+                        >
+                            {isExporting ? (
+                                <Loader2 size={20} className="animate-spin" />
+                            ) : (
+                                <FileText size={20} />
+                            )}
+                            Export ke PDF (Buku Keluarga) ⭐
+                        </button>
 
                         <button
                             onClick={() => handleExport('excel')}

@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 const { utils, write } = XLSX;
 import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
+import { generatePDFBook } from '../utils/pdfExport';
 import { supabase } from '../lib/supabase';
 
 const FamilyContext = createContext();
@@ -418,6 +419,8 @@ export const FamilyProvider = ({ children }) => {
         link.href = url;
         link.download = `family-tree-${treeSlug}-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
+        // Cleanup memory leak
+        setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
     const exportToExcel = async (options = {}) => {
@@ -429,6 +432,8 @@ export const FamilyProvider = ({ children }) => {
         link.href = url;
         link.download = `buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.xlsx`;
         link.click();
+        // Cleanup memory leak
+        setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
     const exportToCSV = () => {
@@ -440,6 +445,8 @@ export const FamilyProvider = ({ children }) => {
         link.href = url;
         link.download = `data-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
+        // Cleanup memory leak
+        setTimeout(() => URL.revokeObjectURL(url), 100);
     };
 
     const exportToHTML = (options = {}) => {
@@ -450,6 +457,13 @@ export const FamilyProvider = ({ children }) => {
         link.href = url;
         link.download = `buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.html`;
         link.click();
+        // Cleanup memory leak
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    };
+
+    const exportToPDF = (options = {}) => {
+        const doc = generatePDFBook(members, options);
+        doc.save(`buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     const createSnapshot = async (note = '') => {
@@ -524,7 +538,7 @@ export const FamilyProvider = ({ children }) => {
             exportData, importData, undo, redo, canUndo, canRedo, lastAction,
             isLoading, listAllSlugs, fetchMembers,
             createSnapshot, listSnapshots, restoreSnapshot,
-            exportToExcel, exportToCSV, exportToHTML, migrateFromLocal,
+            exportToExcel, exportToCSV, exportToHTML, exportToPDF, migrateFromLocal,
             importFromExcel
         }}>
             {children}
