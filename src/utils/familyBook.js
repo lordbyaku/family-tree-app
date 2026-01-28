@@ -19,8 +19,14 @@ export const generateExcelBook = (members, options = {}) => {
         'Telepon': m.phone || '',
         'Pekerjaan': m.occupation || '',
         'Domisili': m.address || '',
-        'Orang Tua': m.parents?.map(pid => members.find(parent => parent.id === (typeof pid === 'string' ? pid : pid.id))?.name).filter(Boolean).join(', ') || '',
-        'Pasangan': m.spouses?.map(sid => members.find(spouse => spouse.id === sid)?.name).filter(Boolean).join(', ') || '',
+        'Orang Tua': m.parents?.map(p => {
+            const pid = typeof p === 'string' ? p : p.id;
+            return members.find(parent => parent.id === pid)?.name;
+        }).filter(Boolean).join(', ') || '',
+        'Pasangan': m.spouses?.map(s => {
+            const sid = typeof s === 'string' ? s : s.id;
+            return members.find(spouse => spouse.id === sid)?.name;
+        }).filter(Boolean).join(', ') || '',
         'Jumlah Anak': m.children?.length || 0,
         'Biografi': m.biography || ''
     }));
@@ -257,13 +263,19 @@ export const generateHTMLBook = (members, options = {}) => {
                         ${m.parents && m.parents.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Orang Tua</strong>
-                                ${m.parents.map(pid => members.find(p => p.id === pid)?.name).filter(Boolean).join(', ')}
+                                ${m.parents.map(p => {
+        const pid = typeof p === 'string' ? p : p.id;
+        return members.find(parent => parent.id === pid)?.name;
+    }).filter(Boolean).join(', ')}
                             </div>
                         ` : ''}
                         ${m.spouses && m.spouses.length > 0 ? `
                             <div class="detail-item">
                                 <strong>Pasangan</strong>
-                                ${m.spouses.map(sid => members.find(s => s.id === sid)?.name).filter(Boolean).join(', ')}
+                                ${m.spouses.map(s => {
+        const sid = typeof s === 'string' ? s : s.id;
+        return members.find(spouse => spouse.id === sid)?.name;
+    }).filter(Boolean).join(', ')}
                             </div>
                         ` : ''}
                         ${m.children && m.children.length > 0 ? `

@@ -324,8 +324,45 @@ export const FamilyProvider = ({ children }) => {
         } catch (error) { console.error("Gagal hapus anggota:", error.message); }
     };
 
-    const migrateFromLocal = async () => { /* legacy handled */ };
-    const importData = async (file) => { /* legacy handled */ };
+    const migrateFromLocal = async () => {
+        try {
+            const localData = localStorage.getItem('family-tree-data') || localStorage.getItem(`family_data_${treeSlug}`);
+            if (!localData) return { success: false, message: "Tidak ada data lokal untuk dimigrasi." };
+
+            const parsed = JSON.parse(localData);
+            const { error } = await supabase.from('members').upsert(
+                parsed.map(m => ({
+                    ...m,
+                    tree_slug: treeSlug,
+                    birth_date: m.birthDate || null,
+                    death_date: m.deathDate || null,
+                    is_deceased: m.isDeceased || false
+                }))
+            );
+
+            if (error) throw error;
+            localStorage.removeItem(`family_data_${treeSlug}`);
+            fetchMembers();
+            return { success: true, message: "Migrasi berhasil!" };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    };
+
+    const importData = async (file) => {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        const upsertData = data.map(m => {
+            const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.isDeceased || false };
+            delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+            return dbM;
+        });
+
+        const { error } = await supabase.from('members').upsert(upsertData);
+        if (error) throw error;
+        fetchMembers();
+    };
 
     const listAllSlugs = async () => {
         try {
@@ -337,13 +374,111 @@ export const FamilyProvider = ({ children }) => {
         } catch (error) { return []; }
     };
 
-    const exportData = () => { /* legacy handled */ };
-    const exportToExcel = () => { /* legacy handled */ };
-    const exportToCSV = () => { /* legacy handled */ };
-    const exportToHTML = () => { /* legacy handled */ };
-    const createSnapshot = () => { /* legacy handled */ };
-    const listSnapshots = () => { /* legacy handled */ };
-    const restoreSnapshot = () => { /* legacy handled */ };
+    const exportData = () => {
+        const dataStr = JSON.stringify(members, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `family-tree-${treeSlug}-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+    };
+
+    const exportToExcel = async (options = {}) => {
+        const workbook = generateExcelBook(members, options);
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.click();
+    };
+
+    const exportToCSV = () => {
+        const workbook = generateExcelBook(members, { includeStats: false });
+        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets['Direktori Anggota']);
+        const data = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `data-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+    };
+
+    const exportToHTML = (options = {}) => {
+        const html = generateHTMLBook(members, options);
+        const data = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `buku-keluarga-${treeSlug}-${new Date().toISOString().split('T')[0]}.html`;
+        link.click();
+    };
+
+    const createSnapshot = async (note = '') => {
+        try {
+            const { error } = await supabase.from('backups').insert([{
+                tree_slug: treeSlug,
+                note: note,
+                data: members,
+                created_at: new Date().toISOString()
+            }]);
+            if (error) throw error;
+            return { success: true };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    };
+
+    const listSnapshots = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('backups')
+                .select('*')
+                .eq('tree_slug', treeSlug)
+                .order('created_at', { ascending: false });
+            if (error) throw error;
+            return data || [];
+        } catch (error) {
+            console.error("Gagal list snapshots:", error.message);
+            return [];
+        }
+    };
+
+    const restoreSnapshot = async (snapshotId) => {
+        try {
+            const { data, error } = await supabase
+                .from('backups')
+                .select('data')
+                .eq('id', snapshotId)
+                .single();
+            if (error) throw error;
+
+            const snapshotData = data.data;
+            // 1. Delete current members of this slug
+            const { error: delError } = await supabase
+                .from('members')
+                .delete()
+                .eq('tree_slug', treeSlug);
+            if (delError) throw delError;
+
+            // 2. Insert snapshot data
+            const upsertData = snapshotData.map(m => {
+                const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.isDeceased || false };
+                delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
+                return dbM;
+            });
+
+            const { error: insError } = await supabase.from('members').upsert(upsertData);
+            if (insError) throw insError;
+
+            fetchMembers();
+            return { success: true };
+        } catch (error) {
+            return { success: false, message: error.message };
+        }
+    };
 
     return (
         <FamilyContext.Provider value={{
