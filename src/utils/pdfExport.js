@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 
 /**
  * Generate PDF Book by rendering HTML visually (canvas) to preserve styles and encoding.
+ * USES HEX COLORS ONLY TO AVOID TAILWIND OKLCH CONFLICTS.
  * @param {Array} members 
  * @param {Object} options 
  * @returns {Promise<jsPDF>}
@@ -10,214 +11,147 @@ import html2canvas from 'html2canvas';
 export const generatePDFBook = async (members, options = {}) => {
     const { includeStats = true, includePhotos = true } = options;
 
-    // Sort members by name
     const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
-
-    // A4 dimensions in pixel (approximate for 96 DPI)
-    // A4 is 210mm x 297mm. jsPDF uses mm. html2canvas uses px.
-    // We will render at a fixed width (e.g. 800px) and scale it down to PDF.
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
 
-    // CSS Styles copied from HTML Export to match the look
-    const styles = `
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
-        background: white;
-        width: 794px; /* A4 width at 96dpi approx */
-        margin: 0 auto;
-        padding: 40px;
-        box-sizing: border-box;
-    `;
+    // STRICT VANILLA CSS ONLY - NO TAILWIND CLASSES (Avoids OKLCH errors)
+    const styles = {
+        container: `font-family: Arial, sans-serif; color: #1e293b; background-color: #ffffff; width: 794px; margin: 0; padding: 40px; box-sizing: border-box;`,
+        header: `background-color: #1e293b; color: #ffffff; padding: 40px 20px; text-align: center; border-radius: 12px; margin-bottom: 30px;`,
+        sectionTitle: `font-size: 24px; font-weight: bold; color: #1e293b; border-bottom: 3px solid #3b82f6; display: inline-block; padding-bottom: 8px; margin-bottom: 24px; margin-top: 20px;`,
+        card: `background-color: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 20px;`,
+        photo: `width: 90px; height: 90px; border-radius: 12px; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);`,
+        photoPlaceholder: `width: 90px; height: 90px; border-radius: 12px; background-color: #6366f1; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 32px; font-weight: bold;`,
+        name: `font-size: 20px; font-weight: bold; color: #0f172a; margin: 0 0 4px 0;`,
+        dates: `display: inline-block; padding: 4px 12px; background-color: #f1f5f9; color: #64748b; border-radius: 100px; font-size: 12px; font-weight: bold; margin-bottom: 12px;`,
+        detailGrid: `display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;`,
+        detailItem: `background-color: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9; font-size: 12px;`,
+        detailLabel: `display: block; color: #6366f1; font-weight: bold; font-size: 10px; text-transform: uppercase; margin-bottom: 4px;`,
+        detailValue: `font-weight: bold; color: #1e293b;`,
+        biography: `margin-top: 15px; padding: 15px; background-color: #fffbeb; border-left: 4px solid #f59e0b; border-radius: 4px; font-size: 12px; color: #92400e; font-style: italic; line-height: 1.5; text-align: justify;`
+    };
 
-    const headerStyle = `
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px 20px;
-        text-align: center;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    `;
-
-    const cardStyle = `
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        page-break-inside: avoid;
-    `;
-
-    // Helper to create a container
     const createContainer = () => {
         const div = document.createElement('div');
-        div.style.cssText = `
-            position: absolute; 
-            left: -9999px; 
-            top: 0; 
-            width: 794px; /* A4 width */
-            background: #f8fafc; /* Hex instead of oklch slate-50 */
-        `;
+        div.style.cssText = `position: absolute; left: -9999px; top: 0; width: 794px; background-color: #ffffff;`;
         document.body.appendChild(div);
         return div;
     };
 
-    /**
-     * Render a component to canvas and add to PDF
-     */
     const addToPdf = async (element) => {
-        // Wait for images to load in this element
         const images = element.getElementsByTagName('img');
-        const imagePromises = Array.from(images).map(img => {
+        await Promise.all(Array.from(images).map(img => {
             if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-                img.onload = resolve;
-                img.onerror = resolve;
-            });
-        });
-        await Promise.all(imagePromises);
+            return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+        }));
 
-        // Small extra delay for rendering stability
-        await new Promise(r => setTimeout(r, 100));
+        // Small delay to ensure layout computation is done
+        await new Promise(r => setTimeout(r, 200));
 
         const canvas = await html2canvas(element, {
-            scale: 2, // Retinal quality
-            useCORS: true, // Handle images
+            scale: 2,
+            useCORS: true,
             logging: false,
-            backgroundColor: '#f8fafc'
+            backgroundColor: '#ffffff'
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
         const imgProps = pdf.getImageProperties(imgData);
         const pdfImgHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+        // If height exceeds page (rare for Chunking), it might need adjustment
+        // But with 3 members per page, it should fit.
         pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfImgHeight);
     };
 
-    // --- PAGE 1: COVER & STATS ---
+    // --- PAGE 1: COVER ---
     const coverContainer = createContainer();
-
-    // Stats HTML Generator
-    let statsHtml = '';
-    if (includeStats) {
-        const total = members.length;
-        const males = members.filter(m => m.gender === 'male').length;
-        const females = members.filter(m => m.gender === 'female').length;
-        const deceased = members.filter(m => m.isDeceased).length;
-        const alive = total - deceased;
-
-        statsHtml = `
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 30px;">
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">${total}</div>
-                    <div style="font-size: 12px; color: #64748b;">Total Anggota</div>
-                </div>
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-size: 24px; font-weight: bold; color: #22c55e;">${alive}</div>
-                    <div style="font-size: 12px; color: #64748b;">Masih Hidup</div>
-                </div>
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-size: 24px; font-weight: bold; color: #3b82f6;">${males}</div>
-                    <div style="font-size: 12px; color: #64748b;">Laki-laki</div>
-                </div>
-                <div style="padding: 15px; background: white; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="font-size: 24px; font-weight: bold; color: #ec4899;">${females}</div>
-                    <div style="font-size: 12px; color: #64748b;">Perempuan</div>
-                </div>
-            </div>
-        `;
-    }
+    const stats = includeStats ? {
+        total: members.length,
+        males: members.filter(m => m.gender === 'male').length,
+        females: members.filter(m => m.gender === 'female').length,
+        deceased: members.filter(m => m.isDeceased).length,
+        alive: members.length - members.filter(m => m.isDeceased).length
+    } : null;
 
     coverContainer.innerHTML = `
-        <div style="${styles}">
-            <div style="${headerStyle}">
-                <h1 style="font-size: 36px; margin: 0 0 10px 0;">📖 Buku Keluarga</h1>
-                <p style="font-size: 18px; margin: 0; opacity: 0.9;">Dokumentasi Lengkap Silsilah Keluarga</p>
-                <p style="margin-top: 20px; font-size: 14px;">Dibuat pada: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</p>
+        <div style="${styles.container}">
+            <div style="${styles.header}">
+                <h1 style="font-size: 42px; margin: 0 0 10px 0; font-weight: bold;">BUKU KELUARGA</h1>
+                <p style="font-size: 18px; opacity: 0.8;">Dokumentasi Lengkap Silsilah & Sejarah Keluarga</p>
+                <div style="margin-top: 30px; font-size: 14px; opacity: 0.6;">Dicetak pada: ${new Date().toLocaleDateString('id-ID', { dateStyle: 'full' })}</div>
             </div>
-            ${statsHtml}
+            ${stats ? `
+                <div style="${styles.sectionTitle}">Statistik Keluarga</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 10px;">
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="font-size: 48px; font-weight: bold; color: #3b82f6;">${stats.total}</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Total Anggota</div>
+                    </div>
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="font-size: 48px; font-weight: bold; color: #22c55e;">${stats.alive}</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Masih Hidup</div>
+                    </div>
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="font-size: 48px; font-weight: bold; color: #6366f1;">${stats.males}</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Laki-laki</div>
+                    </div>
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="font-size: 48px; font-weight: bold; color: #ec4899;">${stats.females}</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Perempuan</div>
+                    </div>
+                </div>
+            ` : ''}
         </div>
     `;
-
     await addToPdf(coverContainer);
     document.body.removeChild(coverContainer);
 
-    // --- MEMBER PAGES ---
-    // We fit approx 4 members per page to match the HTML look nicely
-    const MEMBERS_PER_PAGE = 4;
-
+    // --- MEMBERS PAGES ---
+    const MEMBERS_PER_PAGE = 3;
     for (let i = 0; i < sortedMembers.length; i += MEMBERS_PER_PAGE) {
         pdf.addPage();
-
-        const chunk = sortedMembers.slice(i, i + MEMBERS_PER_PAGE);
         const pageContainer = createContainer();
-
-        let cardsHtml = chunk.map((m, idx) => {
-            const globalIndex = i + idx + 1;
-
-            // Photo handling
-            const photoHtml = (includePhotos && m.photo)
-                ? `<img src="${m.photo}" crossOrigin="anonymous" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; display: block;">`
-                : `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: bold;">${m.name.charAt(0).toUpperCase()}</div>`;
-
-            // Spouses
-            const spouseNames = (m.spouses || []).map(s => {
-                const sid = typeof s === 'string' ? s : s?.id;
-                const spouse = sid ? members.find(sp => sp.id === sid) : null;
-                return spouse?.name || null;
-            }).filter(Boolean);
-
-            // Parents
-            const parentNames = (m.parents || []).map(p => {
-                const pid = typeof p === 'string' ? p : p?.id;
-                const parent = pid ? members.find(par => par.id === pid) : null;
-                return parent?.name || null;
-            }).filter(Boolean);
-
-            return `
-                <div style="${cardStyle}">
-                    <div style="display: flex; gap: 20px; align-items: flex-start;">
-                        <div style="flex-shrink: 0;">
-                            ${photoHtml}
-                            <div style="margin-top: 10px; background: #667eea; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin: 10px auto 0;">${globalIndex}</div>
-                        </div>
-                        <div style="flex: 1;">
-                            <h2 style="margin: 0 0 5px 0; font-size: 18px; color: #1e293b;">
-                                ${m.name} ${m.isDeceased ? '🕊️' : ''}
-                            </h2>
-                            <div style="color: #64748b; font-size: 13px; margin-bottom: 15px;">
-                                ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'} | 
-                                ${m.birthDate || '?'} ${m.isDeceased ? `- ${m.deathDate || '?'}` : '- Sekarang'}
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px;">
-                                ${m.phone ? `<div><strong>📞 Telepon:</strong><br>${m.phone}</div>` : ''}
-                                ${m.occupation ? `<div><strong>💼 Pekerjaan:</strong><br>${m.occupation}</div>` : ''}
-                                ${m.address ? `<div style="grid-column: span 2;"><strong>📍 Domisili:</strong> ${m.address}</div>` : ''}
-                                ${parentNames.length > 0 ? `<div style="grid-column: span 2;"><strong>Orang Tua:</strong> ${parentNames.join(', ')}</div>` : ''}
-                                ${spouseNames.length > 0 ? `<div style="grid-column: span 2;"><strong>Pasangan:</strong> ${spouseNames.join(', ')}</div>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+        const chunk = sortedMembers.slice(i, i + MEMBERS_PER_PAGE);
 
         pageContainer.innerHTML = `
-            <div style="${styles}">
-                <h3 style="color: #667eea; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 20px;">Direktori Anggota (${i + 1} - ${i + chunk.length})</h3>
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    ${cardsHtml}
+            <div style="${styles.container}">
+                <div style="${styles.sectionTitle}">Direktori Anggota (${i + 1} - ${i + chunk.length})</div>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    ${chunk.map(m => {
+            const spouseNames = (m.spouses || []).map(s => members.find(sp => sp.id === (typeof s === 'string' ? s : s.id))?.name).filter(Boolean);
+            const parentNames = (m.parents || []).map(p => members.find(par => par.id === (typeof p === 'string' ? p : p.id))?.name).filter(Boolean);
+
+            return `
+                            <div style="${styles.card}">
+                                <div style="flex-shrink: 0;">
+                                    ${(includePhotos && m.photo)
+                    ? `<img src="${m.photo}" crossOrigin="anonymous" style="${styles.photo}">`
+                    : `<div style="${styles.photoPlaceholder}">${m.name.charAt(0).toUpperCase()}</div>`
+                }
+                                </div>
+                                <div style="flex: 1;">
+                                    <h2 style="${styles.name}">${m.name} ${m.isDeceased ? '🕊️' : ''}</h2>
+                                    <div style="${styles.dates}">
+                                        ${m.gender === 'male' ? 'Laki-laki' : 'Perempuan'} • ${m.birthDate || '?'} ${m.isDeceased ? ` s/d ${m.deathDate || '?'}` : ' (Masih Hidup)'}
+                                    </div>
+                                    <div style="${styles.detailGrid}">
+                                        <div style="${styles.detailItem}"><span style="${styles.detailLabel}">Telepon</span><span style="${styles.detailValue}">${m.phone || '-'}</span></div>
+                                        <div style="${styles.detailItem}"><span style="${styles.detailLabel}">Pekerjaan</span><span style="${styles.detailValue}">${m.occupation || '-'}</span></div>
+                                        <div style="${styles.detailItem}; grid-column: span 2;"><span style="${styles.detailLabel}">Domisili</span><span style="${styles.detailValue}">${m.address || '-'}</span></div>
+                                        <div style="${styles.detailItem}; grid-column: span 2;"><span style="${styles.detailLabel}">Orang Tua</span><span style="${styles.detailValue}">${parentNames.join(', ') || '-'}</span></div>
+                                        <div style="${styles.detailItem}; grid-column: span 2;"><span style="${styles.detailLabel}">Pasangan</span><span style="${styles.detailValue}">${spouseNames.join(', ') || '-'}</span></div>
+                                    </div>
+                                    ${m.biography ? `<div style="${styles.biography}"><strong>📜 Biografi:</strong><br>${m.biography}</div>` : ''}
+                                </div>
+                            </div>
+                        `;
+        }).join('')}
                 </div>
-                <div style="text-align: center; color: #94a3b8; font-size: 10px; margin-top: 40px;">
-                    Halaman ${Math.floor(i / MEMBERS_PER_PAGE) + 2} - Buku Keluarga
-                </div>
+                <div style="text-align: center; color: #94a3b8; font-size: 10px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px;">Halaman ${pdf.internal.getNumberOfPages()} • Buku Keluarga</div>
             </div>
         `;
-
-
-
         await addToPdf(pageContainer);
         document.body.removeChild(pageContainer);
     }
