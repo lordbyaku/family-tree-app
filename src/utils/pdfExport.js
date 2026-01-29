@@ -57,7 +57,7 @@ export const generatePDFBook = async (members, options = {}) => {
             left: -9999px; 
             top: 0; 
             width: 794px; /* A4 width */
-            background: #f8fafc; /* Slate-50 */
+            background: #f8fafc; /* Hex instead of oklch slate-50 */
         `;
         document.body.appendChild(div);
         return div;
