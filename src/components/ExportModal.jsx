@@ -35,9 +35,6 @@ const ExportModal = ({ onClose }) => {
             } else if (format === 'html') {
                 await exportToHTML(options);
                 toast.success("Buku keluarga berhasil diexport ke HTML!");
-            } else if (format === 'pdf') {
-                await exportToPDF(options);
-                toast.success("Buku keluarga berhasil diexport ke PDF!");
             }
 
             onClose();
@@ -141,18 +138,7 @@ const ExportModal = ({ onClose }) => {
                             Export ke HTML (Web Page)
                         </button>
 
-                        <button
-                            onClick={() => handleExport('pdf')}
-                            disabled={isExporting}
-                            className="w-full flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 disabled:bg-slate-400 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-                        >
-                            {isExporting ? (
-                                <Loader2 size={20} className="animate-spin" />
-                            ) : (
-                                <FileText size={20} />
-                            )}
-                            Export ke PDF (.pdf)
-                        </button>
+
                     </div>
 
                     <p className="text-xs text-slate-500 dark:text-slate-400 text-center">

@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 
 /**
@@ -67,10 +67,25 @@ export const generatePDFBook = async (members, options = {}) => {
      * Render a component to canvas and add to PDF
      */
     const addToPdf = async (element) => {
+        // Wait for images to load in this element
+        const images = element.getElementsByTagName('img');
+        const imagePromises = Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        });
+        await Promise.all(imagePromises);
+
+        // Small extra delay for rendering stability
+        await new Promise(r => setTimeout(r, 100));
+
         const canvas = await html2canvas(element, {
             scale: 2, // Retinal quality
             useCORS: true, // Handle images
-            logging: false
+            logging: false,
+            backgroundColor: '#f8fafc'
         });
 
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
@@ -143,7 +158,7 @@ export const generatePDFBook = async (members, options = {}) => {
 
             // Photo handling
             const photoHtml = (includePhotos && m.photo)
-                ? `<img src="${m.photo}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; display: block;">`
+                ? `<img src="${m.photo}" crossOrigin="anonymous" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #667eea; display: block;">`
                 : `<div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: bold;">${m.name.charAt(0).toUpperCase()}</div>`;
 
             // Spouses
@@ -201,8 +216,7 @@ export const generatePDFBook = async (members, options = {}) => {
             </div>
         `;
 
-        // Wait for images to load (primitive wait)
-        await new Promise(r => setTimeout(r, 100));
+
 
         await addToPdf(pageContainer);
         document.body.removeChild(pageContainer);
