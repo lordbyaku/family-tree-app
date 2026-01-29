@@ -165,9 +165,38 @@ const MainLayout = () => {
     navigate
   });
 
-  const filteredMembers = searchQuery
-    ? members.filter(m => m.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    : [];
+  const filteredMembers = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+
+    const query = searchQuery.toLowerCase().trim();
+    const queryWords = query.split(/\s+/);
+
+    return members
+      .map(m => {
+        const name = m.name.toLowerCase();
+        let score = 0;
+
+        // Exact match (highest priority)
+        if (name === query) score += 100;
+        // Prefix match
+        else if (name.startsWith(query)) score += 80;
+        // Contains exact query
+        else if (name.includes(query)) score += 60;
+        // Contains all words in any order
+        else if (queryWords.every(word => name.includes(word))) score += 40;
+        // Contains some words
+        else {
+          const matchedWords = queryWords.filter(word => name.includes(word)).length;
+          if (matchedWords > 0) score += (matchedWords / queryWords.length) * 30;
+        }
+
+        return { member: m, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.member)
+      .slice(0, 8); // Limit to top 8 results for cleaner UI
+  }, [searchQuery, members]);
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
