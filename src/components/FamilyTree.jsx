@@ -166,7 +166,9 @@ const FamilyTree = (props) => {
                     tree_slug: m.tree_slug,
                     onEdit: props.onEdit,
                     onView: props.onView,
-                    onFilterRequest: props.onFilterRequest
+                    onFilterRequest: props.onFilterRequest,
+                    isHighlighted: m.id === highlightedNodeId,
+                    isDarkMode: props.isDarkMode
                 },
                 position: { x: 0, y: 0 },
             })),
@@ -376,7 +378,7 @@ const FamilyTree = (props) => {
 
         setNodes(finalNodes);
         setEdges(finalEdges);
-    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode, DYNAMIC_LAYOUT_KEY]); // added dependency
+    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode, DYNAMIC_LAYOUT_KEY, highlightedNodeId]); // added highlightedNodeId dependency
 
     const onNodeDragStop = useCallback((event, node) => {
         if (props.layoutMode !== 'manual') return;

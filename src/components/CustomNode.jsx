@@ -17,11 +17,13 @@ const CustomNode = ({ id, data }) => {
 
     // Styles based on gender: Blue for Male, Pink for Female, Gray for Deceased
     // Updated for Dark Mode
-    const bgClass = data.isDeceased
-        ? 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
-        : (isMale
-            ? 'bg-blue-50/50 border-blue-100 dark:bg-slate-800 dark:border-blue-900/50'
-            : 'bg-pink-50/50 border-pink-100 dark:bg-slate-800 dark:border-pink-900/50');
+    const bgClass = data.isHighlighted
+        ? (data.isDarkMode ? 'bg-slate-800 border-blue-500 ring-4 ring-blue-500/30 ring-offset-2 ring-offset-slate-900' : 'bg-white border-blue-600 ring-4 ring-blue-600/20 ring-offset-2')
+        : (data.isDeceased
+            ? 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
+            : (isMale
+                ? 'bg-blue-50/50 border-blue-100 dark:bg-slate-800 dark:border-blue-900/50'
+                : 'bg-pink-50/50 border-pink-100 dark:bg-slate-800 dark:border-pink-900/50'));
 
     const textClass = data.isDeceased
         ? 'text-slate-600 dark:text-slate-400'
