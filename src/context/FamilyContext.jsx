@@ -395,19 +395,20 @@ export const FamilyProvider = ({ children }) => {
         };
 
         // First pass: create all members without relationships
+        // Don't generate ID yet - let Supabase auto-generate to avoid collision
         const membersMap = new Map();
         const mappedData = jsonData.map(row => {
             const member = {
-                id: crypto.randomUUID(),
                 name: row['Nama'] || row['name'] || '',
                 gender: (row['Jenis Kelamin'] === 'Laki-laki' || row['gender'] === 'male') ? 'male' : 'female',
-                birthDate: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
-                deathDate: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
+                birth_date: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
+                death_date: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
                 is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
                 phone: row['Telepon'] || row['phone'] || '',
                 occupation: row['Pekerjaan'] || row['occupation'] || '',
                 address: row['Domisili'] || row['address'] || '',
                 biography: row['Biografi'] || row['biography'] || '',
+                tree_slug: treeSlug, // Set tree_slug immediately
                 parentNames: row['Orang Tua'] || '',
                 spouseNames: row['Pasangan'] || '',
                 children: [],
@@ -418,76 +419,139 @@ export const FamilyProvider = ({ children }) => {
             return member;
         });
 
-        // Second pass: resolve relationships by name
-        mappedData.forEach(member => {
-            // Parse parent names
-            if (member.parentNames) {
-                const parentNamesList = member.parentNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
-                parentNamesList.forEach(parentName => {
-                    const parent = membersMap.get(parentName);
-                    if (parent) {
-                        member.parents.push({ id: parent.id, type: 'biological' });
-                    }
-                });
-            }
-
-            // Parse spouse names
-            if (member.spouseNames) {
-                const spouseNamesList = member.spouseNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
-                spouseNamesList.forEach(spouseName => {
-                    const spouse = membersMap.get(spouseName);
-                    if (spouse) {
-                        member.spouses.push({ id: spouse.id, status: 'married' });
-                    }
-                });
-            }
-
-            // Clean up temporary fields
-            delete member.parentNames;
-            delete member.spouseNames;
-        });
-
-        // Transform for database
-        const upsertData = mappedData.map(m => {
-            const dbM = {
-                ...m,
-                tree_slug: treeSlug,
-                birth_date: m.birthDate || null,
-                death_date: m.deathDate || null,
-                is_deceased: m.is_deceased || false
-            };
-            delete dbM.birthDate;
-            delete dbM.deathDate;
+        // Insert all members first (without relationships)
+        const insertData = mappedData.map(m => {
+            const dbM = { ...m };
+            delete dbM.parentNames;
+            delete dbM.spouseNames;
             return dbM;
         });
 
-        const { error } = await supabase.from('members').upsert(upsertData);
-        if (error) throw error;
+        const { data: insertedMembers, error: insertError } = await supabase
+            .from('members')
+            .insert(insertData)
+            .select();
 
-        // After insert, update children relationships
-        const allMembers = await supabase.from('members').select('*').eq('tree_slug', treeSlug);
-        if (!allMembers.error && allMembers.data) {
-            const updates = [];
-            allMembers.data.forEach(member => {
-                const parents = member.parents || [];
-                if (parents.length > 0) {
-                    parents.forEach(p => {
-                        const parentId = typeof p === 'string' ? p : p.id;
-                        const parent = allMembers.data.find(m => m.id === parentId);
-                        if (parent) {
-                            const children = parent.children || [];
-                            if (!children.includes(member.id)) {
-                                children.push(member.id);
-                                updates.push({ ...parent, children });
-                            }
-                        }
-                    });
+        if (insertError) throw insertError;
+
+        // Create a map of name -> inserted member (with ID)
+        const nameToMemberMap = new Map();
+        insertedMembers.forEach(m => {
+            nameToMemberMap.set(m.name.toLowerCase().trim(), m);
+        });
+
+        // Second pass: resolve relationships by name and update
+        const updates = [];
+        mappedData.forEach((member, index) => {
+            const insertedMember = nameToMemberMap.get(member.name.toLowerCase().trim());
+            if (!insertedMember) return;
+
+            let hasChanges = false;
+            const updateData = { id: insertedMember.id };
+
+            // Parse parent names and convert to IDs
+            if (member.parentNames) {
+                const parentNamesList = member.parentNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
+                const parentIds = [];
+
+                parentNamesList.forEach(parentName => {
+                    const parent = nameToMemberMap.get(parentName);
+                    if (parent) {
+                        parentIds.push({ id: parent.id, type: 'biological' });
+                    }
+                });
+
+                if (parentIds.length > 0) {
+                    updateData.parents = parentIds;
+                    hasChanges = true;
                 }
-            });
-
-            if (updates.length > 0) {
-                await supabase.from('members').upsert(updates);
             }
+
+            // Parse spouse names and convert to IDs
+            if (member.spouseNames) {
+                const spouseNamesList = member.spouseNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
+                const spouseIds = [];
+
+                spouseNamesList.forEach(spouseName => {
+                    const spouse = nameToMemberMap.get(spouseName);
+                    if (spouse) {
+                        spouseIds.push({ id: spouse.id, status: 'married' });
+                    }
+                });
+
+                if (spouseIds.length > 0) {
+                    updateData.spouses = spouseIds;
+                    hasChanges = true;
+                }
+            }
+
+            if (hasChanges) {
+                updates.push(updateData);
+            }
+        });
+
+        // Update relationships if any
+        if (updates.length > 0) {
+            const { error: updateError } = await supabase
+                .from('members')
+                .upsert(updates);
+
+            if (updateError) throw updateError;
+        }
+
+        // Third pass: Update children relationships based on parents
+        // Only work with members in THIS tree_slug
+        const { data: allMembers, error: fetchError } = await supabase
+            .from('members')
+            .select('*')
+            .eq('tree_slug', treeSlug);
+
+        if (fetchError) throw fetchError;
+
+        const childrenUpdates = [];
+        const processedParents = new Set();
+
+        allMembers.forEach(member => {
+            const parents = member.parents || [];
+            if (parents.length > 0) {
+                parents.forEach(p => {
+                    const parentId = typeof p === 'string' ? p : p.id;
+
+                    // Skip if already processed to avoid duplicates
+                    if (processedParents.has(parentId)) return;
+
+                    const parent = allMembers.find(m => m.id === parentId);
+                    if (parent) {
+                        // Find all children of this parent
+                        const childrenOfParent = allMembers
+                            .filter(m => {
+                                const ps = m.parents || [];
+                                return ps.some(pObj => {
+                                    const pid = typeof pObj === 'string' ? pObj : pObj.id;
+                                    return pid === parentId;
+                                });
+                            })
+                            .map(m => m.id);
+
+                        if (childrenOfParent.length > 0) {
+                            childrenUpdates.push({
+                                id: parentId,
+                                children: childrenOfParent
+                            });
+                            processedParents.add(parentId);
+                        }
+                    }
+                });
+            }
+        });
+
+        // Update children
+        if (childrenUpdates.length > 0) {
+            const { error: childrenError } = await supabase
+                .from('members')
+                .upsert(childrenUpdates);
+
+            if (childrenError) throw childrenError;
         }
 
         fetchMembers();
