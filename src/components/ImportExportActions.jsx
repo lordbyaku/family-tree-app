@@ -1,4 +1,4 @@
-import { Upload, FileSpreadsheet, Download, BookOpen } from 'lucide-react';
+import { Upload, FileSpreadsheet, Download, BookOpen, FileDown } from 'lucide-react';
 
 const ImportExportActions = ({
     isAdmin,
@@ -6,12 +6,23 @@ const ImportExportActions = ({
     handleExcelClick,
     exportData,
     setIsExportModalOpen,
+    downloadExcelTemplate,
     toast
 }) => {
     if (!isAdmin) return null;
 
     return (
         <>
+            <button
+                onClick={() => {
+                    downloadExcelTemplate();
+                    toast.success("Template Excel berhasil didownload!");
+                }}
+                className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
+                title="Download Template Excel Import"
+            >
+                <FileDown size={20} />
+            </button>
             <button
                 onClick={handleImportClick}
                 className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"

@@ -1,0 +1,1376 @@
+[
+    {
+        "id": "gen1-male-001",
+        "name": "Raden Soekamto",
+        "gender": "male",
+        "birthDate": "1930-03-15",
+        "deathDate": "1995-08-12",
+        "isDeceased": true,
+        "placeOfBirth": "Yogyakarta",
+        "occupation": "Guru",
+        "education": "SMA",
+        "address": "Jl. Malioboro No. 45, Yogyakarta",
+        "phone": "",
+        "email": "",
+        "biography": "Pendiri keluarga, mantan guru SMA yang sangat dihormati di lingkungannya",
+        "children": [
+            "gen2-male-001",
+            "gen2-female-001",
+            "gen2-male-002",
+            "gen2-female-002"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen1-female-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen1-female-001",
+        "name": "Siti Aminah",
+        "gender": "female",
+        "birthDate": "1935-07-20",
+        "deathDate": "2005-11-05",
+        "isDeceased": true,
+        "placeOfBirth": "Solo",
+        "occupation": "Ibu Rumah Tangga",
+        "education": "SMP",
+        "address": "Jl. Malioboro No. 45, Yogyakarta",
+        "phone": "",
+        "email": "",
+        "biography": "Ibu yang penuh kasih sayang, melahirkan dan membesarkan 4 anak dengan penuh dedikasi",
+        "children": [
+            "gen2-male-001",
+            "gen2-female-001",
+            "gen2-male-002",
+            "gen2-female-002"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen1-male-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-male-001",
+        "name": "Budi Santoso",
+        "gender": "male",
+        "birthDate": "1955-01-10",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Yogyakarta",
+        "occupation": "Dokter",
+        "education": "S1 Kedokteran",
+        "address": "Jl. Sudirman No. 123, Jakarta",
+        "phone": "081234567890",
+        "email": "budi.santoso@email.com",
+        "biography": "Anak pertama, praktik sebagai dokter umum di Jakarta sejak tahun 1982",
+        "children": [
+            "gen3-male-001",
+            "gen3-female-001",
+            "gen3-male-002"
+        ],
+        "parents": [
+            {
+                "id": "gen1-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen1-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen2-female-003",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-female-003",
+        "name": "Dewi Lestari",
+        "gender": "female",
+        "birthDate": "1958-05-15",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Pengusaha",
+        "education": "S1 Ekonomi",
+        "address": "Jl. Sudirman No. 123, Jakarta",
+        "phone": "081234567891",
+        "email": "dewi.lestari@email.com",
+        "biography": "Pemilik toko kain sukses di Jakarta, menikah dengan Budi Santoso tahun 1979",
+        "children": [
+            "gen3-male-001",
+            "gen3-female-001",
+            "gen3-male-002"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen2-male-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-female-001",
+        "name": "Siti Rahayu",
+        "gender": "female",
+        "birthDate": "1957-08-22",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Yogyakarta",
+        "occupation": "Perawat",
+        "education": "D3 Keperawatan",
+        "address": "Jl. Gajah Mada No. 67, Semarang",
+        "phone": "081234567892",
+        "email": "siti.rahayu@email.com",
+        "biography": "Anak kedua, bekerja di rumah sakit di Semarang selama 30 tahun",
+        "children": [
+            "gen3-female-002",
+            "gen3-male-003"
+        ],
+        "parents": [
+            {
+                "id": "gen1-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen1-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen2-male-003",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-male-003",
+        "name": "Ahmad Dahlan",
+        "gender": "male",
+        "birthDate": "1955-03-18",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Pengacara",
+        "education": "S1 Hukum",
+        "address": "Jl. Gajah Mada No. 67, Semarang",
+        "phone": "081234567893",
+        "email": "ahmad.dahlan@email.com",
+        "biography": "Pengacara senior dengan pengalaman lebih dari 35 tahun",
+        "children": [
+            "gen3-female-002",
+            "gen3-male-003"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen2-female-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-male-002",
+        "name": "Bambang Wijaya",
+        "gender": "male",
+        "birthDate": "1960-11-30",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Yogyakarta",
+        "occupation": "Insinyur",
+        "education": "S1 Teknik Sipil",
+        "address": "Jl. Asia Afrika No. 89, Bandung",
+        "phone": "081234567894",
+        "email": "bambang.wijaya@email.com",
+        "biography": "Anak ketiga, bekerja di perusahaan kontraktor besar di Bandung",
+        "children": [
+            "gen3-male-004",
+            "gen3-female-003"
+        ],
+        "parents": [
+            {
+                "id": "gen1-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen1-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen2-female-004",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-female-004",
+        "name": "Indah Permata",
+        "gender": "female",
+        "birthDate": "1963-02-12",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Guru",
+        "education": "S1 Pendidikan",
+        "address": "Jl. Asia Afrika No. 89, Bandung",
+        "phone": "081234567895",
+        "email": "indah.permata@email.com",
+        "biography": "Guru SD yang mengajar dengan penuh dedikasi selama 25 tahun",
+        "children": [
+            "gen3-male-004",
+            "gen3-female-003"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen2-male-002",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-female-002",
+        "name": "Suryani Kartini",
+        "gender": "female",
+        "birthDate": "1962-06-05",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Yogyakarta",
+        "occupation": "Apoteker",
+        "education": "S1 Farmasi",
+        "address": "Jl. Diponegoro No. 34, Surabaya",
+        "phone": "081234567896",
+        "email": "suryani.kartini@email.com",
+        "biography": "Anak keempat, memiliki apotek di Surabaya",
+        "children": [
+            "gen3-male-005",
+            "gen3-female-004"
+        ],
+        "parents": [
+            {
+                "id": "gen1-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen1-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen2-male-004",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen2-male-004",
+        "name": "Hendra Kusuma",
+        "gender": "male",
+        "birthDate": "1960-09-25",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Akuntan",
+        "education": "S1 Akuntansi",
+        "address": "Jl. Diponegoro No. 34, Surabaya",
+        "phone": "081234567897",
+        "email": "hendra.kusuma@email.com",
+        "biography": "Akuntan publik bersertifikat dengan banyak klien",
+        "children": [
+            "gen3-male-005",
+            "gen3-female-004"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen2-female-002",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-001",
+        "name": "Andi Pratama",
+        "gender": "male",
+        "birthDate": "1980-04-08",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Programmer",
+        "education": "S1 Informatika",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "081234567898",
+        "email": "andi.pratama@email.com",
+        "biography": "Cucu pertama dari Budi, bekerja sebagai senior programmer di perusahaan teknologi",
+        "children": [
+            "gen4-male-001",
+            "gen4-female-001",
+            "gen4-male-002"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-003",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-female-005",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-005",
+        "name": "Rina Maharani",
+        "gender": "female",
+        "birthDate": "1982-07-14",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Designer",
+        "education": "S1 Desain Grafis",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "081234567899",
+        "email": "rina.maharani@email.com",
+        "biography": "Bekerja di agency kreatif ternama di Jakarta",
+        "children": [
+            "gen4-male-001",
+            "gen4-female-001",
+            "gen4-male-002"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-male-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-001",
+        "name": "Dian Puspita",
+        "gender": "female",
+        "birthDate": "1983-12-20",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Dokter Gigi",
+        "education": "S1 Kedokteran Gigi",
+        "address": "Jl. Menteng No. 78, Jakarta",
+        "phone": "081234567800",
+        "email": "dian.puspita@email.com",
+        "biography": "Cucu kedua dari Budi, membuka praktik dokter gigi di Jakarta",
+        "children": [
+            "gen4-female-002",
+            "gen4-male-003"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-003",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-male-006",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-006",
+        "name": "Rizki Gunawan",
+        "gender": "male",
+        "birthDate": "1981-08-16",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Arsitek",
+        "education": "S1 Arsitektur",
+        "address": "Jl. Menteng No. 78, Jakarta",
+        "phone": "081234567801",
+        "email": "rizki.gunawan@email.com",
+        "biography": "Punya firma arsitektur yang menangani berbagai proyek",
+        "children": [
+            "gen4-female-002",
+            "gen4-male-003"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-female-001",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-002",
+        "name": "Fajar Nugroho",
+        "gender": "male",
+        "birthDate": "1985-09-11",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Marketing",
+        "education": "S1 Marketing",
+        "address": "Jl. Kemang No. 45, Jakarta",
+        "phone": "081234567802",
+        "email": "fajar.nugroho@email.com",
+        "biography": "Cucu ketiga dari Budi, belum menikah, fokus pada karir sebagai marketing manager",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen2-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-003",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen3-female-002",
+        "name": "Maya Anggraini",
+        "gender": "female",
+        "birthDate": "1978-02-28",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Psikolog",
+        "education": "S2 Psikologi",
+        "address": "Jl. Pemuda No. 12, Semarang",
+        "phone": "081234567803",
+        "email": "maya.anggraini@email.com",
+        "biography": "Cucu dari Ahmad & Siti, membuka praktik psikologi klinis",
+        "children": [
+            "gen4-female-003",
+            "gen4-male-004"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-003",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-male-007",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-007",
+        "name": "Bagus Setiawan",
+        "gender": "male",
+        "birthDate": "1976-06-03",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Dosen",
+        "education": "S2 Sastra",
+        "address": "Jl. Pemuda No. 12, Semarang",
+        "phone": "081234567804",
+        "email": "bagus.setiawan@email.com",
+        "biography": "Dosen sastra di universitas negeri Semarang",
+        "children": [
+            "gen4-female-003",
+            "gen4-male-004"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-female-002",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-003",
+        "name": "Rudi Hermawan",
+        "gender": "male",
+        "birthDate": "1981-10-19",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Polisi",
+        "education": "Akademi Kepolisian",
+        "address": "Jl. Pandanaran No. 90, Semarang",
+        "phone": "081234567805",
+        "email": "rudi.hermawan@email.com",
+        "biography": "Cucu kedua dari Ahmad, bertugas sebagai polisi berpangkat AKP",
+        "children": [
+            "gen4-female-004",
+            "gen4-male-005"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-003",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-female-006",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-006",
+        "name": "Sari Wulandari",
+        "gender": "female",
+        "birthDate": "1983-04-22",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Guru",
+        "education": "S1 Pendidikan",
+        "address": "Jl. Pandanaran No. 90, Semarang",
+        "phone": "081234567806",
+        "email": "sari.wulandari@email.com",
+        "biography": "Guru SMP yang mengajar Bahasa Indonesia",
+        "children": [
+            "gen4-female-004",
+            "gen4-male-005"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-male-003",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-004",
+        "name": "Eko Prasetyo",
+        "gender": "male",
+        "birthDate": "1982-07-07",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Pilot",
+        "education": "S1 Penerbangan",
+        "address": "Jl. Dago No. 23, Bandung",
+        "phone": "081234567807",
+        "email": "eko.prasetyo@email.com",
+        "biography": "Cucu dari Bambang, pilot komersial dengan ribuan jam terbang",
+        "children": [
+            "gen4-female-005",
+            "gen4-male-006"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-002",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-004",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-female-007",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-007",
+        "name": "Linda Safitri",
+        "gender": "female",
+        "birthDate": "1984-11-12",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Pramugari",
+        "education": "D3 Perhotelan",
+        "address": "Jl. Dago No. 23, Bandung",
+        "phone": "081234567808",
+        "email": "linda.safitri@email.com",
+        "biography": "Pramugari maskapai nasional, bertemu Eko saat bekerja",
+        "children": [
+            "gen4-female-005",
+            "gen4-male-006"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-male-004",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-003",
+        "name": "Tari Mustika",
+        "gender": "female",
+        "birthDate": "1986-05-30",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Fotografer",
+        "education": "S1 Seni Rupa",
+        "address": "Jl. Braga No. 45, Bandung",
+        "phone": "081234567809",
+        "email": "tari.mustika@email.com",
+        "biography": "Cucu kedua dari Bambang, fotografer profesional dengan banyak penghargaan",
+        "children": [
+            "gen4-female-006"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-002",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-004",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-male-008",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-008",
+        "name": "Yoga Saputra",
+        "gender": "male",
+        "birthDate": "1985-01-18",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Videografer",
+        "education": "S1 Film",
+        "address": "Jl. Braga No. 45, Bandung",
+        "phone": "081234567810",
+        "email": "yoga.saputra@email.com",
+        "biography": "Punya studio produksi bersama istri",
+        "children": [
+            "gen4-female-006"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-female-003",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-005",
+        "name": "Arya Mahendra",
+        "gender": "male",
+        "birthDate": "1979-03-25",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Farmasis",
+        "education": "S1 Farmasi",
+        "address": "Jl. Basuki Rahmat No. 67, Surabaya",
+        "phone": "081234567811",
+        "email": "arya.mahendra@email.com",
+        "biography": "Cucu dari Hendra, melanjutkan apotek keluarga",
+        "children": [
+            "gen4-male-007",
+            "gen4-female-007"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-004",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-002",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-female-008",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-008",
+        "name": "Nina Octavia",
+        "gender": "female",
+        "birthDate": "1981-09-09",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Bidan",
+        "education": "D3 Kebidanan",
+        "address": "Jl. Basuki Rahmat No. 67, Surabaya",
+        "phone": "081234567812",
+        "email": "nina.octavia@email.com",
+        "biography": "Praktik bidan yang membantu banyak persalinan",
+        "children": [
+            "gen4-male-007",
+            "gen4-female-007"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-male-005",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-female-004",
+        "name": "Putri Wulan",
+        "gender": "female",
+        "birthDate": "1983-12-14",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Pengusaha",
+        "education": "S1 Manajemen",
+        "address": "Jl. Tunjungan No. 88, Surabaya",
+        "phone": "081234567813",
+        "email": "putri.wulan@email.com",
+        "biography": "Cucu kedua dari Hendra, memiliki bisnis kuliner yang sukses",
+        "children": [
+            "gen4-male-008",
+            "gen4-female-008"
+        ],
+        "parents": [
+            {
+                "id": "gen2-male-004",
+                "type": "biological"
+            },
+            {
+                "id": "gen2-female-002",
+                "type": "biological"
+            }
+        ],
+        "spouses": [
+            {
+                "id": "gen3-male-009",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen3-male-009",
+        "name": "Dimas Pradipta",
+        "gender": "male",
+        "birthDate": "1982-06-21",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Pengusaha",
+        "education": "S1 Ekonomi",
+        "address": "Jl. Tunjungan No. 88, Surabaya",
+        "phone": "081234567814",
+        "email": "dimas.pradipta@email.com",
+        "biography": "Punya bisnis kuliner bersama istri dengan beberapa cabang",
+        "children": [
+            "gen4-male-008",
+            "gen4-female-008"
+        ],
+        "parents": [],
+        "spouses": [
+            {
+                "id": "gen3-female-004",
+                "status": "married"
+            }
+        ]
+    },
+    {
+        "id": "gen4-male-001",
+        "name": "Aditya Pratama",
+        "gender": "male",
+        "birthDate": "2005-05-15",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Mahasiswa",
+        "education": "SMA",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "081234567815",
+        "email": "aditya.pratama@email.com",
+        "biography": "Cicit, kuliah Teknik Informatika semester 3",
+        "children": [
+            "gen5-male-001"
+        ],
+        "parents": [
+            {
+                "id": "gen3-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-005",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-001",
+        "name": "Cantika Putri",
+        "gender": "female",
+        "birthDate": "2007-08-23",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Pelajar",
+        "education": "SMP",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "081234567816",
+        "email": "cantika.putri@email.com",
+        "biography": "Cicit, pelajar SMP kelas 9 yang aktif di organisasi",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-005",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-002",
+        "name": "Bintang Ramadhan",
+        "gender": "male",
+        "birthDate": "2009-03-10",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Pelajar",
+        "education": "SD",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "081234567817",
+        "email": "bintang.ramadhan@email.com",
+        "biography": "Cicit, pelajar SD yang suka matematika dan robotika",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-001",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-005",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-002",
+        "name": "Alisha Zahra",
+        "gender": "female",
+        "birthDate": "2006-11-18",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Pelajar",
+        "education": "SMA",
+        "address": "Jl. Menteng No. 78, Jakarta",
+        "phone": "081234567818",
+        "email": "alisha.zahra@email.com",
+        "biography": "Cicit, SMA jurusan IPA dengan prestasi akademik tinggi",
+        "children": [
+            "gen5-female-001"
+        ],
+        "parents": [
+            {
+                "id": "gen3-male-006",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-003",
+        "name": "Kevin Adiputra",
+        "gender": "male",
+        "birthDate": "2010-01-22",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Pelajar",
+        "education": "SD",
+        "address": "Jl. Menteng No. 78, Jakarta",
+        "phone": "081234567819",
+        "email": "kevin.adiputra@email.com",
+        "biography": "Cicit, hobi main bola dan punya bakat di olahraga",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-006",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-003",
+        "name": "Sarah Azzahra",
+        "gender": "female",
+        "birthDate": "2004-04-07",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Mahasiswa",
+        "education": "SMA",
+        "address": "Jl. Pemuda No. 12, Semarang",
+        "phone": "081234567820",
+        "email": "sarah.azzahra@email.com",
+        "biography": "Cicit, kuliah Psikologi mengikuti jejak ibu",
+        "children": [
+            "gen5-male-002"
+        ],
+        "parents": [
+            {
+                "id": "gen3-male-007",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-002",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-004",
+        "name": "Farhan Maulana",
+        "gender": "male",
+        "birthDate": "2008-09-30",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Pelajar",
+        "education": "SMP",
+        "address": "Jl. Pemuda No. 12, Semarang",
+        "phone": "081234567821",
+        "email": "farhan.maulana@email.com",
+        "biography": "Cicit, atlet renang yang sering juara tingkat kota",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-007",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-002",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-004",
+        "name": "Nabila Putri",
+        "gender": "female",
+        "birthDate": "2007-12-12",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Pelajar",
+        "education": "SMP",
+        "address": "Jl. Pandanaran No. 90, Semarang",
+        "phone": "081234567822",
+        "email": "nabila.putri@email.com",
+        "biography": "Cicit, hobi menari dan aktif di sanggar tari tradisional",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-003",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-006",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-005",
+        "name": "Rafa Adhitya",
+        "gender": "male",
+        "birthDate": "2010-06-25",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Pelajar",
+        "education": "SD",
+        "address": "Jl. Pandanaran No. 90, Semarang",
+        "phone": "081234567823",
+        "email": "rafa.adhitya@email.com",
+        "biography": "Cicit, suka coding dan membuat game sederhana",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-003",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-006",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-005",
+        "name": "Kirana Dewi",
+        "gender": "female",
+        "birthDate": "2006-02-08",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Pelajar",
+        "education": "SMA",
+        "address": "Jl. Dago No. 23, Bandung",
+        "phone": "081234567824",
+        "email": "kirana.dewi@email.com",
+        "biography": "Cicit, cita-cita jadi pilot seperti ayahnya",
+        "children": [
+            "gen5-female-002"
+        ],
+        "parents": [
+            {
+                "id": "gen3-male-004",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-007",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-006",
+        "name": "Raffi Alam",
+        "gender": "male",
+        "birthDate": "2009-07-19",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Pelajar",
+        "education": "SD",
+        "address": "Jl. Dago No. 23, Bandung",
+        "phone": "081234567825",
+        "email": "raffi.alam@email.com",
+        "biography": "Cicit, hobi pesawat dan koleksi model pesawat",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-004",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-007",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-006",
+        "name": "Keysha Amelia",
+        "gender": "female",
+        "birthDate": "2008-10-05",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Pelajar",
+        "education": "SMP",
+        "address": "Jl. Braga No. 45, Bandung",
+        "phone": "081234567826",
+        "email": "keysha.amelia@email.com",
+        "biography": "Cicit, bakat fotografi mewarisi kedua orang tuanya",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-008",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-003",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-007",
+        "name": "Zidan Akbar",
+        "gender": "male",
+        "birthDate": "2005-04-14",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Mahasiswa",
+        "education": "SMA",
+        "address": "Jl. Basuki Rahmat No. 67, Surabaya",
+        "phone": "081234567827",
+        "email": "zidan.akbar@email.com",
+        "biography": "Cicit, kuliah Farmasi untuk melanjutkan bisnis keluarga",
+        "children": [
+            "gen5-male-003"
+        ],
+        "parents": [
+            {
+                "id": "gen3-male-005",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-008",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-007",
+        "name": "Rania Syifa",
+        "gender": "female",
+        "birthDate": "2007-08-28",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Pelajar",
+        "education": "SMP",
+        "address": "Jl. Basuki Rahmat No. 67, Surabaya",
+        "phone": "081234567828",
+        "email": "rania.syifa@email.com",
+        "biography": "Cicit, hobi memasak dan punya channel YouTube masak",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-005",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-008",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-male-008",
+        "name": "Farel Naufal",
+        "gender": "male",
+        "birthDate": "2006-03-16",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Pelajar",
+        "education": "SMA",
+        "address": "Jl. Tunjungan No. 88, Surabaya",
+        "phone": "081234567829",
+        "email": "farel.naufal@email.com",
+        "biography": "Cicit, bantu bisnis kuliner keluarga di waktu luang",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-009",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-004",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen4-female-008",
+        "name": "Zahra Amira",
+        "gender": "female",
+        "birthDate": "2009-11-11",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Pelajar",
+        "education": "SD",
+        "address": "Jl. Tunjungan No. 88, Surabaya",
+        "phone": "081234567830",
+        "email": "zahra.amira@email.com",
+        "biography": "Cicit, suka kuliner dan ingin jadi chef kelak",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen3-male-009",
+                "type": "biological"
+            },
+            {
+                "id": "gen3-female-004",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen5-male-001",
+        "name": "Arkan Mahesa",
+        "gender": "male",
+        "birthDate": "2024-02-20",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Balita",
+        "education": "Belum sekolah",
+        "address": "Jl. Kuningan No. 56, Jakarta",
+        "phone": "",
+        "email": "",
+        "biography": "Generasi ke-5, masih bayi yang menggemaskan",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen4-male-001",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen5-female-001",
+        "name": "Kayla Assyifa",
+        "gender": "female",
+        "birthDate": "2023-09-15",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Jakarta",
+        "occupation": "Balita",
+        "education": "Belum sekolah",
+        "address": "Jl. Menteng No. 78, Jakarta",
+        "phone": "",
+        "email": "",
+        "biography": "Generasi ke-5, balita yang ceria",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen4-female-002",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen5-male-002",
+        "name": "Azka Ramadhan",
+        "gender": "male",
+        "birthDate": "2024-06-08",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Semarang",
+        "occupation": "Balita",
+        "education": "Belum sekolah",
+        "address": "Jl. Pemuda No. 12, Semarang",
+        "phone": "",
+        "email": "",
+        "biography": "Generasi ke-5, bayi yang lucu",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen4-female-003",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen5-female-002",
+        "name": "Luna Zahra",
+        "gender": "female",
+        "birthDate": "2023-12-30",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Bandung",
+        "occupation": "Balita",
+        "education": "Belum sekolah",
+        "address": "Jl. Dago No. 23, Bandung",
+        "phone": "",
+        "email": "",
+        "biography": "Generasi ke-5, balita yang aktif",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen4-female-005",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    },
+    {
+        "id": "gen5-male-003",
+        "name": "Bima Sakti",
+        "gender": "male",
+        "birthDate": "2024-04-12",
+        "deathDate": null,
+        "isDeceased": false,
+        "placeOfBirth": "Surabaya",
+        "occupation": "Balita",
+        "education": "Belum sekolah",
+        "address": "Jl. Basuki Rahmat No. 67, Surabaya",
+        "phone": "",
+        "email": "",
+        "biography": "Generasi ke-5, bayi harapan keluarga",
+        "children": [],
+        "parents": [
+            {
+                "id": "gen4-male-007",
+                "type": "biological"
+            }
+        ],
+        "spouses": []
+    }
+]

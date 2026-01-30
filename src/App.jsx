@@ -57,6 +57,7 @@ const MainLayout = () => {
     exportData,
     importData,
     importFromExcel,
+    downloadExcelTemplate,
     undo,
     redo,
     canUndo,
@@ -419,6 +420,7 @@ const MainLayout = () => {
               handleExcelClick={handleExcelClick}
               exportData={exportData}
               setIsExportModalOpen={setIsExportModalOpen}
+              downloadExcelTemplate={downloadExcelTemplate}
               toast={toast}
             />
 

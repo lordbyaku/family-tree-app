@@ -83,6 +83,124 @@ export const generateExcelBook = (members, options = {}) => {
 };
 
 /**
+ * Generate Excel template for importing family data
+ * @returns {Blob} Excel file blob with template
+ */
+export const generateExcelTemplate = () => {
+    const workbook = utils.book_new();
+
+    // Template data dengan contoh
+    const templateData = [
+        {
+            'Nama': 'Contoh: Budi Santoso',
+            'Jenis Kelamin': 'Laki-laki',
+            'Tanggal Lahir': '01/01/1950',
+            'Tempat Lahir': 'Jakarta',
+            'Tanggal Wafat': '',
+            'Status': 'Masih Hidup',
+            'Telepon': '081234567890',
+            'Email': 'budi@email.com',
+            'Pekerjaan': 'Dokter',
+            'Pendidikan': 'S1 Kedokteran',
+            'Domisili': 'Jl. Sudirman No. 1, Jakarta',
+            'Orang Tua': 'Nama Ayah, Nama Ibu',
+            'Pasangan': 'Nama Pasangan',
+            'Biografi': 'Cerita singkat tentang kehidupan'
+        },
+        {
+            'Nama': '',
+            'Jenis Kelamin': '',
+            'Tanggal Lahir': '',
+            'Tempat Lahir': '',
+            'Tanggal Wafat': '',
+            'Status': '',
+            'Telepon': '',
+            'Email': '',
+            'Pekerjaan': '',
+            'Pendidikan': '',
+            'Domisili': '',
+            'Orang Tua': '',
+            'Pasangan': '',
+            'Biografi': ''
+        }
+    ];
+
+    const templateSheet = utils.json_to_sheet(templateData);
+
+    // Set column widths
+    templateSheet['!cols'] = [
+        { wch: 25 },  // Nama
+        { wch: 15 },  // Jenis Kelamin
+        { wch: 15 },  // Tanggal Lahir
+        { wch: 20 },  // Tempat Lahir
+        { wch: 15 },  // Tanggal Wafat
+        { wch: 15 },  // Status
+        { wch: 15 },  // Telepon
+        { wch: 25 },  // Email
+        { wch: 20 },  // Pekerjaan
+        { wch: 20 },  // Pendidikan
+        { wch: 30 },  // Domisili
+        { wch: 30 },  // Orang Tua
+        { wch: 25 },  // Pasangan
+        { wch: 40 }   // Biografi
+    ];
+
+    utils.book_append_sheet(workbook, templateSheet, 'Data Keluarga');
+
+    // Sheet 2: Instruksi
+    const instruksiData = [
+        { 'Kolom': 'Nama', 'Wajib': 'YA', 'Format': 'Text', 'Contoh': 'Budi Santoso', 'Keterangan': 'Nama lengkap anggota keluarga' },
+        { 'Kolom': 'Jenis Kelamin', 'Wajib': 'YA', 'Format': 'Laki-laki / Perempuan', 'Contoh': 'Laki-laki', 'Keterangan': 'Harus persis: "Laki-laki" atau "Perempuan"' },
+        { 'Kolom': 'Tanggal Lahir', 'Wajib': 'YA', 'Format': 'DD/MM/YYYY', 'Contoh': '15/08/1945', 'Keterangan': 'Format tanggal Indonesia' },
+        { 'Kolom': 'Tempat Lahir', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'Jakarta', 'Keterangan': 'Kota/tempat kelahiran' },
+        { 'Kolom': 'Tanggal Wafat', 'Wajib': 'Tidak', 'Format': 'DD/MM/YYYY', 'Contoh': '12/02/2020', 'Keterangan': 'Kosongkan jika masih hidup' },
+        { 'Kolom': 'Status', 'Wajib': 'YA', 'Format': 'Masih Hidup / Meninggal', 'Contoh': 'Masih Hidup', 'Keterangan': 'Status kehidupan saat ini' },
+        { 'Kolom': 'Telepon', 'Wajib': 'Tidak', 'Format': 'Text/Number', 'Contoh': '081234567890', 'Keterangan': 'Nomor telepon/HP' },
+        { 'Kolom': 'Email', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'email@domain.com', 'Keterangan': 'Alamat email' },
+        { 'Kolom': 'Pekerjaan', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'Dokter', 'Keterangan': 'Profesi/pekerjaan' },
+        { 'Kolom': 'Pendidikan', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'S1 Kedokteran', 'Keterangan': 'Pendidikan terakhir' },
+        { 'Kolom': 'Domisili', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'Jl. Sudirman No. 1', 'Keterangan': 'Alamat tempat tinggal' },
+        { 'Kolom': 'Orang Tua', 'Wajib': 'Tidak', 'Format': 'Nama, Nama', 'Contoh': 'Ayah Budi, Ibu Budi', 'Keterangan': 'Nama orang tua (pisahkan dengan koma). Nama HARUS SAMA dengan kolom Nama' },
+        { 'Kolom': 'Pasangan', 'Wajib': 'Tidak', 'Format': 'Nama', 'Contoh': 'Siti Rahayu', 'Keterangan': 'Nama pasangan. Nama HARUS SAMA dengan kolom Nama' },
+        { 'Kolom': 'Biografi', 'Wajib': 'Tidak', 'Format': 'Text', 'Contoh': 'Cerita kehidupan...', 'Keterangan': 'Cerita singkat kehidupan anggota' }
+    ];
+
+    const instruksiSheet = utils.json_to_sheet(instruksiData);
+    instruksiSheet['!cols'] = [
+        { wch: 20 },
+        { wch: 10 },
+        { wch: 25 },
+        { wch: 25 },
+        { wch: 60 }
+    ];
+    utils.book_append_sheet(workbook, instruksiSheet, 'Instruksi');
+
+    // Sheet 3: Tips & Catatan Penting
+    const tipsData = [
+        { 'No': 1, 'Tips': 'URUTAN INPUT', 'Detail': 'Input dari generasi tertua ke termuda (Kakek-Nenek dulu, baru anak-cucu)' },
+        { 'No': 2, 'Tips': 'NAMA HARUS SAMA', 'Detail': 'Untuk relasi (Orang Tua & Pasangan), nama HARUS PERSIS SAMA dengan yang ada di kolom Nama' },
+        { 'No': 3, 'Tips': 'FORMAT TANGGAL', 'Detail': 'Gunakan format DD/MM/YYYY, contoh: 15/08/1945 untuk 15 Agustus 1945' },
+        { 'No': 4, 'Tips': 'JENIS KELAMIN', 'Detail': 'Harus tepat: "Laki-laki" atau "Perempuan" (dengan huruf besar di awal)' },
+        { 'No': 5, 'Tips': 'STATUS', 'Detail': 'Harus tepat: "Masih Hidup" atau "Meninggal"' },
+        { 'No': 6, 'Tips': 'MULTIPLE ORANG TUA', 'Detail': 'Pisahkan dengan koma, contoh: "Ahmad Santoso, Siti Aminah"' },
+        { 'No': 7, 'Tips': 'HAPUS BARIS CONTOH', 'Detail': 'Sebelum import, HAPUS baris pertama yang berisi "Contoh: Budi Santoso"' },
+        { 'No': 8, 'Tips': 'BACKUP DATA', 'Detail': 'Selalu backup data existing sebelum import data baru' },
+        { 'No': 9, 'Tips': 'IMPORT BERTAHAP', 'Detail': 'Untuk data banyak, import bertahap per 20-30 orang lebih aman' },
+        { 'No': 10, 'Tips': 'CEK HASIL', 'Detail': 'Setelah import, cek pohon keluarga untuk memastikan relasi sudah benar' }
+    ];
+
+    const tipsSheet = utils.json_to_sheet(tipsData);
+    tipsSheet['!cols'] = [
+        { wch: 5 },
+        { wch: 25 },
+        { wch: 80 }
+    ];
+    utils.book_append_sheet(workbook, tipsSheet, 'Tips Penting');
+
+    return workbook;
+};
+
+/**
  * Generate an HTML family book
  * @param {Array} members - All family members
  * @param {Object} options - Export options

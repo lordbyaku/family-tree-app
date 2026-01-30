@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
 const { utils, write } = XLSX;
 import useUndo from 'use-undo';
-import { generateExcelBook, generateHTMLBook } from '../utils/familyBook';
+import { generateExcelBook, generateHTMLBook, generateExcelTemplate } from '../utils/familyBook';
 import { generatePDFBook } from '../utils/pdfExport';
 import { supabase } from '../lib/supabase';
 
@@ -372,32 +372,129 @@ export const FamilyProvider = ({ children }) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = utils.sheet_to_json(worksheet);
 
+        // Helper function to convert Excel date serial to YYYY-MM-DD
+        const excelDateToString = (excelDate) => {
+            if (!excelDate) return null;
+            // If already a string in DD/MM/YYYY format
+            if (typeof excelDate === 'string' && excelDate.includes('/')) {
+                const parts = excelDate.split('/');
+                if (parts.length === 3) {
+                    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                }
+            }
+            // If Excel serial number
+            if (typeof excelDate === 'number') {
+                const date = new Date((excelDate - 25569) * 86400 * 1000);
+                return date.toISOString().split('T')[0];
+            }
+            // If already YYYY-MM-DD
+            if (typeof excelDate === 'string' && excelDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                return excelDate;
+            }
+            return null;
+        };
+
+        // First pass: create all members without relationships
+        const membersMap = new Map();
         const mappedData = jsonData.map(row => {
-            // Map Indonesian column names back to internal keys if necessary
-            // Or assume standard keys. For now, let's look at what generateExcelBook produces.
-            // Nama, Jenis Kelamin, Tanggal Lahir, Tanggal Wafat, Status, Telepon, Pekerjaan, Domisili, Biografi
-            return {
+            const member = {
                 id: crypto.randomUUID(),
                 name: row['Nama'] || row['name'] || '',
                 gender: (row['Jenis Kelamin'] === 'Laki-laki' || row['gender'] === 'male') ? 'male' : 'female',
-                birthDate: row['Tanggal Lahir'] || row['birthDate'] || '',
-                deathDate: row['Tanggal Wafat'] || row['deathDate'] || '',
+                birthDate: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
+                deathDate: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
                 is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
+                placeOfBirth: row['Tempat Lahir'] || row['placeOfBirth'] || null,
                 phone: row['Telepon'] || row['phone'] || '',
+                email: row['Email'] || row['email'] || '',
                 occupation: row['Pekerjaan'] || row['occupation'] || '',
+                education: row['Pendidikan'] || row['education'] || '',
                 address: row['Domisili'] || row['address'] || '',
                 biography: row['Biografi'] || row['biography'] || '',
+                parentNames: row['Orang Tua'] || '',
+                spouseNames: row['Pasangan'] || '',
+                children: [],
+                parents: [],
+                spouses: []
             };
+            membersMap.set(member.name.toLowerCase().trim(), member);
+            return member;
         });
 
+        // Second pass: resolve relationships by name
+        mappedData.forEach(member => {
+            // Parse parent names
+            if (member.parentNames) {
+                const parentNamesList = member.parentNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
+                parentNamesList.forEach(parentName => {
+                    const parent = membersMap.get(parentName);
+                    if (parent) {
+                        member.parents.push({ id: parent.id, type: 'biological' });
+                    }
+                });
+            }
+
+            // Parse spouse names
+            if (member.spouseNames) {
+                const spouseNamesList = member.spouseNames.split(',').map(n => n.trim().toLowerCase()).filter(Boolean);
+                spouseNamesList.forEach(spouseName => {
+                    const spouse = membersMap.get(spouseName);
+                    if (spouse) {
+                        member.spouses.push({ id: spouse.id, status: 'married' });
+                    }
+                });
+            }
+
+            // Clean up temporary fields
+            delete member.parentNames;
+            delete member.spouseNames;
+        });
+
+        // Transform for database
         const upsertData = mappedData.map(m => {
-            const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.is_deceased || false };
-            delete dbM.birthDate; delete dbM.deathDate;
+            const dbM = {
+                ...m,
+                tree_slug: treeSlug,
+                birth_date: m.birthDate || null,
+                death_date: m.deathDate || null,
+                is_deceased: m.is_deceased || false,
+                place_of_birth: m.placeOfBirth || null
+            };
+            delete dbM.birthDate;
+            delete dbM.deathDate;
+            delete dbM.placeOfBirth;
             return dbM;
         });
 
         const { error } = await supabase.from('members').upsert(upsertData);
         if (error) throw error;
+
+        // After insert, update children relationships
+        const allMembers = await supabase.from('members').select('*').eq('tree_slug', treeSlug);
+        if (!allMembers.error && allMembers.data) {
+            const updates = [];
+            allMembers.data.forEach(member => {
+                const parents = member.parents || [];
+                if (parents.length > 0) {
+                    parents.forEach(p => {
+                        const parentId = typeof p === 'string' ? p : p.id;
+                        const parent = allMembers.data.find(m => m.id === parentId);
+                        if (parent) {
+                            const children = parent.children || [];
+                            if (!children.includes(member.id)) {
+                                children.push(member.id);
+                                updates.push({ ...parent, children });
+                            }
+                        }
+                    });
+                }
+            });
+
+            if (updates.length > 0) {
+                await supabase.from('members').upsert(updates);
+            }
+        }
+
         fetchMembers();
     };
 
@@ -539,6 +636,18 @@ export const FamilyProvider = ({ children }) => {
         }
     };
 
+    const downloadExcelTemplate = () => {
+        const workbook = generateExcelTemplate();
+        const excelBuffer = write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = URL.createObjectURL(data);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `template-import-keluarga.xlsx`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+    };
+
     return (
         <FamilyContext.Provider value={{
             members, treeSlug, setTreeSlug, prevTreeSlug, selectedSlugs, setSelectedSlugs,
@@ -548,7 +657,7 @@ export const FamilyProvider = ({ children }) => {
             isLoading, listAllSlugs, fetchMembers,
             createSnapshot, listSnapshots, restoreSnapshot,
             exportToExcel, exportToCSV, exportToHTML, exportToPDF, migrateFromLocal,
-            importFromExcel
+            importFromExcel, downloadExcelTemplate
         }}>
             {children}
         </FamilyContext.Provider>
