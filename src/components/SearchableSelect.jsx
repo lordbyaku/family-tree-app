@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { getYearFromDateString } from '../utils/date';
 
 const SearchableSelect = ({ label, placeholder, members, onSelect, excludeIds = [], disabled = false }) => {
     const [query, setQuery] = useState('');
@@ -59,7 +60,7 @@ const SearchableSelect = ({ label, placeholder, members, onSelect, excludeIds = 
                             <div className="flex flex-col min-w-0">
                                 <span className="truncate font-medium">{m.name}</span>
                                 <div className="flex items-center gap-2 text-[10px] text-slate-400">
-                                    {m.birthDate && <span>Lahir: {m.birthDate.split('-')[0]}</span>}
+                                    {m.birthDate && <span>Lahir: {getYearFromDateString(m.birthDate)}</span>}
                                     {(m.parents || []).length > 0 && (
                                         <span className="truncate">
                                             &bull; Anak dari: {(m.parents || []).map(p => {

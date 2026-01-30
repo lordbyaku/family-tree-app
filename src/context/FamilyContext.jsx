@@ -265,39 +265,85 @@ export const FamilyProvider = ({ children }) => {
         try {
             const member = members.find(m => m.id === id);
             const updatedMember = { ...member, ...updatedData };
-            let updatedList = members.map((m) => (m.id === id ? updatedMember : m));
-            const modifiedMembers = [updatedMember];
+
+            // Collect all members that need to be updated in DB
+            const modifiedMembersMap = new Map();
+            modifiedMembersMap.set(id, updatedMember);
+
+            // 1. Sync Spouses
             if (updatedData.spouses) {
                 const oldSpouseIds = (member.spouses || []).map(s => typeof s === 'string' ? s : s.id);
                 const newSpouseIds = updatedData.spouses.map(s => typeof s === 'string' ? s : s.id);
-                const removedIds = oldSpouseIds.filter(sid => !newSpouseIds.includes(sid));
-                const keptIds = newSpouseIds;
-                updatedList = updatedList.map(m => {
-                    if (removedIds.includes(m.id)) {
-                        const updatedSpouse = { ...m, spouses: (m.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)) };
-                        modifiedMembers.push(updatedSpouse);
-                        return updatedSpouse;
+
+                // Removed spouses
+                oldSpouseIds.filter(sid => !newSpouseIds.includes(sid)).forEach(sid => {
+                    const spouse = members.find(m => m.id === sid);
+                    if (spouse) {
+                        const updatedSpouse = { ...spouse, spouses: (spouse.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)) };
+                        modifiedMembersMap.set(sid, updatedSpouse);
                     }
-                    if (keptIds.includes(m.id)) {
-                        const spouseObjInNew = updatedData.spouses.find(s => (typeof s === 'string' ? s === m.id : s.id === m.id));
+                });
+
+                // Added/Modified spouses
+                newSpouseIds.forEach(sid => {
+                    const spouse = members.find(m => m.id === sid);
+                    if (spouse) {
+                        const spouseObjInNew = updatedData.spouses.find(s => (typeof s === 'string' ? s === sid : s.id === sid));
                         const status = typeof spouseObjInNew === 'object' ? spouseObjInNew.status : 'married';
-                        const updatedSpouse = { ...m, spouses: [...(m.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)), { id, status }] };
-                        modifiedMembers.push(updatedSpouse);
-                        return updatedSpouse;
+                        const updatedSpouse = { ...spouse, spouses: [...(spouse.spouses || []).filter(s => (typeof s === 'string' ? s !== id : s.id !== id)), { id, status }] };
+                        modifiedMembersMap.set(sid, updatedSpouse);
                     }
-                    return m;
                 });
             }
-            const dbUpsertList = modifiedMembers.map(m => {
-                const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.isDeceased || false };
+
+            // 2. Sync Parents (Update their children arrays)
+            if (updatedData.parents) {
+                const oldParentIds = (member.parents || []).map(p => typeof p === 'string' ? p : p.id);
+                const newParentIds = updatedData.parents.map(p => typeof p === 'string' ? p : p.id);
+
+                // Removed parents
+                oldParentIds.filter(pid => !newParentIds.includes(pid)).forEach(pid => {
+                    const parent = members.find(m => m.id === pid);
+                    if (parent) {
+                        const updatedParent = { ...parent, children: (parent.children || []).filter(cid => cid !== id) };
+                        modifiedMembersMap.set(pid, updatedParent);
+                    }
+                });
+
+                // Added parents
+                newParentIds.filter(pid => !oldParentIds.includes(pid)).forEach(pid => {
+                    const parent = members.find(m => m.id === pid);
+                    if (parent) {
+                        const updatedParent = { ...parent, children: [...new Set([...(parent.children || []), id])] };
+                        modifiedMembersMap.set(pid, updatedParent);
+                    }
+                });
+            }
+
+            const finalModifiedList = Array.from(modifiedMembersMap.values());
+            const dbUpsertList = finalModifiedList.map(m => {
+                const dbM = {
+                    ...m,
+                    tree_slug: m.tree_slug || treeSlug,
+                    birth_date: m.birthDate || null,
+                    death_date: m.deathDate || null,
+                    is_deceased: m.isDeceased || false
+                };
                 delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
                 return dbM;
             });
+
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
+
+            // Update local state
+            const updatedList = members.map(m => modifiedMembersMap.get(m.id) || m);
             setMembers(updatedList);
             setLastAction(`Update Anggota: ${member?.name || id}`);
-        } catch (error) { console.error("Gagal update anggota:", error.message); throw error; }
+        } catch (error) {
+            console.error("Gagal update anggota:", error.message);
+            throw error;
+        }
     };
 
     const deleteMember = async (id) => {

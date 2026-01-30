@@ -5,6 +5,7 @@ import { useConfirm } from '../context/ConfirmContext';
 import { X, Upload, Loader2, Camera } from 'lucide-react';
 import { compressImage } from '../utils/image';
 import { supabase } from '../lib/supabase';
+import { parseDateString } from '../utils/date';
 import MemberBasicInfo from './MemberBasicInfo';
 import MemberRelationshipInfo from './MemberRelationshipInfo';
 import MemberBiographicalInfo from './MemberBiographicalInfo';
@@ -69,7 +70,9 @@ const MemberForm = ({ onClose, initialData = null }) => {
 
     const validate = () => {
         if (formData.birthDate && formData.isDeceased && formData.deathDate) {
-            if (new Date(formData.deathDate) < new Date(formData.birthDate)) {
+            const bDate = parseDateString(formData.birthDate);
+            const dDate = parseDateString(formData.deathDate);
+            if (bDate && dDate && dDate < bDate) {
                 return 'Tanggal wafat tidak boleh sebelum tanggal lahir.';
             }
         }
@@ -94,17 +97,19 @@ const MemberForm = ({ onClose, initialData = null }) => {
                 const parent = members.find(m => m.id === pObj.id);
                 // Only enforce strict age for biological parents
                 if (parent && parent.birthDate && formData.birthDate && pObj.type === 'biological') {
-                    const parentDob = new Date(parent.birthDate);
-                    const childDob = new Date(formData.birthDate);
+                    const parentDob = parseDateString(parent.birthDate);
+                    const childDob = parseDateString(formData.birthDate);
 
-                    if (parentDob >= childDob) {
+                    if (parentDob && childDob && parentDob >= childDob) {
                         return `Data tidak valid: Orang tua kandung (${parent.name}) lahir setelah atau bersamaan dengan anak.`;
                     }
 
-                    const minParentAge = new Date(parentDob);
-                    minParentAge.setFullYear(minParentAge.getFullYear() + 10);
-                    if (minParentAge > childDob) {
-                        return `Data tidak valid: Umur orang tua kandung (${parent.name}) terlalu muda (< 10 tahun) saat anak lahir.`;
+                    if (parentDob && childDob) {
+                        const minParentAge = new Date(parentDob);
+                        minParentAge.setFullYear(minParentAge.getFullYear() + 10);
+                        if (minParentAge > childDob) {
+                            return `Data tidak valid: Umur orang tua kandung (${parent.name}) terlalu muda (< 10 tahun) saat anak lahir.`;
+                        }
                     }
                 }
             }

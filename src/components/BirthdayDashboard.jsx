@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { X, Calendar, Cake, ChevronRight, User } from 'lucide-react';
 import { useFamily } from '../context/FamilyContext';
+import { parseDateString } from '../utils/date';
 
 const BirthdayDashboard = ({ onClose, onViewProfile }) => {
     const { members } = useFamily();
@@ -15,13 +16,12 @@ const BirthdayDashboard = ({ onClose, onViewProfile }) => {
         const allBirthdays = members
             .filter(m => m.birthDate)
             .map(m => {
-                // Assuming date format is YYYY-MM-DD or similar
-                const dateParts = m.birthDate.split('-');
-                if (dateParts.length < 3) return null;
+                const date = parseDateString(m.birthDate);
+                if (!date) return null;
 
-                const day = parseInt(dateParts[2]);
-                const month = parseInt(dateParts[1]);
-                const year = parseInt(dateParts[0]);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
 
                 return {
                     ...m,

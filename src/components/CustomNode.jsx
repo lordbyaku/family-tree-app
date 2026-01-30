@@ -5,6 +5,7 @@ import { useFamily } from '../context/FamilyContext';
 import { useConfirm } from '../context/ConfirmContext';
 import { useToast } from '../context/ToastContext';
 import { useAuth } from '../context/AuthContext';
+import { formatDateDisplay } from '../utils/date';
 
 const CustomNode = ({ id, data }) => {
     const { deleteMember } = useFamily();
@@ -148,8 +149,8 @@ const CustomNode = ({ id, data }) => {
                         )}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {data.birthDate}
-                        {data.isDeceased && data.deathDate && ` - ${data.deathDate}`}
+                        {formatDateDisplay(data.birthDate)}
+                        {data.isDeceased && data.deathDate && ` - ${formatDateDisplay(data.deathDate)}`}
                     </p>
                     {data.tree_slug && data.tree_slug !== 'default' && (
                         <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-[9px] font-bold rounded uppercase tracking-wider text-slate-500 dark:text-slate-400">
