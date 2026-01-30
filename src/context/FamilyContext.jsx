@@ -404,11 +404,8 @@ export const FamilyProvider = ({ children }) => {
                 birthDate: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
                 deathDate: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
                 is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
-                placeOfBirth: row['Tempat Lahir'] || row['placeOfBirth'] || null,
                 phone: row['Telepon'] || row['phone'] || '',
-                email: row['Email'] || row['email'] || '',
                 occupation: row['Pekerjaan'] || row['occupation'] || '',
-                education: row['Pendidikan'] || row['education'] || '',
                 address: row['Domisili'] || row['address'] || '',
                 biography: row['Biografi'] || row['biography'] || '',
                 parentNames: row['Orang Tua'] || '',
@@ -457,12 +454,10 @@ export const FamilyProvider = ({ children }) => {
                 tree_slug: treeSlug,
                 birth_date: m.birthDate || null,
                 death_date: m.deathDate || null,
-                is_deceased: m.is_deceased || false,
-                place_of_birth: m.placeOfBirth || null
+                is_deceased: m.is_deceased || false
             };
             delete dbM.birthDate;
             delete dbM.deathDate;
-            delete dbM.placeOfBirth;
             return dbM;
         });
 

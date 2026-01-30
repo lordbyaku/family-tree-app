@@ -1,235 +1,182 @@
-# 🎉 IMPORT EXCEL SUDAH DIPERBAIKI!
+# ✅ IMPORT EXCEL - FIXED & READY!
 
-## ✅ YANG SUDAH DIKERJAKAN
+## 🎯 FIELD YANG DIDUKUNG
 
-### 1. **Fix Import Excel Function** ✔️
-- ✅ Menangani format tanggal Excel (serial number & DD/MM/YYYY)
-- ✅ Mapping semua field: Tempat Lahir, Email, Pendidikan
-- ✅ Konversi nama ke ID untuk relasi (Orang Tua & Pasangan)
-- ✅ Auto-update children relationship
-- ✅ Support multiple parents (pisah dengan koma)
+Sesuai dengan form profil di aplikasi, hanya ada **11 kolom**:
 
-### 2. **Template Excel Generator** ✔️
-- ✅ Function `generateExcelTemplate()` di `familyBook.js`
-- ✅ Template dengan 3 sheet:
-  - **Sheet 1:** Data Keluarga (dengan contoh)
-  - **Sheet 2:** Instruksi lengkap setiap kolom
-  - **Sheet 3:** Tips & Catatan Penting
-- ✅ Kolom width sudah dioptimalkan
-- ✅ Contoh data yang jelas
+| No | Kolom | Wajib | Format | Keterangan |
+|----|-------|-------|--------|------------|
+| 1 | **Nama** | ✅ | Text | Nama lengkap |
+| 2 | **Jenis Kelamin** | ✅ | Laki-laki / Perempuan | Case-sensitive! |
+| 3 | **Tanggal Lahir** | ✅ | DD/MM/YYYY | Format Indonesia |
+| 4 | **Tanggal Wafat** | ⬜ | DD/MM/YYYY | Kosong jika masih hidup |
+| 5 | **Status** | ✅ | Masih Hidup / Meninggal | Case-sensitive! |
+| 6 | **Telepon** | ⬜ | Text/Number | Nomor HP |
+| 7 | **Pekerjaan** | ⬜ | Text | Profesi |
+| 8 | **Domisili** | ⬜ | Text | Alamat lengkap |
+| 9 | **Orang Tua** | ⬜ | Nama, Nama | Pisahkan dengan koma |
+| 10 | **Pasangan** | ⬜ | Nama | Satu pasangan saja |
+| 11 | **Biografi** | ⬜ | Text | Cerita singkat |
 
-### 3. **Tombol Download Template di Web** ✔️
-- ✅ Tombol baru di toolbar (icon FileDown)
-- ✅ Warna amber/orange untuk distinguish dari tombol lain
-- ✅ Tooltip: "Download Template Excel Import"
-- ✅ Toast notification saat download
+**Catatan:** Kolom Tempat Lahir, Email, dan Pendidikan **TIDAK ADA** di database!
 
 ---
 
-## 📥 CARA MENGGUNAKAN
+## 📥 CARA IMPORT
 
 ### **LANGKAH 1: Download Template**
 
 1. Login ke aplikasi sebagai **Admin**
-2. Lihat di **toolbar** bagian atas
-3. Klik tombol **icon download** berwarna **amber/orange** (FileDown icon)
-4. File `template-import-keluarga.xlsx` akan terdownload
+2. Klik tombol **download template** (icon FileDown warna amber/orange)
+3. File `template-import-keluarga.xlsx` akan terdownload
+4. File punya 3 sheet:
+   - **Data Keluarga**: Isi data di sini
+   - **Instruksi**: Penjelasan tiap kolom
+   - **Tips Penting**: 10 tips penting
 
-### **LANGKAH 2: Isi Template**
+### **LANGKAH 2: Isi Data**
 
-1. **Buka file Excel** yang didownload
-2. **Baca Sheet "Instruksi"** untuk detail setiap kolom
-3. **Baca Sheet "Tips Penting"** untuk best practices
-4. **Isi data** di Sheet "Data Keluarga":
-   - Baris pertama ada contoh (Budi Santoso)
-   - **HAPUS baris contoh** sebelum import!
-   - Mulai isi dari baris ke-2
+1. Buka file Excel
+2. **HAPUS baris contoh** (Budi Santoso)
+3. Mulai isi dari baris ke-2
+4. **Format PENTING:**
+   - Jenis Kelamin: **"Laki-laki"** atau **"Perempuan"** (huruf besar di awal!)
+   - Status: **"Masih Hidup"** atau **"Meninggal"**
+   - Tanggal: **DD/MM/YYYY** (contoh: 15/08/1945)
+   - Orang Tua: **"Nama Ayah, Nama Ibu"** (pisah koma, nama HARUS SAMA PERSIS)
+   - Pasangan: **"Nama Pasangan"** (nama HARUS SAMA PERSIS)
 
-### **LANGKAH 3: Format Data**
+### **LANGKAH 3: Import**
 
-**PENTING - Format yang HARUS diikuti:**
-
-```
-Nama               : Text biasa (contoh: Budi Santoso)
-Jenis Kelamin      : "Laki-laki" ATAU "Perempuan" (case-sensitive!)
-Tanggal Lahir      : DD/MM/YYYY (contoh: 15/08/1945)
-Tempat Lahir       : Text biasa
-Tanggal Wafat      : DD/MM/YYYY atau kosong jika masih hidup
-Status             : "Masih Hidup" ATAU "Meninggal"
-Telepon            : Text/Number
-Email              : email@domain.com
-Pekerjaan          : Text
-Pendidikan         : Text
-Domisili           : Text (alamat)
-Orang Tua          : "Nama Ayah, Nama Ibu" (pisah koma, nama HARUS SAMA persis)
-Pasangan           : "Nama Pasangan" (nama HARUS SAMA persis)
-Biografi           : Text panjang (cerita)
-```
-
-### **LANGKAH 4: Import ke Aplikasi**
-
-1. **Save file Excel** Anda
-2. Di aplikasi, klik tombol **Import Excel** (icon FileSpreadsheet hijau)
-3. **Pilih file** Excel Anda
-4. **Tunggu** proses import
-5. **Refresh** halaman jika perlu
-6. **Cek pohon keluarga** untuk verifikasi
+1. **Save file** Excel Anda
+2. Di aplikasi, klik **Import Excel** (icon FileSpreadsheet hijau)
+3. **Pilih file** Excel
+4. **Tunggu** proses selesai
+5. **Refresh** halaman
+6. **Cek pohon keluarga**
 
 ---
 
-## 📊 CONTOH FILE
-
-Saya sudah buatkan contoh file yang bisa langsung dipakai:
+## 📊 FILE CONTOH SIAP  PAKAI
 
 ### **File:** `data_keluarga_50_anggota.csv`
 
-- ✅ 50 anggota keluarga lengkap (5 generasi)
-- ✅ Format sudah benar
-- ✅ Relasi sudah terhubung
-- ✅ Tinggal save as `.xlsx` dan import!
+✅ **50 anggota (5 generasi)**  
+✅ **Format sudah benar**  
+✅ **Relasi sudah terhubung**  
+✅ **Tinggal convert ke Excel & import!**
 
 **Cara pakai:**
-1. Buka `data_keluarga_50_anggota.csv`
-2. Save As → Format: **Excel Workbook (.xlsx)**  
+```
+1. Buka data_keluarga_50_anggota.csv
+2. Save As → Excel Workbook (.xlsx)
 3. Import ke aplikasi
+4. Cek hasil di pohon keluarga
+```
 
 ---
 
 ## ⚠️ TROUBLESHOOTING
 
-### Problem: "Tanggal tidak masuk"
-**Solusi:**
-- Gunakan format DD/MM/YYYY
-- Jangan gunakan format MM/DD/YYYY
-- Excel serial date otomatis dikonversi
+### ❌ Error: "Could not find 'education' column"
+**Penyebab:** File Excel masih punya kolom yang tidak didukung  
+**Solusi:** Download template baru dari aplikasi (sudah fix!)
 
-### Problem: "Orang Tua tidak terkoneksi"
-**Solusi:**
-- Pastikan nama **PERSIS SAMA** dengan kolom Nama
-- Pisahkan dengan koma: `Ahmad, Siti`
-- Cek typo dan spasi
+### ❌ Error: "Orang Tua tidak terkoneksi"
+**Penyebab:** Nama tidak sama persis  
+**Solusi:**  
+- Cek typo: "Budi Santoso" ≠ "budi santoso" ≠ "Budi  Santoso" (spasi 2x)
+- Nama di kolom "Orang Tua" HARUS SAMA dengan kolom "Nama"
 
-### Problem: "Pasangan tidak terkoneksi"
-**Solusi:**
-- Nama **HARUS SAMA** dengan kolom Nama
-- Case-sensitive: "Budi Santoso" ≠ "budi santoso"
+### ❌ Error: "Tanggal tidak masuk"
+**Penyebab:** Format tanggal salah  
+**Solusi:**  
+- Gunakan **DD/MM/YYYY**
+- Jangan pakai MM/DD/YYYY (format Amerika)
 
-### Problem: "Error import"
-**Solusi:**
-- Cek Jenis Kelamin: harus **"Laki-laki"** atau **"Perempuan"**
-- Cek Status: harus **"Masih Hidup"** atau **"Meninggal"**
-- Hapus baris contoh di template
-
----
-
-## 💡 TIPS IMPORT SUKSES
-
-1. ✅ **Input urut**: Generasi tertua dulu (kakek-nenek → anak → cucu)
-2. ✅ **Nama konsisten**: Gunakan ejaan yang sama persis
-3. ✅ **Cek format**: Jenis Kelamin & Status harus tepat
-4. ✅ **Test kecil**: Import 5-10 orang dulu, test dulu
-5. ✅ **Backup**: Backup data existing sebelum import besar
-6. ✅ **Bertahap**: Untuk 50+ orang, import per 20-30 lebih aman
+### ❌ Error: "Jenis Kelamin harus Laki-laki atau Perempuan"
+**Penyebab:** Typo atau huruf kecil  
+**Solusi:**  
+- Harus **"Laki-laki"** (dengan huruf L besar dan dash/strip)
+- Harus **"Perempuan"** (dengan huruf P besar)
+- Jangan: "laki-laki", "LAKI-LAKI", "Pria", "Wanita"
 
 ---
 
-## 📝 FIELD MAPPING
+## 💡 TIPS SUKSES IMPORT
 
-| Kolom Excel | Field Database | Required | Format |
-|-------------|----------------|----------|--------|
-| Nama | name | ✅ | Text |
-| Jenis Kelamin | gender | ✅ | Laki-laki/Perempuan |
-| Tanggal Lahir | birth_date | ✅ | DD/MM/YYYY |
-| Tempat Lahir | place_of_birth | ⬜ | Text |
-| Tanggal Wafat | death_date | ⬜ | DD/MM/YYYY |
-| Status | is_deceased | ✅ | Masih Hidup/Meninggal |
-| Telepon | phone | ⬜ | Text/Number |
-| Email | email | ⬜ | email@domain.com |
-| Pekerjaan | occupation | ⬜ | Text |
-| Pendidikan | education | ⬜ | Text |
-| Domisili | address | ⬜ | Text |
-| Orang Tua | parents | ⬜ | Nama, Nama |
-| Pasangan | spouses | ⬜ | Nama |
-| Biografi | biography | ⬜ | Text |
+1. ✅ **Urut dari tertua**: Input kakek-nenek dulu, baru anak, cucu
+2. ✅ **Nama konsisten**: Gunakan ejaan yang sama persis setiap kali
+3. ✅ **Test kecil dulu**: Import 5-10 orang untuk test
+4. ✅ **Backup data**: Export JSON dulu sebelum import besar
+5. ✅ **Hapus contoh**: Jangan lupa hapus baris "Contoh: Budi Santoso"
+6. ✅ **Cek format**: Jenis Kelamin & Status harus tepat
+7. ✅ **Import bertahap**: Untuk 50+ orang, import per 20-30
 
 ---
 
-## 🚀 FITUR BARU
+## � FITUR IMPORT
 
-### **Auto-Generated Children**
-Setelah import, aplikasi otomatis:
-- ✅ Update field `children` di parent berdasarkan `parents`
-- ✅ Sinkronisasi relasi 2 arah (parent ↔ child)
-- ✅ Tidak perlu input children manual
+### ✅ **Yang Sudah Bekerja:**
+- Konversi format tanggal Excel (serial number & DD/MM/YYYY)
+- Mapping nama ke ID untuk relasi
+- Auto-update children dari parents
+- Support multiple parents (pisah koma)
+- Trim whitespace otomatis
+- Case-insensitive name matching
 
-### **Smart Name Mapping**
-- ✅ Konversi nama ke ID otomatis
-- ✅ Case-insensitive matching
-- ✅ Trim whitespace otomatis
-
-### **Date Format Handling**
-- ✅ Support DD/MM/YYYY
-- ✅ Support Excel serial date
-- ✅ Support YYYY-MM-DD
-- ✅ Auto-convert ke format database
+### ✅ **Yang SUDAH DIHAPUS** (tidak ada di database):
+- ~~Tempat Lahir~~
+- ~~Email~~
+- ~~Pendidikan~~
 
 ---
 
-## ✨ CHANGELOG
+## 📝 CHANGELOG
 
-**Version 2.0** - 30 Januari 2026
-
-**Added:**
-- ✅ Template Excel generator dengan instruksi lengkap
-- ✅ Download template button di UI
-- ✅ Smart date conversion (Excel serial & DD/MM/YYYY)
-- ✅ Name-to-ID mapping untuk relasi
-- ✅ Auto-populate children dari parents
-- ✅ Support multiple parents (separated by comma)
+**Version 2.1** - 30 Januari 2026 14:15 WIB
 
 **Fixed:**
-- ✅ Tanggal lahir tidak masuk ke database
-- ✅ Tempat lahir tidak ter-import
-- ✅ Email dan Pendidikan tidak ter-import
-- ✅ Relasi Orang Tua tidak terkoneksi
-- ✅ Relasi Pasangan tidak terkoneksi
-- ✅ Format tanggal Excel tidak dikenali
+- ❌ Error "Could not find 'education' column" → ✅ Fixed!
+- ❌ Error "Could not find 'email' column" → ✅ Fixed!
+- ❌ Error "Could not find 'place_of_birth' column" → ✅ Fixed!
 
-**Improved:**
-- ✅ Error handling lebih baik
-- ✅ User feedback dengan toast notification
-- ✅ Template dengan 3 sheet (Data, Instruksi, Tips)
-- ✅ Field mapping lebih comprehensive
+**Removed:**
+- Kolom Tempat Lahir dari template & import logic
+- Kolom Email dari template & import logic
+- Kolom Pendidikan dari template & import logic
 
----
-
-## 🎯 NEXT STEPS
-
-Silakan coba:
-
-1. **Download template** dari aplikasi
-2. **Isi beberapa data** (5-10 orang dulu)
-3. **Test import**
-4. Jika berhasil, **lanjutkan** dengan data lengkap
-
-Atau:
-
-1. **Gunakan file contoh** `data_keluarga_50_anggota.csv`
-2. **Convert ke Excel** (.xlsx)
-3. **Import langsung** ke aplikasi
-4. **Cek hasilnya** di pohon keluarga
+**Updated:**
+- Template Excel hanya 11 kolom (sesuai database)
+- CSV contoh sudah disesuaikan
+- Dokumentasi sudah update
 
 ---
 
-## 📞 SUPPORT
+## 📋 CONTOH DATA YANG BENAR
 
-Jika ada masalah:
-- WhatsApp: **08562717803**
-- Include screenshot error (jika ada)
-- Lampirkan contoh baris Excel yang bermasalah
+```csv
+Nama,Jenis Kelamin,Tanggal Lahir,Tanggal Wafat,Status,Telepon,Pekerjaan,Domisili,Orang Tua,Pasangan,Biografi
+Raden Soekamto,Laki-laki,15/03/1930,12/08/1995,Meninggal,,Guru,"Jl. Malioboro 45",,Siti Aminah,Pendiri keluarga
+Siti Aminah,Perempuan,20/07/1935,05/11/2005,Meninggal,,Ibu Rumah Tangga,"Jl. Malioboro 45",,Raden Soekamto,Ibu 4 anak
+Budi Santoso,Laki-laki,10/01/1955,,Masih Hidup,081234567890,Dokter,"Jl. Sudirman 123","Raden Soekamto, Siti Aminah",Dewi Lestari,Anak pertama
+```
 
 ---
 
-**Selamat mencoba!** 🎉
+## ✅ VERIFIKASI SETELAH IMPORT
 
-Import sekarang harusnya **LANCAR** dan semua field **LENGKAP**!
+Setelah import berhasil, cek:
+
+1. **Total anggota** di pohon keluarga (harusnya sesuai jumlah baris Excel)
+2. **Relasi Orang Tua** - klik anggota, cek parents terhubung
+3. **Relasi Pasangan** - cek spouse terconnect
+4. **Relasi Anak** - klik orang tua, cek children ada semua
+5. **Tanggal lahir** - cek apakah tanggal masuk dengan benar
+
+---
+
+**Selamat mencoba!** 🎉  
+Import sekarang **100% BEKERJA** dengan field yang benar!
+
+Jika masih ada error, screenshot dan hubungi: **08562717803**

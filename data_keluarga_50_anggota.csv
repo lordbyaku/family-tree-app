@@ -1,44 +1,44 @@
-Nama,Jenis Kelamin,Tanggal Lahir,Tempat Lahir,Tanggal Wafat,Status,Telepon,Email,Pekerjaan,Pendidikan,Domisili,Orang Tua,Pasangan,Biografi
-Raden Soekamto,Laki-laki,15/03/1930,Yogyakarta,12/08/1995,Meninggal,,,Guru,SMA,"Jl. Malioboro No. 45, Yogyakarta",,Siti Aminah,Pendiri keluarga mantan guru SMA yang sangat dihormati
-Siti Aminah,Perempuan,20/07/1935,Solo,05/11/2005,Meninggal,,,Ibu Rumah Tangga,SMP,"Jl. Malioboro No. 45, Yogyakarta",,Raden Soekamto,Ibu yang penuh kasih sayang membesarkan 4 anak
-Budi Santoso,Laki-laki,10/01/1955,Yogyakarta,,Masih Hidup,081234567890,budi.santoso@email.com,Dokter,S1 Kedokteran,"Jl. Sudirman No. 123, Jakarta","Raden Soekamto, Siti Aminah",Dewi Lestari,Anak pertama praktik sebagai dokter umum di Jakarta
-Dewi Lestari,Perempuan,15/05/1958,Jakarta,,Masih Hidup,081234567891,dewi.lestari@email.com,Pengusaha,S1 Ekonomi,"Jl. Sudirman No. 123, Jakarta",,Budi Santoso,Pemilik toko kain sukses menikah dengan Budi tahun 1979
-Siti Rahayu,Perempuan,22/08/1957,Yogyakarta,,Masih Hidup,081234567892,siti.rahayu@email.com,Perawat,D3 Keperawatan,"Jl. Gajah Mada No. 67, Semarang","Raden Soekamto, Siti Aminah",Ahmad Dahlan,Anak kedua bekerja di rumah sakit selama 30 tahun
-Ahmad Dahlan,Laki-laki,18/03/1955,Semarang,,Masih Hidup,081234567893,ahmad.dahlan@email.com,Pengacara,S1 Hukum,"Jl. Gajah Mada No. 67, Semarang",,Siti Rahayu,Pengacara senior dengan pengalaman 35 tahun
-Bambang Wijaya,Laki-laki,30/11/1960,Yogyakarta,,Masih Hidup,081234567894,bambang.wijaya@email.com,Insinyur,S1 Teknik Sipil,"Jl. Asia Afrika No. 89, Bandung","Raden Soekamto, Siti Aminah",Indah Permata,Anak ketiga bekerja di perusahaan kontraktor besar
-Indah Permata,Perempuan,12/02/1963,Bandung,,Masih Hidup,081234567895,indah.permata@email.com,Guru,S1 Pendidikan,"Jl. Asia Afrika No. 89, Bandung",,Bambang Wijaya,Guru SD yang mengajar dengan penuh dedikasi
-Suryani Kartini,Perempuan,05/06/1962,Yogyakarta,,Masih Hidup,081234567896,suryani.kartini@email.com,Apoteker,S1 Farmasi,"Jl. Diponegoro No. 34, Surabaya","Raden Soekamto, Siti Aminah",Hendra Kusuma,Anak keempat memiliki apotek di Surabaya
-Hendra Kusuma,Laki-laki,25/09/1960,Surabaya,,Masih Hidup,081234567897,hendra.kusuma@email.com,Akuntan,S1 Akuntansi,"Jl. Diponegoro No. 34, Surabaya",,Suryani Kartini,Akuntan publik bersertifikat
-Andi Pratama,Laki-laki,08/04/1980,Jakarta,,Masih Hidup,081234567898,andi.pratama@email.com,Programmer,S1 Informatika,"Jl. Kuningan No. 56, Jakarta","Budi Santoso, Dewi Lestari",Rina Maharani,Cucu pertama dari Budi bekerja sebagai senior programmer
-Rina Maharani,Perempuan,14/07/1982,Jakarta,,Masih Hidup,081234567899,rina.maharani@email.com,Designer,S1 Desain Grafis,"Jl. Kuningan No. 56, Jakarta",,Andi Pratama,Bekerja di agency kreatif ternama di Jakarta
-Dian Puspita,Perempuan,20/12/1983,Jakarta,,Masih Hidup,081234567800,dian.puspita@email.com,Dokter Gigi,S1 Kedokteran Gigi,"Jl. Menteng No. 78, Jakarta","Budi Santoso, Dewi Lestari",Rizki Gunawan,Cucu kedua dari Budi membuka praktik dokter gigi
-Rizki Gunawan,Laki-laki,16/08/1981,Jakarta,,Masih Hidup,081234567801,rizki.gunawan@email.com,Arsitek,S1 Arsitektur,"Jl. Menteng No. 78, Jakarta",,Dian Puspita,Punya firma arsitektur yang menangani berbagai proyek
-Fajar Nugroho,Laki-laki,11/09/1985,Jakarta,,Masih Hidup,081234567802,fajar.nugroho@email.com,Marketing,S1 Marketing,"Jl. Kemang No. 45, Jakarta","Budi Santoso, Dewi Lestari",,Cucu ketiga dari Budi belum menikah fokus pada karir
-Maya Anggraini,Perempuan,28/02/1978,Semarang,,Masih Hidup,081234567803,maya.anggraini@email.com,Psikolog,S2 Psikologi,"Jl. Pemuda No. 12, Semarang","Ahmad Dahlan, Siti Rahayu",Bagus Setiawan,Cucu dari Ahmad membuka praktik psikologi klinis
-Bagus Setiawan,Laki-laki,03/06/1976,Semarang,,Masih Hidup,081234567804,bagus.setiawan@email.com,Dosen,S2 Sastra,"Jl. Pemuda No. 12, Semarang",,Maya Anggraini,Dosen sastra di universitas negeri Semarang
-Rudi Hermawan,Laki-laki,19/10/1981,Semarang,,Masih Hidup,081234567805,rudi.hermawan@email.com,Polisi,Akademi Kepolisian,"Jl. Pandanaran No. 90, Semarang","Ahmad Dahlan, Siti Rahayu",Sari Wulandari,Cucu kedua dari Ahmad bertugas sebagai polisi AKP
-Sari Wulandari,Perempuan,22/04/1983,Semarang,,Masih Hidup,081234567806,sari.wulandari@email.com,Guru,S1 Pendidikan,"Jl. Pandanaran No. 90, Semarang",,Rudi Hermawan,Guru SMP yang mengajar Bahasa Indonesia
-Eko Prasetyo,Laki-laki,07/07/1982,Bandung,,Masih Hidup,081234567807,eko.prasetyo@email.com,Pilot,S1 Penerbangan,"Jl. Dago No. 23, Bandung","Bambang Wijaya, Indah Permata",Linda Safitri,Cucu dari Bambang pilot komersial ribuan jam terbang
-Linda Safitri,Perempuan,12/11/1984,Bandung,,Masih Hidup,081234567808,linda.safitri@email.com,Pramugari,D3 Perhotelan,"Jl. Dago No. 23, Bandung",,Eko Prasetyo,Pramugari maskapai nasional bertemu Eko saat bekerja
-Tari Mustika,Perempuan,30/05/1986,Bandung,,Masih Hidup,081234567809,tari.mustika@email.com,Fotografer,S1 Seni Rupa,"Jl. Braga No. 45, Bandung","Bambang Wijaya, Indah Permata",Yoga Saputra,Cucu kedua dari Bambang fotografer profesional
-Yoga Saputra,Laki-laki,18/01/1985,Bandung,,Masih Hidup,081234567810,yoga.saputra@email.com,Videografer,S1 Film,"Jl. Braga No. 45, Bandung",,Tari Mustika,Punya studio produksi bersama istri
-Arya Mahendra,Laki-laki,25/03/1979,Surabaya,,Masih Hidup,081234567811,arya.mahendra@email.com,Farmasis,S1 Farmasi,"Jl. Basuki Rahmat No. 67, Surabaya","Hendra Kusuma, Suryani Kartini",Nina Octavia,Cucu dari Hendra melanjutkan apotek keluarga
-Nina Octavia,Perempuan,09/09/1981,Surabaya,,Masih Hidup,081234567812,nina.octavia@email.com,Bidan,D3 Kebidanan,"Jl. Basuki Rahmat No. 67, Surabaya",,Arya Mahendra,Praktik bidan yang membantu banyak persalinan
-Putri Wulan,Perempuan,14/12/1983,Surabaya,,Masih Hidup,081234567813,putri.wulan@email.com,Pengusaha,S1 Manajemen,"Jl. Tunjungan No. 88, Surabaya","Hendra Kusuma, Suryani Kartini",Dimas Pradipta,Cucu kedua dari Hendra memiliki bisnis kuliner sukses
-Dimas Pradipta,Laki-laki,21/06/1982,Surabaya,,Masih Hidup,081234567814,dimas.pradipta@email.com,Pengusaha,S1 Ekonomi,"Jl. Tunjungan No. 88, Surabaya",,Putri Wulan,Punya bisnis kuliner bersama istri beberapa cabang
-Aditya Pratama,Laki-laki,15/05/2005,Jakarta,,Masih Hidup,081234567815,aditya.pratama@email.com,Mahasiswa,SMA,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit kuliah Teknik Informatika semester 3
-Cantika Putri,Perempuan,23/08/2007,Jakarta,,Masih Hidup,081234567816,cantika.putri@email.com,Pelajar,SMP,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit pelajar SMP kelas 9 aktif di organisasi
-Bintang Ramadhan,Laki-laki,10/03/2009,Jakarta,,Masih Hidup,081234567817,bintang.ramadhan@email.com,Pelajar,SD,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit pelajar SD suka matematika dan robotika
-Alisha Zahra,Perempuan,18/11/2006,Jakarta,,Masih Hidup,081234567818,alisha.zahra@email.com,Pelajar,SMA,"Jl. Menteng No. 78, Jakarta","Rizki Gunawan, Dian Puspita",,Cicit SMA jurusan IPA prestasi akademik tinggi
-Kevin Adiputra,Laki-laki,22/01/2010,Jakarta,,Masih Hidup,081234567819,kevin.adiputra@email.com,Pelajar,SD,"Jl. Menteng No. 78, Jakarta","Rizki Gunawan, Dian Puspita",,Cicit hobi main bola punya bakat di olahraga
-Sarah Azzahra,Perempuan,07/04/2004,Semarang,,Masih Hidup,081234567820,sarah.azzahra@email.com,Mahasiswa,SMA,"Jl. Pemuda No. 12, Semarang","Bagus Setiawan, Maya Anggraini",,Cicit kuliah Psikologi mengikuti jejak ibu
-Farhan Maulana,Laki-laki,30/09/2008,Semarang,,Masih Hidup,081234567821,farhan.maulana@email.com,Pelajar,SMP,"Jl. Pemuda No. 12, Semarang","Bagus Setiawan, Maya Anggraini",,Cicit atlet renang sering juara tingkat kota
-Nabila Putri,Perempuan,12/12/2007,Semarang,,Masih Hidup,081234567822,nabila.putri@email.com,Pelajar,SMP,"Jl. Pandanaran No. 90, Semarang","Rudi Hermawan, Sari Wulandari",,Cicit hobi menari aktif di sanggar tari tradisional
-Rafa Adhitya,Laki-laki,25/06/2010,Semarang,,Masih Hidup,081234567823,rafa.adhitya@email.com,Pelajar,SD,"Jl. Pandanaran No. 90, Semarang","Rudi Hermawan, Sari Wulandari",,Cicit suka coding membuat game sederhana
-Kirana Dewi,Perempuan,08/02/2006,Bandung,,Masih Hidup,081234567824,kirana.dewi@email.com,Pelajar,SMA,"Jl. Dago No. 23, Bandung","Eko Prasetyo, Linda Safitri",,Cicit cita-cita jadi pilot seperti ayahnya
-Raffi Alam,Laki-laki,19/07/2009,Bandung,,Masih Hidup,081234567825,raffi.alam@email.com,Pelajar,SD,"Jl. Dago No. 23, Bandung","Eko Prasetyo, Linda Safitri",,Cicit hobi pesawat koleksi model pesawat
-Keysha Amelia,Perempuan,05/10/2008,Bandung,,Masih Hidup,081234567826,keysha.amelia@email.com,Pelajar,SMP,"Jl. Braga No. 45, Bandung","Yoga Saputra, Tari Mustika",,Cicit bakat fotografi mewarisi kedua orang tuanya
-Zidan Akbar,Laki-laki,14/04/2005,Surabaya,,Masih Hidup,081234567827,zidan.akbar@email.com,Mahasiswa,SMA,"Jl. Basuki Rahmat No. 67, Surabaya","Arya Mahendra, Nina Octavia",,Cicit kuliah Farmasi melanjutkan bisnis keluarga
-Rania Syifa,Perempuan,28/08/2007,Surabaya,,Masih Hidup,081234567828,rania.syifa@email.com,Pelajar,SMP,"Jl. Basuki Rahmat No. 67, Surabaya","Arya Mahendra, Nina Octavia",,Cicit hobi memasak punya channel YouTube masak
-Farel Naufal,Laki-laki,16/03/2006,Surabaya,,Masih Hidup,081234567829,farel.naufal@email.com,Pelajar,SMA,"Jl. Tunjungan No. 88, Surabaya","Dimas Pradipta, Putri Wulan",,Cicit bantu bisnis kuliner keluarga waktu luang
-Zahra Amira,Perempuan,11/11/2009,Surabaya,,Masih Hidup,081234567830,zahra.amira@email.com,Pelajar,SD,"Jl. Tunjungan No. 88, Surabaya","Dimas Pradipta, Putri Wulan",,Cicit suka kuliner ingin jadi chef kelak
+Nama,Jenis Kelamin,Tanggal Lahir,Tanggal Wafat,Status,Telepon,Pekerjaan,Domisili,Orang Tua,Pasangan,Biografi
+Raden Soekamto,Laki-laki,15/03/1930,12/08/1995,Meninggal,,Guru,"Jl. Malioboro No. 45, Yogyakarta",,Siti Aminah,Pendiri keluarga mantan guru SMA yang sangat dihormati
+Siti Aminah,Perempuan,20/07/1935,05/11/2005,Meninggal,,Ibu Rumah Tangga,"Jl. Malioboro No. 45, Yogyakarta",,Raden Soekamto,Ibu yang penuh kasih sayang membesarkan 4 anak
+Budi Santoso,Laki-laki,10/01/1955,,Masih Hidup,081234567890,Dokter,"Jl. Sudirman No. 123, Jakarta","Raden Soekamto, Siti Aminah",Dewi Lestari,Anak pertama praktik sebagai dokter umum di Jakarta
+Dewi Lestari,Perempuan,15/05/1958,,Masih Hidup,081234567891,Pengusaha,"Jl. Sudirman No. 123, Jakarta",,Budi Santoso,Pemilik toko kain sukses menikah dengan Budi tahun 1979
+Siti Rahayu,Perempuan,22/08/1957,,Masih Hidup,081234567892,Perawat,"Jl. Gajah Mada No. 67, Semarang","Raden Soekamto, Siti Aminah",Ahmad Dahlan,Anak kedua bekerja di rumah sakit selama 30 tahun
+Ahmad Dahlan,Laki-laki,18/03/1955,,Masih Hidup,081234567893,Pengacara,"Jl. Gajah Mada No. 67, Semarang",,Siti Rahayu,Pengacara senior dengan pengalaman 35 tahun
+Bambang Wijaya,Laki-laki,30/11/1960,,Masih Hidup,081234567894,Insinyur,"Jl. Asia Afrika No. 89, Bandung","Raden Soekamto, Siti Aminah",Indah Permata,Anak ketiga bekerja di perusahaan kontraktor besar
+Indah Permata,Perempuan,12/02/1963,,Masih Hidup,081234567895,Guru,"Jl. Asia Afrika No. 89, Bandung",,Bambang Wijaya,Guru SD yang mengajar dengan penuh dedikasi
+Suryani Kartini,Perempuan,05/06/1962,,Masih Hidup,081234567896,Apoteker,"Jl. Diponegoro No. 34, Surabaya","Raden Soekamto, Siti Aminah",Hendra Kusuma,Anak keempat memiliki apotek di Surabaya
+Hendra Kusuma,Laki-laki,25/09/1960,,Masih Hidup,081234567897,Akuntan,"Jl. Diponegoro No. 34, Surabaya",,Suryani Kartini,Akuntan publik bersertifikat
+Andi Pratama,Laki-laki,08/04/1980,,Masih Hidup,081234567898,Programmer,"Jl. Kuningan No. 56, Jakarta","Budi Santoso, Dewi Lestari",Rina Maharani,Cucu pertama dari Budi bekerja sebagai senior programmer
+Rina Maharani,Perempuan,14/07/1982,,Masih Hidup,081234567899,Designer,"Jl. Kuningan No. 56, Jakarta",,Andi Pratama,Bekerja di agency kreatif ternama di Jakarta
+Dian Puspita,Perempuan,20/12/1983,,Masih Hidup,081234567800,Dokter Gigi,"Jl. Menteng No. 78, Jakarta","Budi Santoso, Dewi Lestari",Rizki Gunawan,Cucu kedua dari Budi membuka praktik dokter gigi
+Rizki Gunawan,Laki-laki,16/08/1981,,Masih Hidup,081234567801,Arsitek,"Jl. Menteng No. 78, Jakarta",,Dian Puspita,Punya firma arsitektur yang menangani berbagai proyek
+Fajar Nugroho,Laki-laki,11/09/1985,,Masih Hidup,081234567802,Marketing,"Jl. Kemang No. 45, Jakarta","Budi Santoso, Dewi Lestari",,Cucu ketiga dari Budi belum menikah fokus pada karir
+Maya Anggraini,Perempuan,28/02/1978,,Masih Hidup,081234567803,Psikolog,"Jl. Pemuda No. 12, Semarang","Ahmad Dahlan, Siti Rahayu",Bagus Setiawan,Cucu dari Ahmad membuka praktik psikologi klinis
+Bagus Setiawan,Laki-laki,03/06/1976,,Masih Hidup,081234567804,Dosen,"Jl. Pemuda No. 12, Semarang",,Maya Anggraini,Dosen sastra di universitas negeri Semarang
+Rudi Hermawan,Laki-laki,19/10/1981,,Masih Hidup,081234567805,Polisi,"Jl. Pandanaran No. 90, Semarang","Ahmad Dahlan, Siti Rahayu",Sari Wulandari,Cucu kedua dari Ahmad bertugas sebagai polisi AKP
+Sari Wulandari,Perempuan,22/04/1983,,Masih Hidup,081234567806,Guru,"Jl. Pandanaran No. 90, Semarang",,Rudi Hermawan,Guru SMP yang mengajar Bahasa Indonesia
+Eko Prasetyo,Laki-laki,07/07/1982,,Masih Hidup,081234567807,Pilot,"Jl. Dago No. 23, Bandung","Bambang Wijaya, Indah Permata",Linda Safitri,Cucu dari Bambang pilot komersial ribuan jam terbang
+Linda Safitri,Perempuan,12/11/1984,,Masih Hidup,081234567808,Pramugari,"Jl. Dago No. 23, Bandung",,Eko Prasetyo,Pramugari maskapai nasional bertemu Eko saat bekerja
+Tari Mustika,Perempuan,30/05/1986,,Masih Hidup,081234567809,Fotografer,"Jl. Braga No. 45, Bandung","Bambang Wijaya, Indah Permata",Yoga Saputra,Cucu kedua dari Bambang fotografer profesional
+Yoga Saputra,Laki-laki,18/01/1985,,Masih Hidup,081234567810,Videografer,"Jl. Braga No. 45, Bandung",,Tari Mustika,Punya studio produksi bersama istri
+Arya Mahendra,Laki-laki,25/03/1979,,Masih Hidup,081234567811,Farmasis,"Jl. Basuki Rahmat No. 67, Surabaya","Hendra Kusuma, Suryani Kartini",Nina Octavia,Cucu dari Hendra melanjutkan apotek keluarga
+Nina Octavia,Perempuan,09/09/1981,,Masih Hidup,081234567812,Bidan,"Jl. Basuki Rahmat No. 67, Surabaya",,Arya Mahendra,Praktik bidan yang membantu banyak persalinan
+Putri Wulan,Perempuan,14/12/1983,,Masih Hidup,081234567813,Pengusaha,"Jl. Tunjungan No. 88, Surabaya","Hendra Kusuma, Suryani Kartini",Dimas Pradipta,Cucu kedua dari Hendra memiliki bisnis kuliner sukses
+Dimas Pradipta,Laki-laki,21/06/1982,,Masih Hidup,081234567814,Pengusaha,"Jl. Tunjungan No. 88, Surabaya",,Putri Wulan,Punya bisnis kuliner bersama istri beberapa cabang
+Aditya Pratama,Laki-laki,15/05/2005,,Masih Hidup,081234567815,Mahasiswa,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit kuliah Teknik Informatika semester 3
+Cantika Putri,Perempuan,23/08/2007,,Masih Hidup,081234567816,Pelajar,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit pelajar SMP kelas 9 aktif di organisasi
+Bintang Ramadhan,Laki-laki,10/03/2009,,Masih Hidup,081234567817,Pelajar,"Jl. Kuningan No. 56, Jakarta","Andi Pratama, Rina Maharani",,Cicit pelajar SD suka matematika dan robotika
+Alisha Zahra,Perempuan,18/11/2006,,Masih Hidup,081234567818,Pelajar,"Jl. Menteng No. 78, Jakarta","Rizki Gunawan, Dian Puspita",,Cicit SMA jurusan IPA prestasi akademik tinggi
+Kevin Adiputra,Laki-laki,22/01/2010,,Masih Hidup,081234567819,Pelajar,"Jl. Menteng No. 78, Jakarta","Rizki Gunawan, Dian Puspita",,Cicit hobi main bola punya bakat di olahraga
+Sarah Azzahra,Perempuan,07/04/2004,,Masih Hidup,081234567820,Mahasiswa,"Jl. Pemuda No. 12, Semarang","Bagus Setiawan, Maya Anggraini",,Cicit kuliah Psikologi mengikuti jejak ibu
+Farhan Maulana,Laki-laki,30/09/2008,,Masih Hidup,081234567821,Pelajar,"Jl. Pemuda No. 12, Semarang","Bagus Setiawan, Maya Anggraini",,Cicit atlet renang sering juara tingkat kota
+Nabila Putri,Perempuan,12/12/2007,,Masih Hidup,081234567822,Pelajar,"Jl. Pandanaran No. 90, Semarang","Rudi Hermawan, Sari Wulandari",,Cicit hobi menari aktif di sanggar tari tradisional
+Rafa Adhitya,Laki-laki,25/06/2010,,Masih Hidup,081234567823,Pelajar,"Jl. Pandanaran No. 90, Semarang","Rudi Hermawan, Sari Wulandari",,Cicit suka coding membuat game sederhana
+Kirana Dewi,Perempuan,08/02/2006,,Masih Hidup,081234567824,Pelajar,"Jl. Dago No. 23, Bandung","Eko Prasetyo, Linda Safitri",,Cicit cita-cita jadi pilot seperti ayahnya
+Raffi Alam,Laki-laki,19/07/2009,,Masih Hidup,081234567825,Pelajar,"Jl. Dago No. 23, Bandung","Eko Prasetyo, Linda Safitri",,Cicit hobi pesawat koleksi model pesawat
+Keysha Amelia,Perempuan,05/10/2008,,Masih Hidup,081234567826,Pelajar,"Jl. Braga No. 45, Bandung","Yoga Saputra, Tari Mustika",,Cicit bakat fotografi mewarisi kedua orang tuanya
+Zidan Akbar,Laki-laki,14/04/2005,,Masih Hidup,081234567827,Mahasiswa,"Jl. Basuki Rahmat No. 67, Surabaya","Arya Mahendra, Nina Octavia",,Cicit kuliah Farmasi melanjutkan bisnis keluarga
+Rania Syifa,Perempuan,28/08/2007,,Masih Hidup,081234567828,Pelajar,"Jl. Basuki Rahmat No. 67, Surabaya","Arya Mahendra, Nina Octavia",,Cicit hobi memasak punya channel YouTube masak
+Farel Naufal,Laki-laki,16/03/2006,,Masih Hidup,081234567829,Pelajar,"Jl. Tunjungan No. 88, Surabaya","Dimas Pradipta, Putri Wulan",,Cicit bantu bisnis kuliner keluarga waktu luang
+Zahra Amira,Perempuan,11/11/2009,,Masih Hidup,081234567830,Pelajar,"Jl. Tunjungan No. 88, Surabaya","Dimas Pradipta, Putri Wulan",,Cicit suka kuliner ingin jadi chef kelak
