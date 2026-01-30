@@ -82,6 +82,21 @@ const FamilyTree = (props) => {
     const { treeSlug } = useFamily();
     const DYNAMIC_LAYOUT_KEY = `family_layout_${treeSlug}`;
 
+    // Highlight State
+    const [highlightedNodeId, setHighlightedNodeId] = React.useState(null);
+
+    const onNodeClick = useCallback((event, node) => {
+        if (node.type === 'member') {
+            setHighlightedNodeId(node.id);
+        } else {
+            setHighlightedNodeId(null);
+        }
+    }, []);
+
+    const onPaneClick = useCallback(() => {
+        setHighlightedNodeId(null);
+    }, []);
+
     // Handle focus on specific node (Search)
     useEffect(() => {
         if (props.focusNodeId && nodes.length > 0) {
@@ -249,6 +264,8 @@ const FamilyTree = (props) => {
                 const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
                 const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
 
+                const isHighlighted = m.p1 === highlightedNodeId || m.p2 === highlightedNodeId;
+
                 finalEdges.push({
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
@@ -257,7 +274,15 @@ const FamilyTree = (props) => {
                     sourceHandle: 'bottom',
                     targetHandle: p1Target,
                     borderRadius: 20,
-                    style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
+                    animated: isHighlighted,
+                    style: {
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
+                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
+                        strokeWidth: isHighlighted ? 6 : 3,
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
+                    }
                 });
 
                 finalEdges.push({
@@ -268,7 +293,15 @@ const FamilyTree = (props) => {
                     sourceHandle: 'bottom',
                     targetHandle: p2Target,
                     borderRadius: 20,
-                    style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
+                    animated: isHighlighted,
+                    style: {
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
+                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
+                        strokeWidth: isHighlighted ? 6 : 3,
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
+                    }
                 });
             }
         });
@@ -281,18 +314,25 @@ const FamilyTree = (props) => {
             });
 
             sortedChildren.forEach(m => {
-                const isStep = m.parents?.some(p => typeof p === 'object' && (typeof p.id === 'string' ? p.id === parentId.replace('marriage-', '').split('__')[0] || p.id === parentId.replace('marriage-', '').split('__')[1] : false) && p.type === 'step')
-                    || m.parents?.some(p => typeof p === 'object' && p.id === parentId && p.type === 'step');
-
-                // Better step child detection for marriage nodes
-                const parentObj = m.parents?.find(p => {
+                const pObj = m.parents?.find(p => {
                     const pid = typeof p === 'string' ? p : p.id;
-                    if (parentId.startsWith('marriage-')) {
-                        return parentId.includes(pid);
-                    }
+                    if (parentId.startsWith('marriage-')) return parentId.includes(pid);
                     return pid === parentId;
                 });
-                const isStepChild = parentObj && typeof parentObj === 'object' && parentObj.type === 'step';
+                const isStepChild = pObj && typeof pObj === 'object' && pObj.type === 'step';
+
+                // Highlighting logic for Parent -> Child edge
+                let isHighlighted = false;
+                if (highlightedNodeId) {
+                    // 1. Is the child the highlighted node? (Show connection to parents)
+                    if (m.id === highlightedNodeId) isHighlighted = true;
+                    // 2. Is the parent (or marriage node) involving the highlighted node? (Show connection to children)
+                    if (parentId.startsWith('marriage-')) {
+                        if (parentId.includes(highlightedNodeId)) isHighlighted = true;
+                    } else {
+                        if (parentId === highlightedNodeId) isHighlighted = true;
+                    }
+                }
 
                 finalEdges.push({
                     id: `e-${parentId}-${m.id}`,
@@ -302,13 +342,17 @@ const FamilyTree = (props) => {
                     sourceHandle: 'bottom',
                     targetHandle: 'top',
                     borderRadius: 20,
-                    animated: !isStepChild && parentId.startsWith('marriage-'),
+                    animated: isHighlighted || (!isStepChild && parentId.startsWith('marriage-') && !highlightedNodeId),
                     style: {
-                        stroke: isStepChild
-                            ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
-                            : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
-                        strokeWidth: isStepChild ? 2 : 3,
-                        strokeDasharray: isStepChild ? '5,5' : '0'
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#60a5fa' : '#3b82f6')
+                            : (highlightedNodeId
+                                ? (props.isDarkMode ? '#1e293b' : '#e2e8f0')
+                                : (isStepChild ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1') : (props.isDarkMode ? '#3b82f6' : '#2563eb'))),
+                        strokeWidth: isHighlighted ? 6 : (isStepChild ? 2 : 3),
+                        strokeDasharray: isStepChild ? '5,5' : '0',
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
                     },
                 });
             });
@@ -420,6 +464,8 @@ const FamilyTree = (props) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                onNodeClick={onNodeClick}
+                onPaneClick={onPaneClick}
                 onNodeDragStop={onNodeDragStop}
                 nodeTypes={nodeTypes}
                 nodesDraggable={props.layoutMode === 'manual'}
