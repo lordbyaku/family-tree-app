@@ -24,6 +24,19 @@ const TreeMetadataSection = () => {
         localStorage.setItem(`tree_info_minimized_${treeSlug}`, newState);
     };
 
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await updateTreeMetadata(formData);
+            success('Informasi silsilah berhasil diperbarui');
+            setIsEditing(false);
+        } catch (err) {
+            toastError('Gagal memperbarui informasi: ' + err.message);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     if (!treeMetadata.title && !isEditing) return null;
 
     return (
