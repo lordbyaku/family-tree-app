@@ -98,22 +98,31 @@ const interpretPath = (path, members, startId) => {
     const result = (() => {
         // Direct Vertical Line Up (Leluhur)
         if (downCount === 0 && spouseCount === 0) {
-            if (upCount === 1) return isMale ? 'Ayah' : 'Ibu';
-            if (upCount === 2) return isMale ? 'Kakek' : 'Nenek';
+            if (upCount === 1) return isMale ? 'Bapak (Ayah)' : 'Ibu';
+            if (upCount === 2) return isMale ? 'Simbah/Eyang (Kakek)' : 'Simbah/Eyang (Nenek)';
             if (upCount === 3) return 'Buyut';
             if (upCount === 4) return 'Canggah';
             if (upCount === 5) return 'Wareng';
             if (upCount === 6) return 'Udheg-udheg';
+            if (upCount === 7) return 'Gantung Siwur';
+            if (upCount === 8) return 'Gropak Senthul';
+            if (upCount === 9) return 'Debog Bosok';
+            if (upCount === 10) return 'Galih Asem';
             return `Leluhur G-${upCount}`;
         }
 
         // Direct Vertical Line Down (Keturunan)
         if (upCount === 0 && spouseCount === 0) {
             if (downCount === 1) return isMale ? 'Anak (L)' : 'Anak (P)';
-            if (downCount === 2) return 'Cucu (Putu)';
-            if (downCount === 3) return 'Cicit (Buyut)';
-            if (downCount === 4) return 'Piut';
-            if (downCount === 5) return 'Anggas';
+            if (downCount === 2) return 'Putu (Cucu)';
+            if (downCount === 3) return 'Buyut (Cicit)';
+            if (downCount === 4) return 'Canggah (Piut)';
+            if (downCount === 5) return 'Wareng';
+            if (downCount === 6) return 'Udheg-udheg';
+            if (downCount === 7) return 'Gantung Siwur';
+            if (downCount === 8) return 'Gropak Senthul';
+            if (downCount === 9) return 'Debog Bosok';
+            if (downCount === 10) return 'Galih Asem';
             return `Keturunan G-${downCount}`;
         }
 

@@ -31,7 +31,7 @@ const getLayoutedElements = (nodes, edges) => {
     const nodeWidth = 260; // 256px + margin
     const nodeHeight = 100;
 
-    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 100, nodesep: 80 });
+    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 200, nodesep: 200, edgesep: 100 });
 
     nodes.forEach((node) => {
         if (node.type === 'member') {
@@ -256,6 +256,7 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p1Target,
+                    borderRadius: 20,
                     style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
 
@@ -266,6 +267,7 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p2Target,
+                    borderRadius: 20,
                     style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
             }
@@ -299,12 +301,13 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: 'top',
+                    borderRadius: 20,
                     animated: !isStepChild && parentId.startsWith('marriage-'),
                     style: {
                         stroke: isStepChild
                             ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
                             : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
-                        strokeWidth: isStepChild ? 1.5 : 2.5,
+                        strokeWidth: isStepChild ? 2 : 3,
                         strokeDasharray: isStepChild ? '5,5' : '0'
                     },
                 });

@@ -113,8 +113,16 @@ const interpretPath = (path, members, endId) => {
         });
 
         if (spouse > 0) return "Kerabat Jauh (Ipar/Besan)";
-        if (up > 0 && down === 0) return `Leluhur (${up} generasi)`;
-        if (down > 0 && up === 0) return `Keturunan (${down} generasi)`;
+
+        const ascendingTerms = ["", "Bapak/Ibu", "Simbah", "Buyut", "Canggah", "Wareng", "Udheg-udheg", "Gantung Siwur", "Gropak Senthul", "Debog Bosok", "Galih Asem"];
+        const descendingTerms = ["", "Anak", "Putu", "Buyut", "Canggah", "Wareng", "Udheg-udheg", "Gantung Siwur", "Gropak Senthul", "Debog Bosok", "Galih Asem"];
+
+        if (up > 0 && down === 0) {
+            return ascendingTerms[up] || `Leluhur (${up} generasi)`;
+        }
+        if (down > 0 && up === 0) {
+            return descendingTerms[down] || `Keturunan (${down} generasi)`;
+        }
 
         return "Kerabat Jauh";
     })();
