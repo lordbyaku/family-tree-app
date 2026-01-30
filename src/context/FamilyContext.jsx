@@ -464,7 +464,11 @@ export const FamilyProvider = ({ children }) => {
             if (!insertedMember) return;
 
             let hasChanges = false;
-            const updateData = { id: insertedMember.id };
+            // Sertakan 'name' untuk menghindari error NOT NULL constraint saat upsert
+            const updateData = {
+                id: insertedMember.id,
+                name: insertedMember.name
+            };
 
             // Parse parent names and convert to IDs
             if (member.parentNames) {
@@ -553,6 +557,7 @@ export const FamilyProvider = ({ children }) => {
                         if (childrenOfParent.length > 0) {
                             childrenUpdates.push({
                                 id: parentId,
+                                name: parent.name, // Sertakan name untuk memuaskan constraint
                                 children: childrenOfParent
                             });
                             processedParents.add(parentId);
