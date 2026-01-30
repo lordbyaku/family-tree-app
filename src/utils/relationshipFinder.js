@@ -5,26 +5,35 @@ export const getDetailedRelationship = (members, startId, endId) => {
 
     // Build Adjacency Graph with labels
     const graph = {};
-    members.forEach(m => {
-        if (!graph[m.id]) graph[m.id] = [];
+    try {
+        members.forEach(m => {
+            if (!m || !m.id) return;
+            if (!graph[m.id]) graph[m.id] = [];
 
-        // Parents
-        (m.parents || []).forEach(p => {
-            const pId = typeof p === 'string' ? p : p.id;
-            const isStep = typeof p === 'object' && p.type === 'step';
+            // Parents
+            (m.parents || []).forEach(p => {
+                if (!p) return;
+                const pId = typeof p === 'string' ? p : p.id;
+                if (!pId) return;
+                const isStep = typeof p === 'object' && p.type === 'step';
 
-            graph[m.id].push({ id: pId, rel: isStep ? 'step-parent' : 'parent', label: isStep ? 'Orang Tua Tiri' : 'Orang Tua' });
-            if (!graph[pId]) graph[pId] = [];
-            graph[pId].push({ id: m.id, rel: isStep ? 'step-child' : 'child', label: isStep ? 'Anak Tiri' : 'Anak' });
+                graph[m.id].push({ id: pId, rel: isStep ? 'step-parent' : 'parent', label: isStep ? 'Orang Tua Tiri' : 'Orang Tua' });
+                if (!graph[pId]) graph[pId] = [];
+                graph[pId].push({ id: m.id, rel: isStep ? 'step-child' : 'child', label: isStep ? 'Anak Tiri' : 'Anak' });
+            });
+
+            // Spouses
+            (m.spouses || []).forEach(sId => {
+                if (!sId) return;
+                const id = typeof sId === 'string' ? sId : sId.id;
+                if (!id) return;
+                graph[m.id].push({ id, rel: 'spouse', label: 'Pasangan' });
+            });
         });
-
-        // Spouses
-        (m.spouses || []).forEach(sId => {
-            // Handle if sId is object or string
-            const id = typeof sId === 'string' ? sId : sId.id;
-            graph[m.id].push({ id, rel: 'spouse', label: 'Pasangan' });
-        });
-    });
+    } catch (e) {
+        console.error("Error building relationship graph:", e);
+        return { type: "Tidak dapat menganalisis hubungan", path: [] };
+    }
 
     // BFS to find the path
     const queue = [{ id: startId, path: [] }];

@@ -5,24 +5,35 @@ export const findRelationship = (members, startId, endId) => {
 
     // Build Adjacency Graph
     const graph = {};
-    members.forEach(m => {
-        if (!graph[m.id]) graph[m.id] = [];
+    try {
+        members.forEach(m => {
+            if (!m || !m.id) return;
+            if (!graph[m.id]) graph[m.id] = [];
 
-        // Parents (Up)
-        m.parents.forEach(p => {
-            const pId = typeof p === 'string' ? p : p.id;
-            const isStep = typeof p === 'object' && p.type === 'step';
+            // Parents
+            (m.parents || []).forEach(p => {
+                if (!p) return;
+                const pId = typeof p === 'string' ? p : p.id;
+                if (!pId) return;
+                const isStep = typeof p === 'object' && p.type === 'step';
 
-            graph[m.id].push({ id: pId, rel: isStep ? 'step-parent' : 'parent' });
-            if (!graph[pId]) graph[pId] = [];
-            graph[pId].push({ id: m.id, rel: isStep ? 'step-child' : 'child' }); // Down
+                graph[m.id].push({ id: pId, rel: isStep ? 'step-parent' : 'parent', label: isStep ? 'Orang Tua Tiri' : 'Orang Tua' });
+                if (!graph[pId]) graph[pId] = [];
+                graph[pId].push({ id: m.id, rel: isStep ? 'step-child' : 'child', label: isStep ? 'Anak Tiri' : 'Anak' });
+            });
+
+            // Spouses
+            (m.spouses || []).forEach(sId => {
+                if (!sId) return;
+                const id = typeof sId === 'string' ? sId : sId.id;
+                if (!id) return;
+                graph[m.id].push({ id, rel: 'spouse', label: 'Pasangan' });
+            });
         });
-
-        // Spouses (Side)
-        m.spouses.forEach(sId => {
-            graph[m.id].push({ id: sId, rel: 'spouse' });
-        });
-    });
+    } catch (e) {
+        console.error("Error building relationship graph:", e);
+        return "Tidak dapat menganalisis hubungan karena data tidak lengkap.";
+    }
 
     // BFS to find shortest path
     const queue = [{ id: startId, path: [] }];
