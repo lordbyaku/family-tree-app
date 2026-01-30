@@ -167,9 +167,9 @@ export const FamilyProvider = ({ children }) => {
                 .from('tree_metadata')
                 .select('*')
                 .eq('slug', treeSlug)
-                .single();
+                .maybeSingle();
 
-            if (error && error.code !== 'PGRST116') throw error;
+            if (error) throw error;
 
             if (data) {
                 setTreeMetadata({ title: data.title, description: data.description });
