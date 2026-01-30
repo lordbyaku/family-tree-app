@@ -397,27 +397,33 @@ export const FamilyProvider = ({ children }) => {
         // First pass: create all members without relationships
         // Don't generate ID yet - let Supabase auto-generate to avoid collision
         const membersMap = new Map();
-        const mappedData = jsonData.map(row => {
-            const member = {
-                name: row['Nama'] || row['name'] || '',
-                gender: (row['Jenis Kelamin'] === 'Laki-laki' || row['gender'] === 'male') ? 'male' : 'female',
-                birth_date: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
-                death_date: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
-                is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
-                phone: row['Telepon'] || row['phone'] || '',
-                occupation: row['Pekerjaan'] || row['occupation'] || '',
-                address: row['Domisili'] || row['address'] || '',
-                biography: row['Biografi'] || row['biography'] || '',
-                tree_slug: treeSlug, // Set tree_slug immediately
-                parentNames: row['Orang Tua'] || '',
-                spouseNames: row['Pasangan'] || '',
-                children: [],
-                parents: [],
-                spouses: []
-            };
-            membersMap.set(member.name.toLowerCase().trim(), member);
-            return member;
-        });
+        const mappedData = jsonData
+            .filter(row => {
+                // Skip rows without name
+                const name = row['Nama'] || row['name'] || '';
+                return name.trim().length > 0;
+            })
+            .map(row => {
+                const member = {
+                    name: row['Nama'] || row['name'] || '',
+                    gender: (row['Jenis Kelamin'] === 'Laki-laki' || row['gender'] === 'male') ? 'male' : 'female',
+                    birth_date: excelDateToString(row['Tanggal Lahir'] || row['birthDate']),
+                    death_date: excelDateToString(row['Tanggal Wafat'] || row['deathDate']),
+                    is_deceased: row['Status'] === 'Meninggal' || row['isDeceased'] || false,
+                    phone: row['Telepon'] || row['phone'] || '',
+                    occupation: row['Pekerjaan'] || row['occupation'] || '',
+                    address: row['Domisili'] || row['address'] || '',
+                    biography: row['Biografi'] || row['biography'] || '',
+                    tree_slug: treeSlug, // Set tree_slug immediately
+                    parentNames: row['Orang Tua'] || '',
+                    spouseNames: row['Pasangan'] || '',
+                    children: [],
+                    parents: [],
+                    spouses: []
+                };
+                membersMap.set(member.name.toLowerCase().trim(), member);
+                return member;
+            });
 
         // Insert all members first (without relationships)
         const insertData = mappedData.map(m => {
@@ -426,13 +432,24 @@ export const FamilyProvider = ({ children }) => {
             delete dbM.spouseNames;
             return dbM;
         });
+        console.log("Data to be inserted:", insertData);
 
-        const { data: insertedMembers, error: insertError } = await supabase
-            .from('members')
-            .insert(insertData)
-            .select();
+        let insertedMembers;
+        try {
+            const { data, error } = await supabase
+                .from('members')
+                .insert(insertData)
+                .select();
 
-        if (insertError) throw insertError;
+            if (error) {
+                console.error("Error inserting initial members:", error.message);
+                throw error;
+            }
+            insertedMembers = data;
+        } catch (insertError) {
+            console.error("Failed to insert initial members from Excel:", insertError.message);
+            throw new Error("Gagal memasukkan anggota awal dari Excel: " + insertError.message);
+        }
 
         // Create a map of name -> inserted member (with ID)
         const nameToMemberMap = new Map();

@@ -1,0 +1,82 @@
+Nama,Jenis Kelamin,Tanggal Lahir,Tanggal Wafat,Status,Telepon,Pekerjaan,Domisili,Orang Tua,Pasangan,Biografi
+Raden Adipati Kusuma,Laki-laki,15/03/1800,10/12/1875,Meninggal,,Bangsawan,Keraton Yogyakarta,,Nyai Raden Ayu Sari,Pendiri silsilah keluarga adipati di Keraton Yogyakarta
+Nyai Raden Ayu Sari,Perempuan,20/08/1805,25/06/1880,Meninggal,,Permaisuri,Keraton Yogyakarta,,Raden Adipati Kusuma,Permaisuri yang bijaksana membesarkan 3 putra
+Pangeran Suryo Kusumo,Laki-laki,12/05/1825,18/09/1895,Meninggal,,Panglima Perang,Yogyakarta,"Raden Adipati Kusuma, Nyai Raden Ayu Sari",Nyi Raden Kartini,Putra sulung yang menjadi panglima perang kerajaan
+Nyi Raden Kartini,Perempuan,05/11/1828,22/04/1900,Meninggal,,Istana,Yogyakarta,,Pangeran Suryo Kusumo,Istri pangeran yang mendampingi suami dalam berbagai peperangan
+Raden Mas Haryo,Laki-laki,30/07/1830,15/11/1898,Meninggal,,Penasihat Raja,Yogyakarta,"Raden Adipati Kusuma, Nyai Raden Ayu Sari",Nyi Roro Kidul Ayu,Putra kedua yang menjadi penasihat raja dalam bidang ekonomi
+Nyi Roro Kidul Ayu,Perempuan,18/03/1833,08/07/1905,Meninggal,,Istana,Yogyakarta,,Raden Mas Haryo,Istri yang mendampingi suami sebagai penasihat raja
+Raden Panji Asmoro,Laki-laki,22/01/1835,30/05/1902,Meninggal,,Kepala Desa,Bantul,"Raden Adipati Kusuma, Nyai Raden Ayu Sari",Nyi Dewi Wulan,Putra bungsu yang memilih hidup sederhana sebagai kepala desa
+Nyi Dewi Wulan,Perempuan,14/09/1838,12/10/1908,Meninggal,,Petani,Bantul,,Raden Panji Asmoro,Istri yang membantu suami mengelola desa dengan baik
+Mas Tumenggung Jaya,Laki-laki,08/06/1850,20/03/1920,Meninggal,,Komandan Pasukan,Yogyakarta,"Pangeran Suryo Kusumo, Nyi Raden Kartini",Nyi Raden Siti,Cucu yang mewarisi jiwa kepemimpinan kakeknya dalam militer
+Nyi Raden Siti,Perempuan,15/12/1853,05/08/1925,Meninggal,,Istana,Yogyakarta,,Mas Tumenggung Jaya,Pendamping setia komandan pasukan kerajaan
+Raden Bagus Santoso,Laki-laki,25/04/1852,18/11/1922,Meninggal,,Tuan Tanah,Sleman,"Pangeran Suryo Kusumo, Nyi Raden Kartini",Nyi Mas Ayu Suci,Cucu yang mengelola perkebunan warisan keluarga
+Nyi Mas Ayu Suci,Perempuan,10/02/1855,28/07/1928,Meninggal,,Pengelola Rumah,Sleman,,Raden Bagus Santoso,Istri yang membantu mengelola perkebunan keluarga
+Mas Kanjeng Budi,Laki-laki,12/10/1858,22/06/1930,Meninggal,,Guru Ngaji,Yogyakarta,"Raden Mas Haryo, Nyi Roro Kidul Ayu",Nyi Siti Nurjanah,Cucu yang mengabdikan hidup untuk pendidikan agama
+Nyi Siti Nurjanah,Perempuan,20/05/1860,15/09/1932,Meninggal,,Ibu Rumah Tangga,Yogyakarta,,Mas Kanjeng Budi,Istri yang mendukung suami dalam mengajar agama
+Raden Soekamto,Laki-laki,05/08/1862,10/04/1935,Meninggal,,Pedagang Batik,Yogyakarta,"Raden Mas Haryo, Nyi Roro Kidul Ayu",Siti Aminah,Cucu yang membuka usaha batik pertama di keluarga
+Siti Aminah,Perempuan,18/11/1865,22/12/1938,Meninggal,,Pembatik,Yogyakarta,,Raden Soekamto,Istri yang ahli membatik dan membantu usaha keluarga
+Mas Lurah Darmo,Laki-laki,30/03/1868,08/01/1940,Meninggal,,Lurah,Bantul,"Raden Panji Asmoro, Nyi Dewi Wulan",Nyi Kasiyem,Cucu yang melanjutkan jejak ayahnya sebagai pemimpin desa
+Nyi Kasiyem,Perempuan,22/07/1870,16/05/1942,Meninggal,,Petani,Bantul,,Mas Lurah Darmo,Istri lurah yang membantu kesejahteraan warga desa
+Ki Ageng Suryanto,Laki-laki,14/02/1875,25/08/1945,Meninggal,,Dalang Wayang,Yogyakarta,"Mas Tumenggung Jaya, Nyi Raden Siti",Nyi Sulastri,Buyut yang menjadi dalang terkenal di Yogyakarta
+Nyi Sulastri,Perempuan,08/09/1878,12/11/1948,Meninggal,,Penyanyi,Yogyakarta,,Ki Ageng Suryanto,Istri dalang yang sering mengiringi pertunjukan wayang
+Raden Soekarno,Laki-laki,22/06/1880,30/10/1950,Meninggal,,Pegawai Priyayi,Yogyakarta,"Mas Tumenggung Jaya, Nyi Raden Siti",Siti Hartinah,Buyut yang bekerja di pemerintahan kolonial
+Siti Hartinah,Perempuan,15/01/1883,18/07/1955,Meninggal,,Ibu Rumah Tangga,Yogyakarta,,Raden Soekarno,Istri pegawai priyayi yang mengurus rumah tangga besar
+Mas Sarwo Edi,Laki-laki,10/04/1882,22/12/1952,Meninggal,,Pandai Besi,Sleman,"Raden Bagus Santoso, Nyi Mas Ayu Suci",Nyi Sukinem,Buyut yang ahli membuat keris dan senjata tradisional
+Nyi Sukinem,Perempuan,28/11/1885,05/03/1958,Meninggal,,Perajin,Sleman,,Mas Sarwo Edi,Istri pandai besi yang membantu usaha kerajinan
+Kyai Haji Abdullah,Laki-laki,18/08/1888,15/06/1960,Meninggal,,Ulama,Yogyakarta,"Mas Kanjeng Budi, Nyi Siti Nurjanah",Nyai Hj Fatimah,Buyut yang mendirikan pesantren di Yogyakarta
+Nyai Hj Fatimah,Perempuan,25/05/1890,20/09/1962,Meninggal,,Pengasuh Santri,Yogyakarta,,Kyai Haji Abdullah,Istri kyai yang mengasuh santri putri
+Soedirman,Laki-laki,12/03/1892,28/11/1965,Meninggal,,Pengusaha,Yogyakarta,"Raden Soekamto, Siti Aminah",Sumirah,Buyut yang mengembangkan bisnis batik keluarga
+Sumirah,Perempuan,08/07/1895,16/04/1968,Meninggal,,Penjahit,Yogyakarta,,Soedirman,Istri pengusaha yang ahli menjahit dan membatik
+Pak Lurah Sutomo,Laki-laki,20/10/1898,10/08/1970,Meninggal,,Kepala Desa,Bantul,"Mas Lurah Darmo, Nyi Kasiyem",Mbok Tukinem,Buyut yang meneruskan tradisi keluarga sebagai pemimpin desa
+Mbok Tukinem,Perempuan,14/12/1900,22/05/1972,Meninggal,,Bidan Desa,Bantul,,Pak Lurah Sutomo,Istri lurah yang membantu persalinan warga desa
+Dalang Suharjo,Laki-laki,05/06/1902,18/01/1975,Meninggal,,Dalang,Yogyakarta,"Ki Ageng Suryanto, Nyi Sulastri",Siti Rahayu,Canggah yang melanjutkan tradisi pewayangan keluarga
+Siti Rahayu,Perempuan,22/09/1905,30/07/1978,Meninggal,,Penari,Yogyakarta,,Dalang Suharjo,Istri dalang yang juga penari klasik Jawa
+Bambang Sudiro,Laki-laki,15/11/1908,12/03/1980,Meninggal,,Guru Sekolah,Yogyakarta,"Raden Soekarno, Siti Hartinah",Sukarti,Canggah yang menjadi guru di sekolah Belanda
+Sukarti,Perempuan,28/04/1910,25/11/1982,Meninggal,,Ibu Rumah Tangga,Yogyakarta,,Bambang Sudiro,Istri guru yang mengurus rumah tangga dan membantu mengajar
+Pak Kromo,Laki-laki,10/02/1912,08/09/1985,Meninggal,,Empu Keris,Sleman,"Mas Sarwo Edi, Nyi Sukinem",Siti Markonah,Canggah yang mewarisi keahlian membuat keris dari ayah
+Siti Markonah,Perempuan,18/07/1915,16/12/1988,Meninggal,,Perajin,Sleman,,Pak Kromo,Istri empu yang membantu proses pembuatan keris
+KH Ahmad Dahlan,Laki-laki,25/08/1918,22/06/1990,Meninggal,,Pengasuh Pesantren,Yogyakarta,"Kyai Haji Abdullah, Nyai Hj Fatimah",Hj Khadijah,Canggah yang melanjutkan pesantren kakek
+Hj Khadijah,Perempuan,12/11/1920,30/04/1992,Meninggal,,Guru Ngaji,Yogyakarta,,KH Ahmad Dahlan,Istri kyai yang mengajar Al-Quran di pesantren
+Pak Harto,Laki-laki,08/05/1922,15/08/1995,Meninggal,,Pengusaha Batik,Yogyakarta,"Soedirman, Sumirah",Siti Waluyo,Canggah yang memperbesar bisnis batik hingga ekspor
+Siti Waluyo,Perempuan,20/01/1925,28/02/1998,Meninggal,,Manajer Toko,Yogyakarta,,Pak Harto,Istri pengusaha yang mengelola toko batik
+Pak Lurah Slamet,Laki-laki,14/09/1928,10/11/2000,Meninggal,,Kepala Desa,Bantul,"Pak Lurah Sutomo, Mbok Tukinem",Wagiyem,Canggah lurah yang membawa desa masuk era modern
+Wagiyem,Perempuan,22/03/1930,18/07/2002,Meninggal,,Ketua PKK,Bantul,,Pak Lurah Slamet,Istri lurah yang aktif di organisasi perempuan
+Ki Manteb Soedarsono,Laki-laki,05/12/1935,25/12/2005,Meninggal,,Dalang Nasional,Yogyakarta,"Dalang Suharjo, Siti Rahayu",Sunarti,Wareng yang menjadi dalang terkenal se-Indonesia
+Sunarti,Perempuan,18/06/1938,12/05/2008,Meninggal,,Penyanyi Keroncong,Yogyakarta,,Ki Manteb Soedarsono,Istri dalang yang juga penyanyi terkenal
+Prof Dr Budi Santoso,Laki-laki,22/10/1940,30/09/2010,Meninggal,,Profesor,Yogyakarta,"Bambang Sudiro, Sukarti",Dr Siti Nurjanah,Wareng yang menjadi profesor pertama di keluarga
+Dr Siti Nurjanah,Perempuan,15/04/1943,18/11/2012,Meninggal,,Dokter,Yogyakarta,,Prof Dr Budi Santoso,Istri profesor yang juga dokter
+Bp Sutrisno,Laki-laki,08/08/1945,22/03/2015,Meninggal,,Empu Keris,Sleman,"Pak Kromo, Siti Markonah",Ibu Sulastri,Wareng yang meneruskan tradisi empu keris
+Ibu Sulastri,Perempuan,28/11/1948,15/07/2018,Meninggal,,Pengusaha,Sleman,,Bp Sutrisno,Istri empu yang membuka galeri keris
+KH Abdurrahman,Laki-laki,12/06/1950,08/01/2020,Meninggal,,Kiai Besar,Yogyakarta,"KH Ahmad Dahlan, Hj Khadijah",Hj Aisyah,Wareng yang mengembangkan pesantren menjadi universitas
+Hj Aisyah,Perempuan,20/02/1952,,Masih Hidup,081234560001,Rektor,Yogyakarta,,KH Abdurrahman,Istri kiai yang menjadi rektor universitas Islam
+Bambang Hartono,Laki-laki,15/09/1955,,Masih Hidup,081234560002,CEO Batik,Jakarta,"Pak Harto, Siti Waluyo",Dewi Kusuma,Wareng yang membawa batik keluarga go international
+Dewi Kusuma,Perempuan,22/12/1958,,Masih Hidup,081234560003,Fashion Designer,Jakarta,,Bambang Hartono,Istri CEO yang designer fashion batik modern
+Pak Ahmad Slamet,Laki-laki,10/04/1960,,Masih Hidup,081234560004,Bupati,Bantul,"Pak Lurah Slamet, Wagiyem",Ibu Tri Wahyuni,Wareng yang menjadi bupati pertama dari keluarga
+Ibu Tri Wahyuni,Perempuan,18/08/1962,,Masih Hidup,081234560005,Wakil Bupati,Bantul,,Pak Ahmad Slamet,Istri bupati yang juga wakil bupati
+Ki Joko Edan,Laki-laki,25/11/1965,,Masih Hidup,081234560006,Dalang Kondang,Yogyakarta,"Ki Manteb Soedarsono, Sunarti",Siti Nuraini,Udeg-udeg yang melanjutkan tradisi pewayangan modern
+Siti Nuraini,Perempuan,12/05/1968,,Masih Hidup,081234560007,Penyanyi Pop,Jakarta,,Ki Joko Edan,Istri dalang yang penyanyi pop terkenal
+Dr Andi Wijaya,Laki-laki,08/07/1970,,Masih Hidup,081234560008,Dokter Spesialis,Yogyakarta,"Prof Dr Budi Santoso, Dr Siti Nurjanah",Dr Nina Sari,Udeg-udeg dokter spesialis jantung
+Dr Nina Sari,Perempuan,20/03/1972,,Masih Hidup,081234560009,Dokter Anak,Yogyakarta,,Dr Andi Wijaya,Istri dokter yang juga dokter spesialis anak
+Bp Sukamto,Laki-laki,15/10/1975,,Masih Hidup,081234560010,Master Empu,Sleman,"Bp Sutrisno, Ibu Sulastri",Ibu Endah,Udeg-udeg empu keris yang karyanya sampai istana
+Ibu Endah,Perempuan,22/06/1978,,Masih Hidup,081234560011,Kurator Museum,Yogyakarta,,Bp Sukamto,Istri empu yang kurator museum keris
+Ustadz Fahmi,Laki-laki,10/12/1980,,Masih Hidup,081234560012,Dosen,Yogyakarta,"KH Abdurrahman, Hj Aisyah",Ustadzah Fatimah,Udeg-udeg dosen di universitas Islam keluarga
+Ustadzah Fatimah,Perempuan,18/09/1982,,Masih Hidup,081234560013,Dosen,Yogyakarta,,Ustadz Fahmi,Istri ustadz yang juga mengajar di kampus
+Budi Hartono Jr,Laki-laki,25/05/1985,,Masih Hidup,081234560014,Direktur Marketing,Jakarta,"Bambang Hartono, Dewi Kusuma",Rina Kartika,Canggit yang handle marketing batik global
+Rina Kartika,Perempuan,12/11/1987,,Masih Hidup,081234560015,Brand Manager,Jakarta,,Budi Hartono Jr,Istri direktur yang ahli branding
+Ahmad Slamet Jr,Laki-laki,08/08/1990,,Masih Hidup,081234560016,Anggota DPR,Jakarta,"Pak Ahmad Slamet, Ibu Tri Wahyuni",Siti Mahmudah,Canggit politisi muda yang duduk di DPR
+Siti Mahmudah,Perempuan,20/04/1992,,Masih Hidup,081234560017,Aktivis,Jakarta,,Ahmad Slamet Jr,Istri politisi yang aktivis lingkungan
+Joko Susilo,Laki-laki,15/02/1995,,Masih Hidup,081234560018,Dalang Milenial,Yogyakarta,"Ki Joko Edan, Siti Nuraini",Devi Anggraini,Canggit dalang yang viral di media sosial
+Devi Anggraini,Perempuan,22/09/1997,,Masih Hidup,081234560019,Content Creator,Jakarta,,Joko Susilo,Istri dalang yang content creator YouTube
+dr Rizki Wijaya,Laki-laki,10/06/2000,,Masih Hidup,081234560020,Dokter Muda,Yogyakarta,"Dr Andi Wijaya, Dr Nina Sari",dr Lisa Amelia,Canggit dokter baru lulus yang bertugas di RSUP
+dr Lisa Amelia,Perempuan,18/12/2002,,Masih Hidup,081234560021,Dokter Muda,Yogyakarta,,dr Rizki Wijaya,Istri dokter yang juga dokter baru lulus
+Bambang Sukamto,Laki-laki,25/08/2005,,Masih Hidup,081234560022,Mahasiswa Seni,Yogyakarta,"Bp Sukamto, Ibu Endah",,Canggit yang kuliah seni rupa belajar membuat keris
+M Rizky Fahmi,Laki-laki,12/03/2008,,Masih Hidup,081234560023,Mahasiswa,Yogyakarta,"Ustadz Fahmi, Ustadzah Fatimah",,Canggit mahasiswa fakultas syariah
+Sari Hartono,Perempuan,20/10/2010,,Masih Hidup,081234560024,Pelajar SMA,Jakarta,"Budi Hartono Jr, Rina Kartika",,Canggit pelajar SMA yang berbakat fashion design
+Anisa Slamet,Perempuan,15/05/2012,,Masih Hidup,081234560025,Pelajar SMP,Bantul,"Ahmad Slamet Jr, Siti Mahmudah",,Canggit pelajar SMP yang aktif organisasi
+Bayu Susilo,Laki-laki,10/12/2014,,Masih Hidup,081234560026,Pelajar SD,Yogyakarta,"Joko Susilo, Devi Anggraini",,Canggit anak SD yang suka wayang sejak kecil
+Cantika Wijaya,Perempuan,22/08/2016,,Masih Hidup,081234560027,TK,Yogyakarta,"dr Rizki Wijaya, dr Lisa Amelia",,Canggit anak TK yang ceria dan pintar
+Dimas Sukamto,Laki-laki,18/04/2018,,Masih Hidup,081234560028,Balita,Sleman,"Bambang Sukamto, Ibu Endah",,Wareng balita yang sudah tertarik melihat keris
+Elsa Fahmi,Perempuan,25/11/2019,,Masih Hidup,081234560029,Balita,Yogyakarta,"M Rizky Fahmi, Ustadzah Fatimah",,Wareng balita yang lucu dan menggemaskan
+Farhan Hartono,Laki-laki,12/07/2021,,Masih Hidup,081234560030,Balita,Jakarta,"Sari Hartono, Rina Kartika",,Wareng bayi yang baru belajar jalan
+Gita Slamet,Perempuan,30/03/2023,,Masih Hidup,081234560031,Bayi,Bantul,"Anisa Slamet, Siti Mahmudah",,Wareng bayi yang masih menyusu
+Hendra Susilo,Laki-laki,15/09/2024,,Masih Hidup,081234560032,Bayi,Yogyakarta,"Bayu Susilo, Devi Anggraini",,Wareng bayi baru lahir kebanggaan keluarga
