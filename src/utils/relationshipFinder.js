@@ -9,7 +9,7 @@ export const getDetailedRelationship = (members, startId, endId) => {
         if (!graph[m.id]) graph[m.id] = [];
 
         // Parents
-        m.parents.forEach(p => {
+        (m.parents || []).forEach(p => {
             const pId = typeof p === 'string' ? p : p.id;
             const isStep = typeof p === 'object' && p.type === 'step';
 
@@ -19,8 +19,10 @@ export const getDetailedRelationship = (members, startId, endId) => {
         });
 
         // Spouses
-        m.spouses.forEach(sId => {
-            graph[m.id].push({ id: sId, rel: 'spouse', label: 'Pasangan' });
+        (m.spouses || []).forEach(sId => {
+            // Handle if sId is object or string
+            const id = typeof sId === 'string' ? sId : sId.id;
+            graph[m.id].push({ id, rel: 'spouse', label: 'Pasangan' });
         });
     });
 

@@ -64,7 +64,10 @@ export const FamilyProvider = ({ children }) => {
                 ...m,
                 birthDate: m.birth_date,
                 deathDate: m.death_date,
-                isDeceased: !!m.is_deceased
+                isDeceased: !!m.is_deceased,
+                parents: m.parents || [],
+                children: m.children || [],
+                spouses: m.spouses || []
             }));
 
             // ADVANCED Deduplication Logic for 'gabungan' mode
