@@ -43,6 +43,8 @@ const getLayoutedElements = (nodes, edges) => {
     });
 
     edges.forEach((edge) => {
+        // Dagre needs to know about parent-child hierarchy to rank nodes correctly
+        // We use the original relationship logic for Dagre even if rendering is different
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
@@ -79,21 +81,6 @@ const FamilyTree = (props) => {
     // Ideally we use treeSlug from context, let's grab it properly
     const { treeSlug } = useFamily();
     const DYNAMIC_LAYOUT_KEY = `family_layout_${treeSlug}`;
-
-    // Highlight State
-    const [highlightedNodeId, setHighlightedNodeId] = React.useState(null);
-
-    const onNodeClick = useCallback((event, node) => {
-        if (node.type === 'member') {
-            setHighlightedNodeId(node.id);
-        } else {
-            setHighlightedNodeId(null);
-        }
-    }, []);
-
-    const onPaneClick = useCallback(() => {
-        setHighlightedNodeId(null);
-    }, []);
 
     // Handle focus on specific node (Search)
     useEffect(() => {
@@ -164,9 +151,7 @@ const FamilyTree = (props) => {
                     tree_slug: m.tree_slug,
                     onEdit: props.onEdit,
                     onView: props.onView,
-                    onFilterRequest: props.onFilterRequest,
-                    isHighlighted: m.id === highlightedNodeId,
-                    isDarkMode: props.isDarkMode
+                    onFilterRequest: props.onFilterRequest
                 },
                 position: { x: 0, y: 0 },
             })),
@@ -257,28 +242,21 @@ const FamilyTree = (props) => {
             const mNode = layoutedNodes.find(n => n.id === m.id);
 
             if (p1 && p2 && mNode) {
-                // Determine target handles on marriage node (Left and Right sides of heart)
+                const p1Side = p1.position.x < p2.position.x ? 'left' : 'right';
+                const p2Side = p2.position.x < p1.position.x ? 'left' : 'right';
+
+                // Determine which target handle to use on marriage node
                 const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
                 const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
-
-                const isHighlighted = m.p1 === highlightedNodeId || m.p2 === highlightedNodeId;
 
                 finalEdges.push({
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
                     target: m.id,
-                    type: 'smoothstep', // U-shape connector
+                    type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p1Target,
-                    animated: isHighlighted,
-                    style: {
-                        stroke: isHighlighted
-                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
-                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
-                        strokeWidth: isHighlighted ? 6 : 3,
-                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
-                        transition: 'all 0.3s ease'
-                    }
+                    style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
 
                 finalEdges.push({
@@ -288,15 +266,7 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p2Target,
-                    animated: isHighlighted,
-                    style: {
-                        stroke: isHighlighted
-                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
-                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
-                        strokeWidth: isHighlighted ? 6 : 3,
-                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
-                        transition: 'all 0.3s ease'
-                    }
+                    style: { stroke: props.isDarkMode ? '#db2777' : '#ec4899', strokeWidth: 3 }
                 });
             }
         });
@@ -309,23 +279,18 @@ const FamilyTree = (props) => {
             });
 
             sortedChildren.forEach(m => {
-                const pObj = m.parents?.find(p => {
+                const isStep = m.parents?.some(p => typeof p === 'object' && (typeof p.id === 'string' ? p.id === parentId.replace('marriage-', '').split('__')[0] || p.id === parentId.replace('marriage-', '').split('__')[1] : false) && p.type === 'step')
+                    || m.parents?.some(p => typeof p === 'object' && p.id === parentId && p.type === 'step');
+
+                // Better step child detection for marriage nodes
+                const parentObj = m.parents?.find(p => {
                     const pid = typeof p === 'string' ? p : p.id;
-                    if (parentId.startsWith('marriage-')) return parentId.includes(pid);
+                    if (parentId.startsWith('marriage-')) {
+                        return parentId.includes(pid);
+                    }
                     return pid === parentId;
                 });
-                const isStepChild = pObj && typeof pObj === 'object' && pObj.type === 'step';
-
-                // Highlighting logic for Parent -> Child edge
-                let isHighlighted = false;
-                if (highlightedNodeId) {
-                    if (m.id === highlightedNodeId) isHighlighted = true;
-                    if (parentId.startsWith('marriage-')) {
-                        if (parentId.includes(highlightedNodeId)) isHighlighted = true;
-                    } else {
-                        if (parentId === highlightedNodeId) isHighlighted = true;
-                    }
-                }
+                const isStepChild = parentObj && typeof parentObj === 'object' && parentObj.type === 'step';
 
                 finalEdges.push({
                     id: `e-${parentId}-${m.id}`,
@@ -334,18 +299,13 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: 'top',
-                    borderRadius: 20,
-                    animated: isHighlighted || (!isStepChild && parentId.startsWith('marriage-') && !highlightedNodeId),
+                    animated: !isStepChild && parentId.startsWith('marriage-'),
                     style: {
-                        stroke: isHighlighted
-                            ? (props.isDarkMode ? '#60a5fa' : '#3b82f6')
-                            : (highlightedNodeId
-                                ? (props.isDarkMode ? '#1e293b' : '#e2e8f0')
-                                : (isStepChild ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1') : (props.isDarkMode ? '#3b82f6' : '#2563eb'))),
-                        strokeWidth: isHighlighted ? 6 : (isStepChild ? 2 : 2.5),
-                        strokeDasharray: isStepChild ? '5,5' : '0',
-                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
-                        transition: 'all 0.3s ease'
+                        stroke: isStepChild
+                            ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1')
+                            : (props.isDarkMode ? '#3b82f6' : '#2563eb'),
+                        strokeWidth: isStepChild ? 1.5 : 2.5,
+                        strokeDasharray: isStepChild ? '5,5' : '0'
                     },
                 });
             });
@@ -369,7 +329,7 @@ const FamilyTree = (props) => {
 
         setNodes(finalNodes);
         setEdges(finalEdges);
-    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode, DYNAMIC_LAYOUT_KEY, highlightedNodeId]); // added highlightedNodeId dependency
+    }, [members, setNodes, setEdges, props.onEdit, props.onView, props.isDarkMode, props.filterMode, props.filterRootId, props.onFilterRequest, props.layoutMode, DYNAMIC_LAYOUT_KEY]); // added dependency
 
     const onNodeDragStop = useCallback((event, node) => {
         if (props.layoutMode !== 'manual') return;
@@ -413,6 +373,9 @@ const FamilyTree = (props) => {
 
             try {
                 // 4. Calculate the transform to shift the bounds to (padding, padding)
+                // If nodesBounds.x is negative, we need to shift POSITIVE to bring it to 0.
+                // If nodesBounds.x is positive, we need to shift NEGATIVE to bring it to 0.
+                // So the logic is always: -nodesBounds.x + padding
                 const transformX = -nodesBounds.x + padding;
                 const transformY = -nodesBounds.y + padding;
 
@@ -424,21 +387,15 @@ const FamilyTree = (props) => {
                         width: `${imageWidth}px`,
                         height: `${imageHeight}px`,
                         transform: `translate(${transformX}px, ${transformY}px) scale(1)`,
-                        transformOrigin: 'top left',
                     },
-                    pixelRatio: 2,
-                    quality: 1,
-                    // Filter out some problematic elements if needed
-                    filter: (node) => {
-                        if (node.classList?.contains('react-flow__controls')) return false;
-                        if (node.classList?.contains('react-flow__minimap')) return false;
-                        return true;
-                    }
+                    pixelRatio: 2, // Improve definition for large trees
+                    quality: 1
                 });
 
                 const link = document.createElement('a');
                 link.download = `silsilah-keluarga-${treeSlug}-${new Date().toISOString().slice(0, 10)}.png`;
                 link.href = dataUrl;
+                link.link = dataUrl;
                 link.click();
             } catch (err) {
                 console.error("Gagal export gambar:", err);
@@ -457,8 +414,6 @@ const FamilyTree = (props) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                onNodeClick={onNodeClick}
-                onPaneClick={onPaneClick}
                 onNodeDragStop={onNodeDragStop}
                 nodeTypes={nodeTypes}
                 nodesDraggable={props.layoutMode === 'manual'}
