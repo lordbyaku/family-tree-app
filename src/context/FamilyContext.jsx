@@ -71,6 +71,7 @@ export const FamilyProvider = ({ children }) => {
             }));
 
             // ADVANCED Deduplication Logic for 'gabungan' mode
+            // Merges members with same name and birth date into a single visual node
             if (treeSlug === 'gabungan') {
                 const identityGroups = new Map(); // key -> Array of all duplicate records
                 const idToMasterId = new Map(); // mapping every ID to its Master ID
@@ -95,7 +96,7 @@ export const FamilyProvider = ({ children }) => {
                         return currScore > prevScore ? curr : prev;
                     });
 
-                    // Map all duplicate IDs to this master ID
+                    // Map all duplicate IDs to this master ID for edge redirection
                     duplicates.forEach(d => idToMasterId.set(d.id, master.id));
 
                     // Prepare the merged object with combined unique relationships
@@ -111,13 +112,16 @@ export const FamilyProvider = ({ children }) => {
 
                     mergedMembers.push({
                         ...master,
+                        // Mark as merged so we know it belongs to multiple slugs
+                        isMerged: duplicates.length > 1,
+                        allSlugs: [...new Set(duplicates.map(d => d.tree_slug))],
                         parents: combinedParents,
                         children: combinedChildren,
                         spouses: combinedSpouses
                     });
                 }
 
-                // 3. Rewrite all IDs to use Master IDs and perform final cleanup
+                // 3. Rewrite all relationship IDs to use Master IDs and perform final cleanup
                 mappedData = mergedMembers.map(member => {
                     const rewriteId = (id) => idToMasterId.get(id) || id;
                     const uniqueBy = (arr, keyFn) => {
@@ -135,7 +139,7 @@ export const FamilyProvider = ({ children }) => {
                         parents: uniqueBy(
                             (member.parents || []).map(p => (typeof p === 'string' ? { id: rewriteId(p), type: 'biological' } : { ...p, id: rewriteId(p.id) })),
                             p => p.id
-                        ).filter(p => p.id !== member.id), // No self-parenting
+                        ).filter(p => p.id !== member.id),
 
                         children: [...new Set((member.children || []).map(rewriteId))]
                             .filter(cid => cid !== member.id),
@@ -143,7 +147,7 @@ export const FamilyProvider = ({ children }) => {
                         spouses: uniqueBy(
                             (member.spouses || []).map(s => (typeof s === 'string' ? { id: rewriteId(s), status: 'married' } : { ...s, id: rewriteId(s.id) })),
                             s => s.id
-                        ).filter(s => s.id !== member.id) // No self-marriage
+                        ).filter(s => s.id !== member.id)
                     };
                 });
             }
@@ -250,7 +254,13 @@ export const FamilyProvider = ({ children }) => {
                 });
             }
             const dbUpsertList = modifiedMembers.map(m => {
-                const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.isDeceased || false };
+                const dbM = {
+                    ...m,
+                    tree_slug: m.tree_slug || treeSlug,
+                    birth_date: m.birthDate || null,
+                    death_date: m.deathDate || null,
+                    is_deceased: m.isDeceased || false
+                };
                 delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
                 return dbM;
             });
@@ -364,7 +374,13 @@ export const FamilyProvider = ({ children }) => {
             if (delError) throw delError;
             if (modifiedMembers.length > 0) {
                 const dbUpsertList = modifiedMembers.map(m => {
-                    const dbM = { ...m, tree_slug: treeSlug, birth_date: m.birthDate || null, death_date: m.deathDate || null, is_deceased: m.isDeceased || false };
+                    const dbM = {
+                        ...m,
+                        tree_slug: m.tree_slug || treeSlug,
+                        birth_date: m.birthDate || null,
+                        death_date: m.deathDate || null,
+                        is_deceased: m.isDeceased || false
+                    };
                     delete dbM.birthDate; delete dbM.deathDate; delete dbM.isDeceased;
                     return dbM;
                 });

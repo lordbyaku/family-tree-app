@@ -31,14 +31,14 @@ const getLayoutedElements = (nodes, edges) => {
     const nodeWidth = 260; // 256px + margin
     const nodeHeight = 100;
 
-    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 100, nodesep: 80 });
+    dagreGraph.setGraph({ rankdir: 'TB', ranksep: 180, nodesep: 150 });
 
     nodes.forEach((node) => {
         if (node.type === 'member') {
             dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
         } else {
             // Marriage nodes are small
-            dagreGraph.setNode(node.id, { width: 40, height: 40 });
+            dagreGraph.setNode(node.id, { width: 50, height: 50 });
         }
     });
 
@@ -48,11 +48,11 @@ const getLayoutedElements = (nodes, edges) => {
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    let layoutedNodes = nodes.map((node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
         const isMember = node.type === 'member';
-        const w = isMember ? nodeWidth : 40;
-        const h = isMember ? nodeHeight : 40;
+        const w = isMember ? nodeWidth : 50;
+        const h = isMember ? nodeHeight : 50;
 
         return {
             ...node,
@@ -62,7 +62,47 @@ const getLayoutedElements = (nodes, edges) => {
             },
             targetPosition: 'top',
             sourcePosition: 'bottom',
+            width: w,
+            height: h
         };
+    });
+
+    // POST-PROCESSING: Center Marriage nodes between spouses for perfect symmetry
+    layoutedNodes = layoutedNodes.map(node => {
+        if (node.type === 'marriage') {
+            const spouseEdges = edges.filter(e => e.target === node.id);
+            const parentNodes = spouseEdges
+                .map(e => layoutedNodes.find(n => n.id === e.source))
+                .filter(Boolean);
+
+            if (parentNodes.length === 2) {
+                const p1 = parentNodes[0];
+                const p2 = parentNodes[1];
+
+                const p1Center = p1.position.x + p1.width / 2;
+                const p2Center = p2.position.x + p2.width / 2;
+                const midX = (p1Center + p2Center) / 2;
+
+                // Marriage node should be exactly between ranks
+                // We calculate the Y to be clearly below the parents
+                const p1Bottom = p1.position.y + p1.height;
+                const p2Bottom = p2.position.y + p2.height;
+                const lowestParentBottom = Math.max(p1Bottom, p2Bottom);
+
+                // Set the marriage node Y to be exactly in the middle of ranksep area
+                // We use 180 as ranksep, so let's put it 1/3 down
+                const targetY = lowestParentBottom + 40;
+
+                return {
+                    ...node,
+                    position: {
+                        x: midX - node.width / 2,
+                        y: targetY
+                    }
+                };
+            }
+        }
+        return node;
     });
 
     return { nodes: layoutedNodes, edges };
@@ -162,6 +202,8 @@ const FamilyTree = (props) => {
                     isDeceased: m.isDeceased,
                     photo: m.photo,
                     tree_slug: m.tree_slug,
+                    isMerged: m.isMerged,
+                    allSlugs: m.allSlugs,
                     onEdit: props.onEdit,
                     onView: props.onView,
                     onFilterRequest: props.onFilterRequest,
@@ -267,9 +309,10 @@ const FamilyTree = (props) => {
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
                     target: m.id,
-                    type: 'smoothstep', // U-shape connector
+                    type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p1Target,
+                    borderRadius: 30, // Increased for smoother U-curve
                     animated: isHighlighted,
                     style: {
                         stroke: isHighlighted
@@ -288,6 +331,7 @@ const FamilyTree = (props) => {
                     type: 'smoothstep',
                     sourceHandle: 'bottom',
                     targetHandle: p2Target,
+                    borderRadius: 30, // Increased for smoother U-curve
                     animated: isHighlighted,
                     style: {
                         stroke: isHighlighted

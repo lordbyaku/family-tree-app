@@ -152,10 +152,16 @@ const CustomNode = ({ id, data }) => {
                         {formatDateDisplay(data.birthDate)}
                         {data.isDeceased && data.deathDate && ` - ${formatDateDisplay(data.deathDate)}`}
                     </p>
-                    {data.tree_slug && data.tree_slug !== 'default' && (
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-[9px] font-bold rounded uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            Kel: {data.tree_slug}
+                    {data.isMerged ? (
+                        <span className="inline-block mt-1 px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-[9px] font-bold rounded uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">
+                            Tersebar di {data.allSlugs?.length} Keluarga
                         </span>
+                    ) : (
+                        data.tree_slug && data.tree_slug !== 'default' && (
+                            <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 dark:bg-slate-700 text-[9px] font-bold rounded uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                Kel: {data.tree_slug}
+                            </span>
+                        )
                     )}
                 </div>
             </div>
