@@ -59,3 +59,42 @@ export const formatDateDisplay = (dateStr) => {
 
     return `${d}/${m}/${y}`;
 };
+
+/**
+ * Calculate age based on birthDate
+ */
+export const calculateAge = (birthDate) => {
+    if (!birthDate) return 0;
+    const birth = parseDateString(birthDate);
+    if (!birth) return 0;
+
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+
+    return age;
+};
+
+/**
+ * Check if the given date is today (ignoring year)
+ */
+export const isBirthdayToday = (birthDate) => {
+    if (!birthDate) return false;
+    const birth = parseDateString(birthDate);
+    if (!birth) return false;
+
+    const today = new Date();
+    return birth.getDate() === today.getDate() &&
+        birth.getMonth() === today.getMonth();
+};
+
+/**
+ * Generate WhatsApp Greeting Message
+ */
+export const generateWhatsAppGreeting = (name, age, treeSlug) => {
+    return encodeURIComponent(`Selamat Ulang Tahun yang ke-${age}, ${name}! 🎂🥳\n\nSemoga panjang umur, sehat selalu, dan murah rezeki. Aamiin.\n\nSalam Hangat,\nKeluarga Besar ${treeSlug !== 'default' ? treeSlug : ''}`);
+};
