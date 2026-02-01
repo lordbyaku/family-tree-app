@@ -290,11 +290,7 @@ const FamilyTree = (props) => {
             const mNode = layoutedNodes.find(n => n.id === m.id);
 
             if (p1 && p2 && mNode) {
-                // Determine source handles based on relative position
-                const p1Handle = p1.position.x < p2.position.x ? 'right-source' : 'left-source';
-                const p2Handle = p2.position.x < p1.position.x ? 'right-source' : 'left-source';
-
-                // Determine target handles on marriage node
+                // Determine target handles on marriage node (Left and Right sides of heart)
                 const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
                 const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
 
@@ -304,8 +300,8 @@ const FamilyTree = (props) => {
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
                     target: m.id,
-                    type: 'straight', // Use straight for a clean horizontal line
-                    sourceHandle: p1Handle,
+                    type: 'smoothstep', // U-shape connector
+                    sourceHandle: 'bottom',
                     targetHandle: p1Target,
                     animated: isHighlighted,
                     style: {
@@ -322,8 +318,8 @@ const FamilyTree = (props) => {
                     id: `e-${m.p2}-${m.id}`,
                     source: m.p2,
                     target: m.id,
-                    type: 'straight',
-                    sourceHandle: p2Handle,
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
                     targetHandle: p2Target,
                     animated: isHighlighted,
                     style: {
