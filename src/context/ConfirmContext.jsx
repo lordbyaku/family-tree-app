@@ -17,24 +17,30 @@ export const ConfirmProvider = ({ children }) => {
         title: '',
         message: '',
         onConfirm: () => { },
+        onCancel: () => { },
         type: 'danger'
     });
 
-    const confirm = useCallback(({ title, message, onConfirm, type = 'danger' }) => {
-        setState({
-            isOpen: true,
-            title,
-            message,
-            onConfirm: () => {
-                onConfirm();
-                setState(prev => ({ ...prev, isOpen: false }));
-            },
-            type
+    const confirm = useCallback(({ title, message, onConfirm, type = 'danger', confirmText, cancelText }) => {
+        return new Promise((resolve) => {
+            setState({
+                isOpen: true,
+                title,
+                message,
+                type,
+                confirmText,
+                cancelText,
+                onConfirm: () => {
+                    setState(prev => ({ ...prev, isOpen: false }));
+                    if (onConfirm && typeof onConfirm === 'function') onConfirm();
+                    resolve(true);
+                },
+                onCancel: () => {
+                    setState(prev => ({ ...prev, isOpen: false }));
+                    resolve(false);
+                }
+            });
         });
-    }, []);
-
-    const close = useCallback(() => {
-        setState(prev => ({ ...prev, isOpen: false }));
     }, []);
 
     return (
@@ -45,8 +51,10 @@ export const ConfirmProvider = ({ children }) => {
                 title={state.title}
                 message={state.message}
                 onConfirm={state.onConfirm}
-                onCancel={close}
+                onCancel={state.onCancel}
                 type={state.type}
+                confirmText={state.confirmText}
+                cancelText={state.cancelText}
             />
         </ConfirmContext.Provider>
     );
