@@ -259,10 +259,11 @@ const FamilyTree = (props) => {
             const mNode = layoutedNodes.find(n => n.id === m.id);
 
             if (p1 && p2 && mNode) {
-                const p1Side = p1.position.x < p2.position.x ? 'left' : 'right';
-                const p2Side = p2.position.x < p1.position.x ? 'left' : 'right';
+                // Determine source handles based on relative position
+                const p1Handle = p1.position.x < p2.position.x ? 'right-source' : 'left-source';
+                const p2Handle = p2.position.x < p1.position.x ? 'right-source' : 'left-source';
 
-                // Determine which target handle to use on marriage node
+                // Determine target handles on marriage node
                 const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
                 const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
 
@@ -272,10 +273,9 @@ const FamilyTree = (props) => {
                     id: `e-${m.p1}-${m.id}`,
                     source: m.p1,
                     target: m.id,
-                    type: 'smoothstep',
-                    sourceHandle: 'bottom',
+                    type: 'straight', // Use straight for a clean horizontal line
+                    sourceHandle: p1Handle,
                     targetHandle: p1Target,
-                    borderRadius: 20,
                     animated: isHighlighted,
                     style: {
                         stroke: isHighlighted
@@ -291,10 +291,9 @@ const FamilyTree = (props) => {
                     id: `e-${m.p2}-${m.id}`,
                     source: m.p2,
                     target: m.id,
-                    type: 'smoothstep',
-                    sourceHandle: 'bottom',
+                    type: 'straight',
+                    sourceHandle: p2Handle,
                     targetHandle: p2Target,
-                    borderRadius: 20,
                     animated: isHighlighted,
                     style: {
                         stroke: isHighlighted
