@@ -50,7 +50,7 @@ const getLayoutedElements = (nodes, edges) => {
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
+    let layoutedNodes = nodes.map((node) => {
         const nodeWithPosition = dagreGraph.node(node.id);
         const isMember = node.type === 'member';
         const w = isMember ? nodeWidth : 40;
@@ -64,7 +64,38 @@ const getLayoutedElements = (nodes, edges) => {
             },
             targetPosition: 'top',
             sourcePosition: 'bottom',
+            width: w,
+            height: h
         };
+    });
+
+    // Post-processing: Force marriage nodes to be perfectly aligned with spouses
+    // This removes the "V" shape and ensures straight horizontal lines
+    layoutedNodes = layoutedNodes.map(node => {
+        if (node.type === 'marriage') {
+            const connectedEdges = edges.filter(e => e.target === node.id);
+            const spouseNodes = connectedEdges
+                .map(e => layoutedNodes.find(n => n.id === e.source))
+                .filter(Boolean);
+
+            if (spouseNodes.length > 0) {
+                // Use the first spouse's Y position as reference (assuming spouses are on same rank)
+                const refSpouse = spouseNodes[0];
+
+                // Center vertically: Reference Y + (Reference Height - Node Height) / 2
+                // Member Height: 100, Marriage Height: 40. Delta: 60 / 2 = 30.
+                const centeredY = refSpouse.position.y + (refSpouse.height - node.height) / 2;
+
+                return {
+                    ...node,
+                    position: {
+                        ...node.position,
+                        y: centeredY
+                    }
+                };
+            }
+        }
+        return node;
     });
 
     return { nodes: layoutedNodes, edges };

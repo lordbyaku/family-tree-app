@@ -4,7 +4,7 @@ import { useFamily } from '../context/FamilyContext';
 import { useToast } from '../context/ToastContext';
 import { useConfirm } from '../context/ConfirmContext';
 
-const DataManagerModal = ({ onClose, isAdmin, handleImportClick, handleExcelClick, handleExportImage }) => {
+const DataManagerModal = ({ onClose, isAdmin, handleImportClick, handleExcelClick, handleExportImage, initialTab = 'backup' }) => {
     const {
         members,
         exportData,
@@ -22,7 +22,7 @@ const DataManagerModal = ({ onClose, isAdmin, handleImportClick, handleExcelClic
     const toast = useToast();
     const confirm = useConfirm();
 
-    const [activeTab, setActiveTab] = useState('backup'); // 'backup', 'import', 'export'
+    const [activeTab, setActiveTab] = useState(initialTab); // 'backup', 'import', 'export'
     const [snapshots, setSnapshots] = useState([]);
     const [isLoadingSnapshots, setIsLoadingSnapshots] = useState(false);
     const [snapshotNote, setSnapshotNote] = useState('');

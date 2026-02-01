@@ -45,6 +45,7 @@ const MainLayout = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isBirthdayOpen, setIsBirthdayOpen] = useState(false);
   const [isDataManagerOpen, setIsDataManagerOpen] = useState(false);
+  const [dataManagerTab, setDataManagerTab] = useState('backup');
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
 
@@ -413,7 +414,22 @@ const MainLayout = () => {
           {/* Action Buttons Group */}
           <div className="grid grid-cols-4 md:flex items-center gap-2 w-full md:w-auto">
             <button
-              onClick={() => setIsDataManagerOpen(true)}
+              onClick={() => {
+                setDataManagerTab('export');
+                setIsDataManagerOpen(true);
+              }}
+              className="flex items-center justify-center text-white bg-red-600 hover:bg-red-700 p-2.5 rounded-xl transition-all shadow-lg shadow-red-500/20 active:scale-95 border border-red-500 md:px-4 md:gap-2"
+              title="Buku Keluarga"
+            >
+              <BookOpen size={20} />
+              <span className="hidden md:inline text-xs font-bold">Buku Keluarga</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setDataManagerTab('backup');
+                setIsDataManagerOpen(true);
+              }}
               className="flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 p-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95 border border-blue-500 md:px-4 md:gap-2"
               title="Data & Export"
             >
@@ -648,6 +664,7 @@ const MainLayout = () => {
           handleImportClick={handleImportClick}
           handleExcelClick={handleExcelClick}
           handleExportImage={handleExportImage}
+          initialTab={dataManagerTab}
         />
       )}
 
