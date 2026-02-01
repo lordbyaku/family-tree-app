@@ -43,11 +43,7 @@ const getLayoutedElements = (nodes, edges) => {
     });
 
     edges.forEach((edge) => {
-        // Use weight if provided to keep certain nodes closer (like spouses)
-        dagreGraph.setEdge(edge.source, edge.target, {
-            weight: edge.weight || 1,
-            minlen: edge.minlen || 1
-        });
+        dagreGraph.setEdge(edge.source, edge.target);
     });
 
     dagre.layout(dagreGraph);
@@ -267,67 +263,27 @@ const FamilyTree = (props) => {
             }
         });
 
-        // Marriage connections for Dagre - Higher weight keeps spouses closer together
+        // Marriage connections for Dagre
         marriages.forEach(m => {
             if (displayedIds.has(m.p1) && displayedIds.has(m.p2)) {
-                dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id, weight: 20 });
-                dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id, weight: 20 });
+                dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id });
+                dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id });
             }
         });
 
         // Children connections for Dagre
         childrenByMarriage.forEach((children, parentId) => {
-            // Sort by birth date first to get natural order
-            const sortedChildren = [...children].sort((a, b) => {
-                const parse = (d) => {
-                    if (!d) return 0;
-                    if (d.includes('/')) {
-                        const p = d.split('/');
-                        return new Date(p[2], p[1] - 1, p[0]).getTime();
-                    }
-                    return new Date(d).getTime();
-                };
-                return parse(a.birthDate) - parse(b.birthDate);
-            });
-
-            // Group siblings and their spouses to prevent line crossing
-            // SIBLING ORDERING LOGIC:
-            // For nodes to the left of the parent center: [Spouse, Child]
-            // For nodes to the right: [Child, Spouse]
-            // This ensures "blood" children are always inner-most, preventing crossing lines
-            const siblingOrder = [];
-            const mid = Math.floor(sortedChildren.length / 2);
-
-            sortedChildren.forEach((child, idx) => {
+            children.forEach(child => {
                 const childId = child.id;
+                // Double check both exist in layout
+                const sourceExists = parentId.startsWith('marriage-')
+                    ? marriages.some(m => m.id === parentId)
+                    : displayedIds.has(parentId);
 
-                // Add parent -> child edge (normal weight)
-                dagreEdges.push({ id: `de-${parentId}-${childId}`, source: parentId, target: childId, weight: 1 });
-
-                // Find spouses of this child
-                const childSpouses = (child.spouses || [])
-                    .map(s => typeof s === 'string' ? s : s.id)
-                    .filter(sid => displayedIds.has(sid));
-
-                if (idx < mid) {
-                    // Left side: [Spouse(s), Child]
-                    siblingOrder.push(...childSpouses, childId);
-                } else {
-                    // Right side: [Child, Spouse(s)]
-                    siblingOrder.push(childId, ...childSpouses);
+                if (sourceExists && displayedIds.has(childId)) {
+                    dagreEdges.push({ id: `de-${parentId}-${childId}`, source: parentId, target: childId });
                 }
             });
-
-            // Add invisible ordering edges to force horizontal layout
-            for (let i = 0; i < siblingOrder.length - 1; i++) {
-                dagreEdges.push({
-                    id: `order-${parentId}-${siblingOrder[i]}-${siblingOrder[i + 1]}`,
-                    source: siblingOrder[i],
-                    target: siblingOrder[i + 1],
-                    weight: 1,
-                    minlen: 0 // Keep them on the same rank as much as possible
-                });
-            }
         });
 
         // 4. Run Layout
