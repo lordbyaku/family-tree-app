@@ -12,7 +12,10 @@ const TreeMetadataSection = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({ title: '', description: '' });
     const [isSaving, setIsSaving] = useState(false);
-    const [isMinimized, setIsMinimized] = useState(() => localStorage.getItem(`tree_info_minimized_${treeSlug}`) === 'true');
+    const [isMinimized, setIsMinimized] = useState(() => {
+        const saved = localStorage.getItem(`tree_info_minimized_${treeSlug}`);
+        return saved === null ? true : saved === 'true';
+    });
 
     useEffect(() => {
         setFormData(treeMetadata);
@@ -51,10 +54,15 @@ const TreeMetadataSection = () => {
                     <div className="flex items-center gap-3 shrink-0">
                         <button
                             onClick={toggleMinimize}
-                            className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            className="flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group/hint relative"
                         >
                             <Info size={12} />
-                            {isMinimized ? 'Expand' : 'Minimize'}
+                            {isMinimized ? (
+                                <span className="flex items-center gap-1">
+                                    <span className="md:hidden">Buka</span>
+                                    <span className="hidden md:inline text-blue-500/80 animate-pulse font-medium">Klik untuk melihat informasi silsilah</span>
+                                </span>
+                            ) : 'Minimize'}
                         </button>
                     </div>
                 </div>

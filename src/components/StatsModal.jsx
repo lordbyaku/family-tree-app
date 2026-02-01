@@ -68,6 +68,17 @@ const StatsModal = ({ onClose }) => {
 
     const ProgressBar = ({ label, value, total, color }) => {
         const percentage = total > 0 ? (value / total) * 100 : 0;
+
+        // Use mapping for tailwind classes to ensure they are picked up by JIT
+        const colorClasses = {
+            blue: 'bg-blue-500 dark:bg-blue-400',
+            pink: 'bg-pink-500 dark:bg-pink-400',
+            emerald: 'bg-emerald-500 dark:bg-emerald-400',
+            purple: 'bg-purple-500 dark:bg-purple-400',
+            indigo: 'bg-indigo-500 dark:bg-indigo-400',
+            amber: 'bg-amber-500 dark:bg-amber-400'
+        };
+
         return (
             <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold">
@@ -76,7 +87,7 @@ const StatsModal = ({ onClose }) => {
                 </div>
                 <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div
-                        className={`h-full bg-${color}-500 dark:bg-${color}-400 transition-all duration-1000 ease-out`}
+                        className={`h-full ${colorClasses[color] || 'bg-slate-500'} transition-all duration-1000 ease-out`}
                         style={{ width: `${percentage}%` }}
                     />
                 </div>

@@ -7,9 +7,8 @@ import MemberForm from './components/MemberForm'
 import StatsModal from './components/StatsModal'
 import RelationshipModal from './components/RelationshipModal'
 import ProfileModal from './components/ProfileModal'
-import ExportModal from './components/ExportModal'
+import DataManagerModal from './components/DataManagerModal'
 import BirthdayDashboard from './components/BirthdayDashboard'
-import BackupModal from './components/BackupModal'
 import RelationshipPathModal from './components/RelationshipPathModal'
 import AuditLogModal from './components/AuditLogModal'
 import BirthdayReminder from './components/BirthdayReminder'
@@ -23,7 +22,6 @@ import AdminDashboard from './components/AdminDashboard'
 
 import { ToastProvider, useToast } from './context/ToastContext';
 import SearchBar from './components/SearchBar';
-import ImportExportActions from './components/ImportExportActions';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { ConfirmProvider } from './context/ConfirmContext';
 
@@ -41,12 +39,12 @@ const MainLayout = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [focusNodeId, setFocusNodeId] = useState(null);
   const [layoutMode, setLayoutMode] = useState('auto'); // 'auto' | 'manual'
-  const [showMiniMap, setShowMiniMap] = useState(true);
+  const [showMiniMap, setShowMiniMap] = useState(false);
   const [filterMode, setFilterMode] = useState(null); // 'ancestors' | 'descendants' | null
   const [filterRootId, setFilterRootId] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isBirthdayOpen, setIsBirthdayOpen] = useState(false);
-  const [isBackupOpen, setIsBackupOpen] = useState(false);
+  const [isDataManagerOpen, setIsDataManagerOpen] = useState(false);
   const [isAuditLogOpen, setIsAuditLogOpen] = useState(false);
   const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
 
@@ -414,15 +412,16 @@ const MainLayout = () => {
 
           {/* Action Buttons Group */}
           <div className="grid grid-cols-4 md:flex items-center gap-2 w-full md:w-auto">
-            <ImportExportActions
-              isAdmin={isAdmin}
-              handleImportClick={handleImportClick}
-              handleExcelClick={handleExcelClick}
-              exportData={exportData}
-              setIsExportModalOpen={setIsExportModalOpen}
-              downloadExcelTemplate={downloadExcelTemplate}
-              toast={toast}
-            />
+            <button
+              onClick={() => setIsDataManagerOpen(true)}
+              className="flex items-center justify-center text-white bg-blue-600 hover:bg-blue-700 p-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-95 border border-blue-500 md:px-4 md:gap-2"
+              title="Data & Export"
+            >
+              <Database size={20} />
+              <span className="hidden md:inline text-xs font-bold">Data & Export</span>
+            </button>
+
+            <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
@@ -433,22 +432,12 @@ const MainLayout = () => {
             </button>
 
             <button
-              onClick={handleExportImage}
+              onClick={() => setIsStatsOpen(true)}
               className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
-              title="Export Image (PNG)"
+              title="Statistik"
             >
-              <ImageIcon size={20} />
+              <BarChart3 size={20} />
             </button>
-
-            {isAdmin && (
-              <button
-                onClick={() => setIsBackupOpen(true)}
-                className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
-                title="Backup & Snapshots"
-              >
-                <Database size={20} />
-              </button>
-            )}
 
             {isAdmin && (
               <button
@@ -660,12 +649,14 @@ const MainLayout = () => {
       )}
 
       <BirthdayReminder />
-      {isExportModalOpen && (
-        <ExportModal onClose={() => setIsExportModalOpen(false)} />
-      )}
-
-      {isBackupOpen && (
-        <BackupModal onClose={() => setIsBackupOpen(false)} />
+      {isDataManagerOpen && (
+        <DataManagerModal
+          onClose={() => setIsDataManagerOpen(false)}
+          isAdmin={isAdmin}
+          handleImportClick={handleImportClick}
+          handleExcelClick={handleExcelClick}
+          handleExportImage={handleExportImage}
+        />
       )}
 
       {isMergeModalOpen && (
