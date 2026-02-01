@@ -30,7 +30,7 @@ const MainLayout = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isStatsOpen, setIsStatsOpen] = useState(false);
   const [isRelOpen, setIsRelOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  // isExportModalOpen removed
   const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
