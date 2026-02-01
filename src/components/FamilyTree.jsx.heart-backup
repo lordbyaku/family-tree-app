@@ -258,61 +258,51 @@ const FamilyTree = (props) => {
             }
         });
 
-        // 3.2 Ancestry & Sibling Ordering for Dagre
-        // We want children and their spouses to appear in sequence: [C1, S1, C2, S2...]
-        // We group children by their parentId (either individual or marriage node)
-        const groups = new Map();
-        displayMembers.forEach(m => {
-            const pid = childToParentGroup.get(m.id);
-            if (!pid) return;
-            if (!groups.has(pid)) groups.set(pid, []);
-            groups.get(pid).push(m);
+        // 3.2 Ancestry connections for Dagre (Heart-to-Heart)
+        const sortedDisplayMembers = [...displayMembers].sort((a, b) => {
+            const parse = (d) => {
+                if (!d) return 0;
+                if (d.includes('/')) {
+                    const p = d.split('/');
+                    return new Date(p[2], p[1] - 1, p[0]).getTime();
+                }
+                return new Date(d).getTime();
+            };
+            return parse(a.birthDate) - parse(b.birthDate);
         });
 
-        groups.forEach((children, parentId) => {
-            // Sort siblings by birth date
-            const sorted = [...children].sort((a, b) => {
-                const parse = (d) => {
-                    if (!d) return 0;
-                    if (d.includes('/')) {
-                        const p = d.split('/');
-                        return new Date(p[2], p[1] - 1, p[0]).getTime();
-                    }
-                    return new Date(d).getTime();
-                };
-                return parse(a.birthDate) - parse(b.birthDate);
-            });
+        sortedDisplayMembers.forEach(child => {
+            const parentId = childToParentGroup.get(child.id);
+            if (!parentId) return;
 
-            // For each sibling, add ancestry edge (Direct to Child Card as requested)
-            // And then build a sequence to keep siblings and spouses ordered
-            let prevNodeId = null;
+            // Check if this child has a marriage node
+            const cMarriage = marriages.find(m => m.p1 === child.id || m.p2 === child.id);
 
-            sorted.forEach(child => {
-                // Parent -> Child (Direct)
+            if (cMarriage) {
+                // Connect Parent -> Child's Marriage (Target the heart for cleaner layout)
+                // Use higher weight to center the marriage under the parent
+                dagreEdges.push({
+                    id: `de-anc-${parentId}-${cMarriage.id}`,
+                    source: parentId,
+                    target: cMarriage.id,
+                    weight: 20
+                });
+                // Also keep a link to the child node so it stays in the correct rank
+                dagreEdges.push({
+                    id: `de-link-${parentId}-${child.id}`,
+                    source: parentId,
+                    target: child.id,
+                    weight: 1
+                });
+            } else {
+                // Unmarried child, connect directly
                 dagreEdges.push({
                     id: `de-anc-${parentId}-${child.id}`,
                     source: parentId,
                     target: child.id,
                     weight: 10
                 });
-
-                // Find spouse(s) of this child
-                const m = marriages.find(mar => mar.p1 === child.id || mar.p2 === child.id);
-
-                // Add nodes to sequence for horizontal ordering
-                if (prevNodeId) {
-                    // Force child to be after previous sibling/spouse
-                    dagreEdges.push({ id: `ord-${prevNodeId}-${child.id}`, source: prevNodeId, target: child.id, weight: 1, minlen: 0 });
-                }
-                prevNodeId = child.id;
-
-                if (m) {
-                    const spouseId = m.p1 === child.id ? m.p2 : m.p1;
-                    // Force spouse to be after child
-                    dagreEdges.push({ id: `ord-${child.id}-${spouseId}`, source: child.id, target: spouseId, weight: 1, minlen: 0 });
-                    prevNodeId = spouseId;
-                }
-            });
+            }
         });
 
         // 4. Run Layout
@@ -322,7 +312,6 @@ const FamilyTree = (props) => {
         const finalEdges = [];
 
         // 5.1 Spouse -> Marriage Edges (Pink Heart Lines)
-        // Now using BOTTOM of member cards as requested for cleaner look
         marriages.forEach(m => {
             const isHighlighted = m.p1 === highlightedNodeId || m.p2 === highlightedNodeId;
             const style = {
@@ -334,12 +323,10 @@ const FamilyTree = (props) => {
                 transition: 'all 0.3s ease'
             };
 
-            const mNode = layoutedNodes.find(n => n.id === m.id);
-            if (!mNode) return;
-
             [m.p1, m.p2].forEach(pId => {
                 const pNode = layoutedNodes.find(n => n.id === pId);
-                if (!pNode) return;
+                const mNode = layoutedNodes.find(n => n.id === m.id);
+                if (!pNode || !mNode) return;
 
                 const targetHandle = pNode.position.x < mNode.position.x ? 'left' : 'right';
 
@@ -348,7 +335,7 @@ const FamilyTree = (props) => {
                     source: pId,
                     target: m.id,
                     type: 'smoothstep',
-                    sourceHandle: 'bottom', // From bottom of member
+                    sourceHandle: 'bottom',
                     targetHandle: targetHandle,
                     borderRadius: 30,
                     animated: isHighlighted,
@@ -365,8 +352,12 @@ const FamilyTree = (props) => {
             const targetNode = layoutedNodes.find(n => n.id === de.target);
             if (!sourceNode || !targetNode) return;
 
-            // Direct line highlighting
-            const isHighlighted = highlightedNodeId === de.source || highlightedNodeId === de.target;
+            // Biological child identification (if target is member) or marriage
+            let isHighlighted = highlightedNodeId === de.source || highlightedNodeId === de.target;
+            if (de.target.startsWith('marriage-') && !isHighlighted) {
+                const m = marriages.find(mar => mar.id === de.target);
+                if (m && (m.p1 === highlightedNodeId || m.p2 === highlightedNodeId)) isHighlighted = true;
+            }
 
             finalEdges.push({
                 id: `final-${de.id}`,
@@ -376,7 +367,7 @@ const FamilyTree = (props) => {
                 sourceHandle: 'bottom',
                 targetHandle: 'top',
                 borderRadius: 20,
-                animated: isHighlighted || (de.source.startsWith('marriage-') && !highlightedNodeId),
+                animated: isHighlighted || (!de.target.startsWith('marriage-') && de.source.startsWith('marriage-') && !highlightedNodeId),
                 style: {
                     stroke: isHighlighted
                         ? (props.isDarkMode ? '#60a5fa' : '#3b82f6')
