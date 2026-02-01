@@ -34,7 +34,7 @@ const BirthdayDashboard = ({ onClose, onViewProfile }) => {
 
         const birthdaysToday = allBirthdays.filter(m => m.bDay === currentDay && m.bMonth === currentMonth);
         const birthdaysThisMonth = allBirthdays
-            .filter(m => m.bMonth === currentMonth && m.bDay !== currentDay)
+            .filter(m => m.bMonth === currentMonth && m.bDay > currentDay)
             .sort((a, b) => a.bDay - b.bDay);
 
         return {

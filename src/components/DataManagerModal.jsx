@@ -179,7 +179,12 @@ const DataManagerModal = ({ onClose, isAdmin, handleImportClick, handleExcelClic
                                     <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                         <Save size={14} /> Ambil Snapshot Internal
                                     </h3>
-                                    <form onSubmit={handleCreateSnapshot} className="flex gap-2">
+                                    <form onSubmit={handleCreateSnapshot} className={`flex gap-2 relative ${treeSlug === 'gabungan' ? 'opacity-50 pointer-events-none' : ''}`}>
+                                        {treeSlug === 'gabungan' && (
+                                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-slate-800/60 rounded-xl">
+                                                <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">Snapshot dinonaktifkan di mode Gabungan</p>
+                                            </div>
+                                        )}
                                         <input
                                             type="text"
                                             placeholder="Catatan snapshot (misal: Sebelum migrasi)..."

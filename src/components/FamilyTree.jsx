@@ -347,9 +347,15 @@ const FamilyTree = (props) => {
 
         childrenByMarriage.forEach((children, parentId) => {
             const sortedChildren = [...children].sort((a, b) => {
-                const dateA = a.birthDate ? new Date(a.birthDate) : new Date(0);
-                const dateB = b.birthDate ? new Date(b.birthDate) : new Date(0);
-                return dateB - dateA;
+                const parse = (d) => {
+                    if (!d) return 0;
+                    if (d.includes('/')) {
+                        const p = d.split('/');
+                        return new Date(p[2], p[1] - 1, p[0]).getTime();
+                    }
+                    return new Date(d).getTime();
+                };
+                return parse(a.birthDate) - parse(b.birthDate);
             });
 
             sortedChildren.forEach(m => {

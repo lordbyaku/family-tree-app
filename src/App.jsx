@@ -253,8 +253,21 @@ const MainLayout = () => {
     const m = today.getMonth() + 1;
     return members.some(member => {
       if (!member.birthDate) return false;
-      const parts = member.birthDate.split('-');
-      return parseInt(parts[2]) === d && parseInt(parts[1]) === m;
+      // Handle YYYY-MM-DD
+      if (member.birthDate.includes('-')) {
+        const parts = member.birthDate.split('-');
+        if (parts[0].length === 4) { // YYYY-MM-DD
+          return parseInt(parts[2]) === d && parseInt(parts[1]) === m;
+        } else { // DD-MM-YYYY (rare but possible)
+          return parseInt(parts[0]) === d && parseInt(parts[1]) === m;
+        }
+      }
+      // Handle DD/MM/YYYY
+      if (member.birthDate.includes('/')) {
+        const parts = member.birthDate.split('/');
+        return parseInt(parts[0]) === d && parseInt(parts[1]) === m;
+      }
+      return false;
     });
   }, [members]);
 
@@ -286,7 +299,7 @@ const MainLayout = () => {
         <div className="flex items-center justify-between w-full md:w-auto">
           <div className="flex items-center gap-3 md:gap-4 truncate">
             <h1 className="text-lg md:text-2xl font-bold text-slate-800 dark:text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">
-              {treeSlug === 'gabungan' ? 'Gabungan Semua Silsilah' : (treeSlug === 'utama' || treeSlug === 'default' ? 'Silsilah Keluarga' : `Silsilah: ${treeSlug.charAt(0).toUpperCase() + treeSlug.slice(1)}`)}
+              {treeSlug === 'gabungan' ? 'Gabungan Semua Silsilah' : (treeSlug === 'utama' || treeSlug === 'default' ? 'Silsilah Keluarga' : `Silsilah: ${treeSlug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`)}
             </h1>
 
             <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
