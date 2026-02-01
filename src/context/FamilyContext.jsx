@@ -6,6 +6,7 @@ import useUndo from 'use-undo';
 import { generateExcelBook, generateHTMLBook, generateExcelTemplate } from '../utils/familyBook';
 import { generatePDFBook } from '../utils/pdfExport';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './AuthContext';
 
 const FamilyContext = createContext();
 
@@ -28,6 +29,21 @@ export const FamilyProvider = ({ children }) => {
 
     const members = membersState.present;
     const [lastAction, setLastAction] = useState('');
+    const { user } = useAuth();
+
+    const recordAuditLog = async (action, details) => {
+        try {
+            await supabase.from('audit_logs').insert([{
+                tree_slug: treeSlug,
+                action: action,
+                performed_by: user?.name || 'Sistem/Unknown',
+                details: details,
+                created_at: new Date().toISOString()
+            }]);
+        } catch (err) {
+            console.error("Gagal mencatat audit log:", err);
+        }
+    };
 
     // Update prevTreeSlug whenever treeSlug changes (but not to gabungan)
     useEffect(() => {
@@ -266,6 +282,9 @@ export const FamilyProvider = ({ children }) => {
             });
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
+
+            recordAuditLog('ADD_MEMBER', { name: newMember.name, id: id });
+
             setMembers(updatedList);
             setLastAction(`Tambah Anggota: ${newMember.name}`);
         } catch (error) { console.error("Gagal tambah anggota:", error.message); throw error; }
@@ -346,6 +365,8 @@ export const FamilyProvider = ({ children }) => {
             const { error } = await supabase.from('members').upsert(dbUpsertList);
             if (error) throw error;
 
+            recordAuditLog('UPDATE_MEMBER', { name: updatedMember.name, id: id });
+
             // Update local state
             const updatedList = members.map(m => modifiedMembersMap.get(m.id) || m);
             setMembers(updatedList);
@@ -386,6 +407,9 @@ export const FamilyProvider = ({ children }) => {
                 });
                 await supabase.from('members').upsert(dbUpsertList);
             }
+
+            recordAuditLog('DELETE_MEMBER', { name: memberToDelete.name, id: id });
+
             setMembers(updatedList);
             setLastAction(`Hapus Anggota: ${memberToDelete.name}`);
         } catch (error) { console.error("Gagal hapus anggota:", error.message); }
@@ -408,6 +432,7 @@ export const FamilyProvider = ({ children }) => {
             );
 
             if (error) throw error;
+            recordAuditLog('IMPORT_DATA', { name: `Migrasi Cloud dari Browser (${parsed.length} orang)` });
             localStorage.removeItem(`family_data_${treeSlug}`);
             fetchMembers();
             return { success: true, message: "Migrasi berhasil!" };
@@ -428,6 +453,7 @@ export const FamilyProvider = ({ children }) => {
 
         const { error } = await supabase.from('members').upsert(upsertData);
         if (error) throw error;
+        recordAuditLog('IMPORT_DATA', { name: `Impor JSON (${data.length} anggota)` });
         fetchMembers();
     };
 
@@ -584,6 +610,8 @@ export const FamilyProvider = ({ children }) => {
 
             if (updateError) throw updateError;
         }
+
+        recordAuditLog('IMPORT_DATA', { name: `Impor Excel (${mappedData.length} anggota)` });
 
         // Third pass: Update children relationships based on parents
         // Only work with members in THIS tree_slug
@@ -774,6 +802,8 @@ export const FamilyProvider = ({ children }) => {
 
             const { error: insError } = await supabase.from('members').upsert(upsertData);
             if (insError) throw insError;
+
+            recordAuditLog('RESTORE_SNAPSHOT', { name: `ID: ${snapshotId}` });
 
             fetchMembers();
             return { success: true };

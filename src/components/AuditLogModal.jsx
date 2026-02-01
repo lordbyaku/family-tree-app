@@ -37,6 +37,8 @@ const AuditLogModal = ({ onClose }) => {
             case 'ADD_MEMBER': return <UserPlus size={16} className="text-emerald-500" />;
             case 'UPDATE_MEMBER': return <Edit3 size={16} className="text-blue-500" />;
             case 'DELETE_MEMBER': return <Trash2 size={16} className="text-red-500" />;
+            case 'IMPORT_DATA': return <Upload size={16} className="text-orange-500" />;
+            case 'RESTORE_SNAPSHOT': return <RotateCcw size={16} className="text-purple-500" />;
             default: return <ClipboardList size={16} className="text-slate-400" />;
         }
     };
@@ -46,6 +48,8 @@ const AuditLogModal = ({ onClose }) => {
             case 'ADD_MEMBER': return 'Tambah Anggota';
             case 'UPDATE_MEMBER': return 'Ubah Profil';
             case 'DELETE_MEMBER': return 'Hapus Anggota';
+            case 'IMPORT_DATA': return 'Impor Masal (Excel/JSON)';
+            case 'RESTORE_SNAPSHOT': return 'Restore Snapshot';
             default: return action;
         }
     };
