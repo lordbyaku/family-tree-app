@@ -221,17 +221,21 @@ const FamilyTree = (props) => {
         ];
 
         // 3. Build Edges (For Dagre Layout)
+        // Group children by marriage to sort them by birth date
         const dagreEdges = [];
+        const childrenByMarriage = new Map(); // key: marriageId or parentId, value: array of members
 
-        // Map to keep track of which child belongs to which parent/marriage
-        const childToParentGroup = new Map();
         displayMembers.forEach(m => {
             if (m.parents && m.parents.length > 0) {
-                const pIds = m.parents.map(p => typeof p === 'string' ? p : p.id).filter(pid => displayedIds.has(pid));
-                if (pIds.length > 0) {
-                    let mId = null;
-                    if (pIds.length >= 2) {
-                        const uniqueParents = [...new Set(pIds)];
+                const parentIds = m.parents.map(p => typeof p === 'string' ? p : p.id).filter(pid => displayedIds.has(pid));
+
+                let mId = null;
+                if (parentIds.length >= 2) {
+                    // Try to find a marriage node that matches ANY pair of these parents
+                    // but preferentially a pair that includes both a male and female (traditional)
+                    // or just any pair we have a marriage node for.
+                    const uniqueParents = [...new Set(parentIds)];
+                    if (uniqueParents.length >= 2) {
                         for (let i = 0; i < uniqueParents.length; i++) {
                             for (let j = i + 1; j < uniqueParents.length; j++) {
                                 const pair = [uniqueParents[i], uniqueParents[j]].sort();
@@ -244,34 +248,105 @@ const FamilyTree = (props) => {
                             if (mId) break;
                         }
                     }
-                    childToParentGroup.set(m.id, mId || pIds[0]);
+                }
+
+                if (mId) {
+                    if (!childrenByMarriage.has(mId)) childrenByMarriage.set(mId, []);
+                    childrenByMarriage.get(mId).push(m);
+                } else {
+                    // Single parent or no marriage node found for parent pairs
+                    parentIds.forEach(pid => {
+                        if (!childrenByMarriage.has(pid)) childrenByMarriage.set(pid, []);
+                        childrenByMarriage.get(pid).push(m);
+                    });
                 }
             }
         });
 
-        // 3.1 Marriage connections for Dagre
+        // Marriage connections for Dagre
         marriages.forEach(m => {
             if (displayedIds.has(m.p1) && displayedIds.has(m.p2)) {
-                // High weight to keep spouses together
-                dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id, weight: 10 });
-                dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id, weight: 10 });
+                dagreEdges.push({ id: `de-${m.p1}-${m.id}`, source: m.p1, target: m.id });
+                dagreEdges.push({ id: `de-${m.p2}-${m.id}`, source: m.p2, target: m.id });
             }
         });
 
-        // 3.2 Ancestry & Sibling Ordering for Dagre
-        // We want children and their spouses to appear in sequence: [C1, S1, C2, S2...]
-        // We group children by their parentId (either individual or marriage node)
-        const groups = new Map();
-        displayMembers.forEach(m => {
-            const pid = childToParentGroup.get(m.id);
-            if (!pid) return;
-            if (!groups.has(pid)) groups.set(pid, []);
-            groups.get(pid).push(m);
+        // Children connections for Dagre
+        childrenByMarriage.forEach((children, parentId) => {
+            children.forEach(child => {
+                const childId = child.id;
+                // Double check both exist in layout
+                const sourceExists = parentId.startsWith('marriage-')
+                    ? marriages.some(m => m.id === parentId)
+                    : displayedIds.has(parentId);
+
+                if (sourceExists && displayedIds.has(childId)) {
+                    dagreEdges.push({ id: `de-${parentId}-${childId}`, source: parentId, target: childId });
+                }
+            });
         });
 
-        groups.forEach((children, parentId) => {
-            // Sort siblings by birth date
-            const sorted = [...children].sort((a, b) => {
+        // 4. Run Layout
+        const { nodes: layoutedNodes } = getLayoutedElements(initialNodes, dagreEdges);
+
+        // 5. Build Final Edges for Rendering with proper styling
+        const finalEdges = [];
+
+        // Spouse -> Marriage Edges
+        marriages.forEach(m => {
+            const p1 = layoutedNodes.find(n => n.id === m.p1);
+            const p2 = layoutedNodes.find(n => n.id === m.p2);
+            const mNode = layoutedNodes.find(n => n.id === m.id);
+
+            if (p1 && p2 && mNode) {
+                // Determine target handles on marriage node (Left and Right sides of heart)
+                const p1Target = p1.position.x < p2.position.x ? 'left' : 'right';
+                const p2Target = p2.position.x < p1.position.x ? 'left' : 'right';
+
+                const isHighlighted = m.p1 === highlightedNodeId || m.p2 === highlightedNodeId;
+
+                finalEdges.push({
+                    id: `e-${m.p1}-${m.id}`,
+                    source: m.p1,
+                    target: m.id,
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
+                    targetHandle: p1Target,
+                    borderRadius: 30, // Increased for smoother U-curve
+                    animated: isHighlighted,
+                    style: {
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
+                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
+                        strokeWidth: isHighlighted ? 6 : 3,
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
+                    }
+                });
+
+                finalEdges.push({
+                    id: `e-${m.p2}-${m.id}`,
+                    source: m.p2,
+                    target: m.id,
+                    type: 'smoothstep',
+                    sourceHandle: 'bottom',
+                    targetHandle: p2Target,
+                    borderRadius: 30, // Increased for smoother U-curve
+                    animated: isHighlighted,
+                    style: {
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
+                            : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
+                        strokeWidth: isHighlighted ? 6 : 3,
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
+                    }
+                });
+            }
+        });
+
+        childrenByMarriage.forEach((children, parentId) => {
+            const sortedChildren = [...children].sort((a, b) => {
                 const parse = (d) => {
                     if (!d) return 0;
                     if (d.includes('/')) {
@@ -283,112 +358,50 @@ const FamilyTree = (props) => {
                 return parse(a.birthDate) - parse(b.birthDate);
             });
 
-            // For each sibling, add ancestry edge (Direct to Child Card as requested)
-            // And then build a sequence to keep siblings and spouses ordered
-            let prevNodeId = null;
-
-            sorted.forEach(child => {
-                // Parent -> Child (Direct)
-                dagreEdges.push({
-                    id: `de-anc-${parentId}-${child.id}`,
-                    source: parentId,
-                    target: child.id,
-                    weight: 10
+            sortedChildren.forEach(m => {
+                const pObj = m.parents?.find(p => {
+                    const pid = typeof p === 'string' ? p : p.id;
+                    if (parentId.startsWith('marriage-')) return parentId.includes(pid);
+                    return pid === parentId;
                 });
+                const isStepChild = pObj && typeof pObj === 'object' && pObj.type === 'step';
 
-                // Find spouse(s) of this child
-                const m = marriages.find(mar => mar.p1 === child.id || mar.p2 === child.id);
-
-                // Add nodes to sequence for horizontal ordering
-                if (prevNodeId) {
-                    // Force child to be after previous sibling/spouse
-                    dagreEdges.push({ id: `ord-${prevNodeId}-${child.id}`, source: prevNodeId, target: child.id, weight: 1, minlen: 0 });
+                // Highlighting logic for Parent -> Child edge
+                let isHighlighted = false;
+                if (highlightedNodeId) {
+                    if (m.id === highlightedNodeId) isHighlighted = true;
+                    if (parentId.startsWith('marriage-')) {
+                        if (parentId.includes(highlightedNodeId)) isHighlighted = true;
+                    } else {
+                        if (parentId === highlightedNodeId) isHighlighted = true;
+                    }
                 }
-                prevNodeId = child.id;
-
-                if (m) {
-                    const spouseId = m.p1 === child.id ? m.p2 : m.p1;
-                    // Force spouse to be after child
-                    dagreEdges.push({ id: `ord-${child.id}-${spouseId}`, source: child.id, target: spouseId, weight: 1, minlen: 0 });
-                    prevNodeId = spouseId;
-                }
-            });
-        });
-
-        // 4. Run Layout
-        const { nodes: layoutedNodes } = getLayoutedElements(initialNodes, dagreEdges);
-
-        // 5. Build Final Edges for Rendering
-        const finalEdges = [];
-
-        // 5.1 Spouse -> Marriage Edges (Pink Heart Lines)
-        // Now using BOTTOM of member cards as requested for cleaner look
-        marriages.forEach(m => {
-            const isHighlighted = m.p1 === highlightedNodeId || m.p2 === highlightedNodeId;
-            const style = {
-                stroke: isHighlighted
-                    ? (props.isDarkMode ? '#fbbf24' : '#f59e0b')
-                    : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#db2777' : '#ec4899')),
-                strokeWidth: isHighlighted ? 6 : 3,
-                opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
-                transition: 'all 0.3s ease'
-            };
-
-            const mNode = layoutedNodes.find(n => n.id === m.id);
-            if (!mNode) return;
-
-            [m.p1, m.p2].forEach(pId => {
-                const pNode = layoutedNodes.find(n => n.id === pId);
-                if (!pNode) return;
-
-                const targetHandle = pNode.position.x < mNode.position.x ? 'left' : 'right';
 
                 finalEdges.push({
-                    id: `e-${pId}-${m.id}`,
-                    source: pId,
+                    id: `e-${parentId}-${m.id}`,
+                    source: parentId,
                     target: m.id,
                     type: 'smoothstep',
-                    sourceHandle: 'bottom', // From bottom of member
-                    targetHandle: targetHandle,
-                    borderRadius: 30,
-                    animated: isHighlighted,
-                    style
+                    sourceHandle: 'bottom',
+                    targetHandle: 'top',
+                    borderRadius: 20,
+                    animated: isHighlighted || (!isStepChild && parentId.startsWith('marriage-') && !highlightedNodeId),
+                    style: {
+                        stroke: isHighlighted
+                            ? (props.isDarkMode ? '#60a5fa' : '#3b82f6')
+                            : (highlightedNodeId
+                                ? (props.isDarkMode ? '#1e293b' : '#e2e8f0')
+                                : (isStepChild ? (props.isDarkMode ? '#94a3b8' : '#cbd5e1') : (props.isDarkMode ? '#3b82f6' : '#2563eb'))),
+                        strokeWidth: isHighlighted ? 6 : (isStepChild ? 2 : 2.5),
+                        strokeDasharray: isStepChild ? '5,5' : '0',
+                        opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
+                        transition: 'all 0.3s ease'
+                    },
                 });
             });
         });
 
-        // 5.2 Ancestry Edges (Blue Lines)
-        dagreEdges.forEach(de => {
-            if (!de.id.startsWith('de-anc-')) return;
-
-            const sourceNode = layoutedNodes.find(n => n.id === de.source);
-            const targetNode = layoutedNodes.find(n => n.id === de.target);
-            if (!sourceNode || !targetNode) return;
-
-            // Direct line highlighting
-            const isHighlighted = highlightedNodeId === de.source || highlightedNodeId === de.target;
-
-            finalEdges.push({
-                id: `final-${de.id}`,
-                source: de.source,
-                target: de.target,
-                type: 'smoothstep',
-                sourceHandle: 'bottom',
-                targetHandle: 'top',
-                borderRadius: 20,
-                animated: isHighlighted || (de.source.startsWith('marriage-') && !highlightedNodeId),
-                style: {
-                    stroke: isHighlighted
-                        ? (props.isDarkMode ? '#60a5fa' : '#3b82f6')
-                        : (highlightedNodeId ? (props.isDarkMode ? '#1e293b' : '#e2e8f0') : (props.isDarkMode ? '#3b82f6' : '#2563eb')),
-                    strokeWidth: isHighlighted ? 6 : 2.5,
-                    opacity: highlightedNodeId && !isHighlighted ? 0.3 : 1,
-                    transition: 'all 0.3s ease'
-                },
-            });
-        });
-
-        // Post-processing adjustment: Manual Layout if enabled
+        // 6. Manual Layout adjustment if needed
         const finalNodes = layoutedNodes.map(node => {
             if (props.layoutMode === 'manual') {
                 try {
