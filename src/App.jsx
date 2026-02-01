@@ -450,14 +450,6 @@ const MainLayout = () => {
             )}
 
             <button
-              onClick={() => setIsStatsOpen(true)}
-              className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
-              title="Statistik"
-            >
-              <BarChart3 size={20} />
-            </button>
-
-            <button
               onClick={() => setIsRelOpen(true)}
               className="flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border md:border-0 border-slate-200 dark:border-slate-700"
               title="Cek Hubungan"
